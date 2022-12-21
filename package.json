@@ -1,0 +1,29 @@
+{
+  "name": "jack",
+  "displayName": "lazyJack",
+  "description": "lets go",
+  "version": "0.0.6",
+  "publisher":"jackFan",
+  "icon": "image/lazy_man.png",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Snippets"
+  ],
+  "contributes": {
+    "snippets": [
+      {
+        "language": "dart",
+        "path": "./snippets/snippets.code-snippets"
+      }
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jack-fan1991/vscode.git"
+  },
+   "devDependencies": {
+    "bloc": "^6.6.2"
+  }
+}
