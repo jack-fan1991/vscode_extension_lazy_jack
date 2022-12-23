@@ -6,9 +6,9 @@
 
 |  快捷   |  描述  | 補充|
 |  ----  | ----  |------|
-| c2up     | clipboard to Uppercase|剪貼板的文字為預設值 |
-| c2low    | clipboard to lowerCase|剪貼板的文字為預設值 |
-| c2camel  | clipboard to camelCase|剪貼板的文字為預設值 |
+| c2up     | clipboard to Uppercase|剪貼板的文字為預設值<br>quick fix 支援  |
+| c2low    | clipboard to lowerCase|剪貼板的文字為預設值<br>quick fix 支援   |
+| c2camel  | clipboard to camelCase|剪貼板的文字為預設值<br>quick fix 支援   |
 | fun      | Function definition |
 
 #### dart 

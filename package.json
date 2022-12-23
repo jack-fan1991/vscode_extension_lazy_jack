@@ -2,8 +2,8 @@
   "name": "jack",
   "displayName": "lazyJack",
   "description": "lets go",
-  "version": "0.0.6",
-  "publisher":"jackFan",
+  "version": "0.0.7",
+  "publisher": "jackFan",
   "icon": "image/lazy_man.png",
   "engines": {
     "vscode": "^1.74.0"
@@ -11,11 +11,60 @@
   "categories": [
     "Snippets"
   ],
+  "keywords": [
+    "flutter",
+    "bloc",
+    "freezed"
+  ],
+  "main": "./src/extension",
+  "activationEvents": [
+    "onCommand:extension.sayHello"
+  ],
   "contributes": {
+    "commands": [
+      {
+        "command": "extension.sayHello",
+        "title": "Hello World"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "extension.sayHello",
+        "key": "ctrl+f10",
+        "mac": "cmd+f10",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "extension.demo.openWebview",
+        "key": "ctrl+f9",
+        "mac": "cmd+f9",
+        "when": "editorTextFocus"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "when": "editorFocus",
+          "command": "extension.sayHello",
+          "group": "navigation"
+        }
+      ]
+    },
     "snippets": [
       {
-        "language": "dart",
         "path": "./snippets/snippets.code-snippets"
+      },
+      {
+        "language": "dart",
+        "path": "./snippets/dart_freezed.json"
+      },
+      {
+        "language": "dart",
+        "path": "./snippets/dart_unit_test.json"
+      },
+      {
+        "language": "dart",
+        "path": "./snippets/dart.json"
       }
     ]
   },
@@ -23,7 +72,7 @@
     "type": "git",
     "url": "https://github.com/jack-fan1991/vscode.git"
   },
-   "devDependencies": {
-    "bloc": "^6.6.2"
-  }
+  "extensionPack": [
+    "FelixAngelov.bloc"
+  ]
 }

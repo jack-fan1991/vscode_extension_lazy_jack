@@ -1,188 +1,45 @@
 {
-
-	// 通用
-	"Clipboard to Uppercase": {
-		"prefix": "c2upCase",
-		"body": [
-		  "${CLIPBOARD/.*/${0:/upcase}/}$0"
-		]
-	  },
-	  "Clipboard to lowerCase": {
-		"prefix": "c2lowCase",
-		"body": [
-		  "${CLIPBOARD/.*/${0:/downcase}/}$0"
-		]
-	  },
-	  "Clipboard to camelCase": {
-		"prefix": "c2camelCase",
-		"body": [
-		  "${CLIPBOARD/.*/${0:/camelcase}/}$0"
-		]
-	  },
-	  "Function definition": {
-        "prefix": "fun",
-        "body": [
-            "${2:returnType} ${3:functionName}() {",
-			"\t\t$2  ${2/(.*)/${1:/camelcase}/}= $2();",
-			"\t\treturn ${2/(.*)/${1:/camelcase}/};",
-            "}"
-        ],
-        "description": "Define user defined function"
+  "to upcase": {
+    "body": [
+      "${TM_SELECTED_TEXT/.*/${0:/upcase}/}$0"
+    ]
+  },
+  "to lowercase": {
+    "body": [
+      "${TM_SELECTED_TEXT/.*/${0:/downcase}/}$0"
+    ]
+  },  
+  "to camelcase": {
+    "body": [
+      "${TM_SELECTED_TEXT/.*/${0:/camelcase}/}$0"
+    ]
+  },    
+  "Clipboard to Uppercase": {
+      "prefix": "c2upCase",
+      "body": [
+        "${CLIPBOARD/.*/${0:/upcase}/}$0"
+      ]
     },
-
-
-
-	// dart
-	"For Loop": {
-	  "scope": "dart",
-	  "prefix": [
-		"forLoop"
-	  ],
-	  "body": [
-		"for (final ${2:element} in ${1:array}) {",
-		"\t$0",
-		"}"
-	  ],
-	  "description": "A for loop."
-	},
-	"For Loop block": {
-        "prefix": "for",
-        "body": [
-            "for ( int ${1:i} = 0 ; $1 < ${2:10} ; $1 ++ ){",
-            "\t$3",
-            "}"
-        ],
-        "description": "Create a For-Loop Block",
+    "Clipboard to lowerCase": {
+      "prefix": "c2lowCase",
+      "body": [
+        "${CLIPBOARD/.*/${0:/downcase}/}$0"
+      ]
     },
-	"Final Member": {
-		"scope": "dart",
-		"prefix": "finalMember",
-		"body": [
-		  "final ${1/(.*)/${1:/camelcase}/}= ${1:Member}();"
-		],
-		"description": "Freezed Union Case for bloc state case ,copy string as default factory class name"
-	  },
-
-	"Try Catch Block": {
-		"scope": "dart",
-        "prefix": "tryCatch",
-        "body": [
-            "try { ",
-            "${1:}",
-            "} catch (exception) {",
-            "  print(exception.toString());",
-            "}"
-        ],
-        "description": "Create a try-catch block to use exception object"
+    "Clipboard to camelCase": {
+      "prefix": "c2camelCase",
+      "body": [
+        "${CLIPBOARD/.*/${0:/camelcase}/}$0"
+      ]
     },
-    "Try-On-Catch Block": {
-		"scope": "dart",
-        "prefix": "tryOnCatch",
-        "body": [
-            "try { ",
-            "\t$2",
-            "} on ${1:exceptionType} {",
-            "",
-            "} catch(exception) {",
-			"\t$3",
-            "  print(exception.toString());",
-            "}"
-        ],
-        "description": "Create a try-on-catch block to handle specific exception and use exception object"
-    },
-	"Clipboard to factory ": {
-		"scope": "dart",
-		"prefix": "c2Factory",
-		"body": [
-		  "const factory ${1:$CLIPBOARD}.${2:name}(${4}) => $1($3);"
-		],
-		"description": "Clipboard to factory"
-	  },
-	
-    
-
-	// freezed
-	"freezed part ": {
-	  "scope": "dart",
-	  "prefix": [
-		"fz.p"
-	  ],
-	  "body": [
-		"part '${TM_FILENAME_BASE}.${1|g,freezed|}.dart';"
-	  ],
-	  "description": "create part for freezed"
-	},
-	"Freezed Data Class": {
-	  "scope": "dart",
-	  "prefix": "fzClass",
-	  "body": [
-		"@freezed",
-		"abstract class ${1:DataClass} with _$${1:DataClass}{",
-		"  const factory ${1:DataClass}(${2}) = _${1:DataClass};",
-		"}"
-	  ],
-	  "description": "Freezed Data Class"
-	},
-	"Freezed class with state": {
-	  "scope": "dart",
-	  "prefix": "fzWithState",
-	  "body": [
-		"@freezed",
-		"abstract class ${1:${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/g}} with _$$1{",
-		"  const factory $1.${2:init}(${3}) = _$1${2/(.*)/${1:/capitalize}/};",
-		"}"
-	  ],
-	  "description": "Freezed Union for bloc state"
-	},
-	"Create Freezed State": {
-	  "scope": "dart",
-	  "prefix": "fzState",
-	  "body": [
-		"const factory ${1:${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/g}}.${2:newState}(${3}) = _${TM_FILENAME_BASE}${2/(.*)/${1:/capitalize}/};"
-	  ],
-	  "description": "Create Freezed State"
-	},
-	"Copy Class Name to Freezed State": {
-		"scope": "dart",
-		"prefix": "fzC2State",
-		"body": [
-		  "const factory $CLIPBOARD.${2:newState}(${3}) = _${CLIPBOARD}${2/(.*)/${1:/capitalize}/};"
-		],
-		"description": "Clipboard Class Name to Freezed State"
-	  },
-	
-
-	// unitText
-	"Unit test": {
-		"scope": "dart",
-        "prefix": "ut",
-        "body": [
-            "test('${1:testName} ', () {",
-            "//Arrange - Setup facts, Put Expected outputs or Initilize\n",
-            "//Act - Call the function that is to be tested\n",
-            "//Assert - Compare the actual result and expected result\n",
-            "});"
-        ],
-        "description": "Define a Unit test"
-    },
-	"Unit test group": {
-		"scope": "dart",
-        "prefix": "utg",
-        "body": [
-			"\tgroup('${1:groupName}', () {",
-            "\t\ttest('${2:testName}', () {",
-            "\t\t\t\t//Arrange - Setup facts, Put Expected outputs or Initilize\n",
-            "\t\t\t\t//Act - Call the function that is to be tested\n",
-            "\t\t\t\t//Assert - Compare the actual result and expected result\n",
-			"\t\t\t\t${3:case}",
-            "\t\t\t});",
-			"\t\t},",
-			"\t);"
-        ],
-        "description": "Define a Unit test group"
-    },
-    
-
+    "Function definition": {
+      "prefix": "fun",
+      "body": [
+        "${2:returnType} ${3:functionName}() {",
+        "\t\t$2  ${2/(.*)/${1:/camelcase}/}= $2();",
+        "\t\treturn ${2/(.*)/${1:/camelcase}/};",
+        "}"
+      ],
+      "description": "Define user defined function"
+    }
   }
-  
-  

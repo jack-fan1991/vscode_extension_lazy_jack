@@ -1,0 +1,53 @@
+{
+  "For Loop": {
+    "scope": "dart",
+    "prefix": ["forLoop"],
+    "body": ["for (final ${2:element} in ${1:array}) {", "\t$0", "}"],
+    "description": "A for loop."
+  },
+  "For Loop block": {
+    "prefix": "for",
+    "body": ["for ( int ${1:i} = 0 ; $1 < ${2:10} ; $1 ++ ){", "\t$3", "}"],
+    "description": "Create a For-Loop Block"
+  },
+  "Final Member": {
+    "scope": "dart",
+    "prefix": "finalMember",
+    "body": ["final ${1/(.*)/${1:/camelcase}/}= ${1:Member}();"],
+    "description": "Freezed Union Case for bloc state case ,copy string as default factory class name"
+  },
+
+  "Try Catch Block": {
+    "scope": "dart",
+    "prefix": "tryCatch",
+    "body": [
+      "try { ",
+      "${1:}",
+      "} catch (exception) {",
+      "  print(exception.toString());",
+      "}"
+    ],
+    "description": "Create a try-catch block to use exception object"
+  },
+  "Try-On-Catch Block": {
+    "scope": "dart",
+    "prefix": "tryOnCatch",
+    "body": [
+      "try { ",
+      "\t$2",
+      "} on ${1:exceptionType} {",
+      "",
+      "} catch(exception) {",
+      "\t$3",
+      "  print(exception.toString());",
+      "}"
+    ],
+    "description": "Create a try-on-catch block to handle specific exception and use exception object"
+  },
+  "Clipboard to factory ": {
+    "scope": "dart",
+    "prefix": "c2Factory",
+    "body": ["const factory ${1:$CLIPBOARD}.${2:name}(${4}) => $1($3);"],
+    "description": "Clipboard to factory"
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "freezed part ": {
+    "scope": "dart",
+    "prefix": ["fz.p"],
+    "body": ["part '${TM_FILENAME_BASE}.${1|g,freezed|}.dart';"],
+    "description": "create part for freezed"
+  },
+  "Freezed Data Class": {
+    "scope": "dart",
+    "prefix": "fzClass",
+    "body": [
+      "@freezed",
+      "abstract class ${1:DataClass} with _$${1:DataClass}{",
+      "  const factory ${1:DataClass}(${2}) = _${1:DataClass};",
+      "}"
+    ],
+    "description": "Freezed Data Class"
+  },
+  "Freezed class with state": {
+    "scope": "dart",
+    "prefix": "fzWithState",
+    "body": [
+      "@freezed",
+      "abstract class ${1:${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/g}} with _$$1{",
+      "  const factory $1.${2:init}(${3}) = _$1${2/(.*)/${1:/capitalize}/};",
+      "}"
+    ],
+    "description": "Freezed Union for bloc state"
+  },
+  "Create Freezed State": {
+    "scope": "dart",
+    "prefix": "fzState",
+    "body": [
+      "const factory ${1:${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/g}}.${2:newState}(${3}) = _${TM_FILENAME_BASE}${2/(.*)/${1:/capitalize}/};"
+    ],
+    "description": "Create Freezed State"
+  },
+  "Copy Class Name to Freezed State": {
+    "scope": "dart",
+    "prefix": "fzC2State",
+    "body": [
+      "const factory $CLIPBOARD.${2:newState}(${3}) = _${CLIPBOARD}${2/(.*)/${1:/capitalize}/};"
+    ],
+    "description": "Clipboard Class Name to Freezed State"
+  }
+}
