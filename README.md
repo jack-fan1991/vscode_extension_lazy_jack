@@ -1,42 +1,47 @@
 ## Features
 
-* teb to next cursor
-* c2 snippets will use clipboard as value
+* Use tab to next cursor, modify snippets code
+* Prefix "c2" snippets, means "clipboard to" will use clipboard as value
+* Prefix "b2" snippets means "baseFileName to" will use baseFileName as value
+* Quick fix(on_text_selected) => Extension can be used on selected text 
+
 #### 一般
 
-|  快捷   |  描述  | 補充|
-|  ----  | ----  |------|
-| c2up     | clipboard to Uppercase|剪貼板的文字為預設值<br>quick fix 支援  |
-| c2low    | clipboard to lowerCase|剪貼板的文字為預設值<br>quick fix 支援   |
-| c2camel  | clipboard to camelCase|剪貼板的文字為預設值<br>quick fix 支援   |
-| fun      | Function definition |
+|  快捷   |  描述  | 補充| 支援|
+|  ----  | ----  |------|-----|
+| c2up     | clipboard to Uppercase|剪貼板的文字為預設值  |Quick fix ( onText Select )|
+| c2low    | clipboard to lowerCase|剪貼板的文字為預設值  |Quick fix ( onText Select )|
+| c2camel  | clipboard to camelCase|剪貼板的文字為預設值  |Quick fix ( onText Select )|
+| fun      | Function definition ||
 
 #### dart 
 
-|  快捷   |  描述  | 補充|
-|  ----  | ----  |------|
-| forLoop<br>forl  | just for loop   ||
+|  快捷   |  描述  | 補充| 支援|
+|  ----  | ----  |------|-----|
+| forLoop<br>forl  | just for loop   |||
 | for    | just for loop   ||
-| finalMember<br>fm     | final member= Member();||
+| finalMember<br>fm     | |final member= Member(); |
 | tc     | Try catch||
 | toc    | Try on catch||
-| c2Factory<br> c2f    | clipboard to factory |複製小要新增的 factory case 的 class name ,<br>複製的class name 為factory class name|
 | fun    |  Function definition ||
+| c2Factory  | clipboard to factory | const factory Clipboard.name() = Clipboard(); |
+| c2FromJson   | clipboard to FromJson |  factory Clipboard.fromJson(Map<String, dynamic> json) => _ClipboardFromJson(json); <br>  Map<String, dynamic> toJson() => _$ClipboardToJson(this); |
+| b2FromJson   | base file name to FromJson |factory baseFileName.fromJson(Map<String, dynamic> json) => _baseFileNameFromJson(json); <br> Map<String, dynamic> toJson() => _$baseFileNameToJson(this); |右鍵菜單|
 
 #### freezed 
 
 * State  snippets: will take base file name as class name 
 
-|  快捷   |  描述  | 補充|
-|  ----  | ----  |------|
-| fz.p     |import current_filename.g.dart<br>import current_filename.freezed.dart<br>  |可選( .g / .freezed )|
-| fzClass<br>fzc     |  Freezed Data Class  | 自定義class|
-| fzWithState<br>fzw     |  Freezed Data Class with state  |參照freezed Union types and Sealed classes 生成的模板<br>|
-| fzState<br>fzs    | Create Freezed State | 搭配 freezed Union types|
+|  快捷   |  描述  | 補充|支援|
+|  ----  | ----  |------|------|
+| fz.p     |import base_filename.g.dart<br>import base_filename.freezed.dart<br>  |引入後可選( .g / .freezed )|右鍵菜單 |
+| fzClass<br>fzc     | Create Freezed Data Class  | 用於任何文件字定義 freezed class |右鍵菜單 |
+| fzWithState<br>fzw     |Create Freezed Data Class with state  |參照freezed Union types and Sealed classes 生成的模板<br>|右鍵菜單 |
+| fzState<br>fzs    | Add New Freezed State | 搭配 freezed Union types|右鍵菜單 |
 | fzC2State<br>fzc2s    | Copy Class Name to Freezed State| 搭配 freezed Union types|
 
-
 ### 參考文件結構為範例
+
 ```
 login
     |___bloc 
@@ -47,9 +52,10 @@ login
     |__login_view.dart
     
 ```
+
 ### customer freeze class
 
-``` dart
+```dart
 // fzc
 @freezed
 abstract class DataClass with _$DataClass {
@@ -60,9 +66,12 @@ abstract class DataClass with _$DataClass {
   const factory DataClass.newState() = _DataClassNewState;
 } 
 ```
+
 ### Use state snippets 
+
 *  login_bLoc.dart
-``` dart
+
+```dart
 //fzWithState
 @freezed
 abstract class LoginBloc with _$LoginBloc {
@@ -74,7 +83,8 @@ abstract class LoginBloc with _$LoginBloc {
 ```
 
 *  login_event.dart
-``` dart
+
+```dart
 //fzWithState
 @freezed
 abstract class LoginEvent with _$LoginEvent {
@@ -86,7 +96,8 @@ abstract class LoginEvent with _$LoginEvent {
 ```
 
 *  login_event.dart
-``` dart
+
+```dart
 //fzWithState
 @freezed
 abstract class LoginState with _$LoginState {
@@ -95,10 +106,6 @@ abstract class LoginState with _$LoginState {
   const factory LoginState.newState() = _login_stateNewState;
 }
 ```
-
-
-
-
 
 #### dart test
 
@@ -111,6 +118,5 @@ abstract class LoginState with _$LoginState {
 
 * [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
 * [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
 
 **Enjoy!**
