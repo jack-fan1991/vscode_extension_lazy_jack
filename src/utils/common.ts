@@ -11,3 +11,34 @@ export function showInfo2OptionMessage(msg: string, option1?: string, option2?: 
     }
   });
 }
+
+
+
+export async function onFlutter(getData: () => any[], errorData: () => any[]) {
+  const files = await vscode.workspace.findFiles('**/pubspec.yaml');
+  if (files.length <= 0) {
+    console.log('當前不是flutter 專案');
+    return errorData()
+  }
+  return getData()
+}
+
+export async function onGit(getData: () => any[], errorData: () => any[]) {
+  const files = await vscode.workspace.findFiles('**/.gitignore', '**/android/**', 1);
+  if (files.length <= 0) {
+    console.log('當前不是 git 專案');
+    return errorData()
+
+  }
+  return getData()
+}
+
+
+export async function onTypeScript(getData: () => any[], errorData: () => any[]) {
+  const files = await vscode.workspace.findFiles('**/package.json', '**/ios/**');
+  if (files.length <= 0) {
+    console.log('當前不是TypeScript 專案');
+    return errorData()
+  }
+  return getData()
+}

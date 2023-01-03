@@ -17,31 +17,10 @@ let setter;
 let arr = [];
 function registerGenerateGetterSetter(context) {
     context.subscriptions.push(vscode.commands.registerCommand(command_dart_generate_getter_setter, () => __awaiter(this, void 0, void 0, function* () {
-        // generator()
-        generator2();
+        generator();
     })));
 }
 exports.registerGenerateGetterSetter = registerGenerateGetterSetter;
-function generator2() {
-    const editor = vscode.window.activeTextEditor;
-    if (!editor)
-        return;
-    const selection = editor.selection;
-    let text = editor.document.getText(selection);
-    if (text.length < 1) {
-        vscode.window.showErrorMessage('No selected properties.');
-        return;
-    }
-    let properties = text.split(/\r?\n/).filter(x => x.length > 2).map(x => x.replace(';', ''));
-    let generatedMethods = [];
-    for (let p of properties) {
-        console.log(p);
-        generatedMethods = generateGetterAndSetter(p);
-    }
-    editor.edit(edit => editor.selections.forEach(selection => {
-        edit.insert(selection.end, generatedMethods.join("\n"));
-    }));
-}
 function generator() {
     const editor = vscode.window.activeTextEditor;
     if (!editor)

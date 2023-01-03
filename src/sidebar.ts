@@ -1,10 +1,11 @@
 import * as vscode from 'vscode';
-import { showInfo2OptionMessage } from './utils/common';
+import { showInfo2OptionMessage, onFlutter, onGit, onTypeScript } from './utils/common';
 import * as terminal_util from './utils/terminal_utils';
 import * as child_process from "child_process";
 
 enum ScriptsType {
-    terminal = 'terminal'
+    terminal = 'terminal',
+    gitBrowser = 'gitBrowser',
 }
 export const sidebar_command = "sidebar_command.onSelected";
 
@@ -48,6 +49,12 @@ const vsceScripts = [
 
 const gitScripts = [
     {
+        scriptsType: ScriptsType.gitBrowser,
+        label: "open remote wiki",
+        script: 'git config --get remote.origin.url',
+        args: "wiki"
+    },
+    {
         scriptsType: ScriptsType.terminal,
         label: "git force push",
         script: 'git push -f origin',
@@ -56,7 +63,7 @@ const gitScripts = [
         scriptsType: ScriptsType.terminal,
         label: "git reflog",
         script: 'git reflog',
-    },
+    }
 ]
 
 
@@ -87,7 +94,7 @@ export class FlutterTreeDataProvider implements vscode.TreeDataProvider<SideBarE
         element?: SideBarEntryItem
     ): vscode.ProviderResult<SideBarEntryItem[]> {
         //子节点
-        let childrenList = []
+        let childrenList: any[] = []
         let script = flutterScripts
         for (let index = 0; index < script.length; index++) {
             let item = new SideBarEntryItem(
@@ -102,7 +109,7 @@ export class FlutterTreeDataProvider implements vscode.TreeDataProvider<SideBarE
             }
             childrenList[index] = item
         }
-        return childrenList
+        return Promise.resolve(onFlutter(() => childrenList, () => []));
     }
 
 }
@@ -117,8 +124,9 @@ export class RunBuilderTreeDataProvider implements vscode.TreeDataProvider<SideB
     getChildren(
         element?: SideBarEntryItem
     ): vscode.ProviderResult<SideBarEntryItem[]> {
+
         //子节点
-        let childrenList = []
+        let childrenList: any[] = []
         let script = buildRunnerScripts
         for (let index = 0; index < script.length; index++) {
             let item = new SideBarEntryItem(
@@ -133,7 +141,7 @@ export class RunBuilderTreeDataProvider implements vscode.TreeDataProvider<SideB
             }
             childrenList[index] = item
         }
-        return childrenList
+        return Promise.resolve(onFlutter(() => childrenList, () => []));
     }
 
 }
@@ -146,8 +154,9 @@ export class NpmTreeDataProvider implements vscode.TreeDataProvider<SideBarEntry
     getChildren(
         element?: SideBarEntryItem
     ): vscode.ProviderResult<SideBarEntryItem[]> {
+
         //子节点
-        let childrenList = []
+        let childrenList: any[] = []
         let script = npmScripts
         for (let index = 0; index < script.length; index++) {
             let item = new SideBarEntryItem(
@@ -162,7 +171,7 @@ export class NpmTreeDataProvider implements vscode.TreeDataProvider<SideBarEntry
             }
             childrenList[index] = item
         }
-        return childrenList
+        return Promise.resolve(onTypeScript(() => childrenList, () => []));
     }
 
 }
@@ -176,7 +185,7 @@ export class VscodeExtensionTreeDataProvider implements vscode.TreeDataProvider<
         element?: SideBarEntryItem
     ): vscode.ProviderResult<SideBarEntryItem[]> {
         //子节点
-        let childrenList = []
+        let childrenList: any[] = []
         let script = vsceScripts
         for (let index = 0; index < script.length; index++) {
             let item = new SideBarEntryItem(
@@ -191,7 +200,7 @@ export class VscodeExtensionTreeDataProvider implements vscode.TreeDataProvider<
             }
             childrenList[index] = item
         }
-        return childrenList
+        return Promise.resolve(onTypeScript(() => childrenList, () => []));
     }
 
 }
@@ -206,7 +215,7 @@ export class GitTreeDataProvider implements vscode.TreeDataProvider<SideBarEntry
         element?: SideBarEntryItem
     ): vscode.ProviderResult<SideBarEntryItem[]> {
         //子节点
-        let childrenList = []
+        let childrenList: any[] = []
         let script = gitScripts
         for (let index = 0; index < script.length; index++) {
             let item = new SideBarEntryItem(
@@ -221,7 +230,7 @@ export class GitTreeDataProvider implements vscode.TreeDataProvider<SideBarEntry
             }
             childrenList[index] = item
         }
-        return childrenList
+        return Promise.resolve(onGit(() => childrenList, () => []));
     }
 
 }
@@ -237,6 +246,9 @@ export function onTreeItemSelect(context: vscode.ExtensionContext, args: any) {
     switch (scriptsType) {
         case ScriptsType.terminal:
             terminalAction(context, script)
+            break;
+        case ScriptsType.gitBrowser:
+            gitBrowserAction(context, script, args['args'] == null ? [] : args['args'].split(','))
             break;
         default:
             vscode.window.showInformationMessage("Only show => " + script)
@@ -259,6 +271,19 @@ async function terminalAction(context: vscode.ExtensionContext, command: string)
     );
 }
 
+async function gitBrowserAction(context: vscode.ExtensionContext, command: string, args: string[]) {
+    const cwd = vscode.workspace.rootPath;
+    let uri = await runCommand("cd " + cwd + " && " + command)
+    uri = uri.replace("git@github.com:", "https://git@github.com/").split('.git')[0]
+
+    if (args.length > 0) {
+        uri = uri + "/" + args[0];
+    }
+    vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(uri));
+    return;
+
+}
+
 function runCommand(command: string): Promise<string> {
     return new Promise((resolve, reject) => {
         child_process.exec(command, (error, stdout, stderr) => {
@@ -270,3 +295,5 @@ function runCommand(command: string): Promise<string> {
         });
     });
 }
+
+

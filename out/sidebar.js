@@ -17,6 +17,7 @@ const child_process = require("child_process");
 var ScriptsType;
 (function (ScriptsType) {
     ScriptsType["terminal"] = "terminal";
+    ScriptsType["gitBrowser"] = "gitBrowser";
 })(ScriptsType || (ScriptsType = {}));
 exports.sidebar_command = "sidebar_command.onSelected";
 const flutterScripts = [
@@ -54,6 +55,12 @@ const vsceScripts = [
 ];
 const gitScripts = [
     {
+        scriptsType: ScriptsType.gitBrowser,
+        label: "open remote wiki",
+        script: 'git config --get remote.origin.url',
+        args: "wiki"
+    },
+    {
         scriptsType: ScriptsType.terminal,
         label: "git force push",
         script: 'git push -f origin',
@@ -62,7 +69,7 @@ const gitScripts = [
         scriptsType: ScriptsType.terminal,
         label: "git reflog",
         script: 'git reflog',
-    },
+    }
 ];
 // 树节点
 /**
@@ -100,7 +107,7 @@ class FlutterTreeDataProvider {
             };
             childrenList[index] = item;
         }
-        return childrenList;
+        return Promise.resolve((0, common_1.onFlutter)(() => childrenList, () => []));
     }
 }
 exports.FlutterTreeDataProvider = FlutterTreeDataProvider;
@@ -125,7 +132,7 @@ class RunBuilderTreeDataProvider {
             };
             childrenList[index] = item;
         }
-        return childrenList;
+        return Promise.resolve((0, common_1.onFlutter)(() => childrenList, () => []));
     }
 }
 exports.RunBuilderTreeDataProvider = RunBuilderTreeDataProvider;
@@ -150,7 +157,7 @@ class NpmTreeDataProvider {
             };
             childrenList[index] = item;
         }
-        return childrenList;
+        return Promise.resolve((0, common_1.onTypeScript)(() => childrenList, () => []));
     }
 }
 exports.NpmTreeDataProvider = NpmTreeDataProvider;
@@ -175,7 +182,7 @@ class VscodeExtensionTreeDataProvider {
             };
             childrenList[index] = item;
         }
-        return childrenList;
+        return Promise.resolve((0, common_1.onTypeScript)(() => childrenList, () => []));
     }
 }
 exports.VscodeExtensionTreeDataProvider = VscodeExtensionTreeDataProvider;
@@ -200,7 +207,7 @@ class GitTreeDataProvider {
             };
             childrenList[index] = item;
         }
-        return childrenList;
+        return Promise.resolve((0, common_1.onGit)(() => childrenList, () => []));
     }
 }
 exports.GitTreeDataProvider = GitTreeDataProvider;
@@ -215,6 +222,9 @@ function onTreeItemSelect(context, args) {
     switch (scriptsType) {
         case ScriptsType.terminal:
             terminalAction(context, script);
+            break;
+        case ScriptsType.gitBrowser:
+            gitBrowserAction(context, script, args['args'] == null ? [] : args['args'].split(','));
             break;
         default:
             vscode.window.showInformationMessage("Only show => " + script);
@@ -232,6 +242,18 @@ function terminalAction(context, command) {
             return;
         }
         (0, common_1.showInfo2OptionMessage)("你確定要執行 " + command, undefined, undefined, () => (terminal_util.runTerminal(context, command)));
+    });
+}
+function gitBrowserAction(context, command, args) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const cwd = vscode.workspace.rootPath;
+        let uri = yield runCommand("cd " + cwd + " && " + command);
+        uri = uri.replace("git@github.com:", "https://git@github.com/").split('.git')[0];
+        if (args.length > 0) {
+            uri = uri + "/" + args[0];
+        }
+        vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(uri));
+        return;
     });
 }
 function runCommand(command) {
