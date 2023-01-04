@@ -1,8 +1,6 @@
 import * as vscode from 'vscode';
 const command_dart_generate_getter_setter = "command_dart_generate_getter_setter"
-let s;
-let setter;
-let arr: string[] = [];
+
 
 export function registerGenerateGetterSetter(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand(command_dart_generate_getter_setter, async () => {
@@ -12,6 +10,9 @@ export function registerGenerateGetterSetter(context: vscode.ExtensionContext) {
 
 function generator() {
     const editor = vscode.window.activeTextEditor;
+    let s;
+    let setter;
+    let arr: string[] = [];
     if (!editor)
         return;
     const selection = editor.selection;
@@ -24,9 +25,8 @@ function generator() {
     let generatedMethods: string[] = [];
     for (let p of properties) {
         console.log(p)
-        generatedMethods = generateGetterAndSetter(p);
+        generatedMethods = generateGetterAndSetter(p, s, setter, arr);
     }
-
     editor.edit(
         edit => editor.selections.forEach(
             selection => {
@@ -36,10 +36,26 @@ function generator() {
     );
 }
 
-function generateGetterAndSetter(prop: string): string[] {
+function generateGetterAndSetter(prop: string, s: string, setter: string, arr: string[]): string[] {
     const editor = vscode.window.activeTextEditor;
-
+    let isFinal = false
+    let start = 0;
+    for (let s of prop) {
+        if (s != " ") {
+            start = prop.indexOf(s)
+            break
+        }
+    }
+    prop = prop.slice(start)
     let type = prop.split(" ").splice(0)[0];
+    if (type.includes("final")) {
+        isFinal = true
+        type = ''
+        if (!prop.split(" ").splice(0)[2].startsWith("_")) {
+            vscode.window.showErrorMessage(prop + ' no need Setter and Getter');
+            return arr
+        }
+    }
     if (prop.includes("=")) {
         prop = prop.substring(0, prop.lastIndexOf("=")).trim()
     }
@@ -47,12 +63,17 @@ function generateGetterAndSetter(prop: string): string[] {
     let varUpprName = variableName.toString().charAt(0).toUpperCase() + variableName.toString().slice(1);
     if (prop.includes("_")) {
         let varLowerName = variableName.toString().charAt(0).toLowerCase() + variableName.toString().slice(1);
+        if (!isFinal) {
+            setter = `\n set ${varLowerName.replace("_", "")}(${type} value) => this.${variableName} = value;`;
+
+        }
         s = `\n ${type} get ${varLowerName.replace("_", "")} => this.${variableName};`;
-        setter = `\n set ${varLowerName.replace("_", "")}(${type} value) => this.${variableName} = value;`;
     }
     else {
         s = `\n ${type} get get${varUpprName} => this.${variableName};`;
-        setter = `\n set set${varUpprName}(${type} ${variableName}) => this.${variableName} = ${variableName};`;
+        if (!isFinal) {
+            setter = `\n set set${varUpprName}(${type} ${variableName}) => this.${variableName} = ${variableName};`;
+        }
     }
     let uri = vscode.window.activeTextEditor.document.getText();
     if (uri.includes(`=> this.${variableName}`)) {

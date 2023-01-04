@@ -2,7 +2,7 @@
   "name": "jack",
   "displayName": "lazyJack",
   "description": "lets go",
-  "version": "0.0.17",
+  "version": "0.0.23",
   "publisher": "jackFan",
   "icon": "image/lazy_man.png",
   "engines": {
@@ -29,9 +29,19 @@
           "icon": "/image/rocket.svg"
         }
       ]
-    },
+    },    
+    "viewsWelcome": [
+			{
+					"view": "fast-repo-gui",
+					"contents": "Open github Repository \n[Open](command:command_open_github_repo)\n[Actions](command:command_open_github_actions)\n[Wiki](command:command_open_github_wiki)\nOpen local sourcetree\n[Open](command:command_open_sourcetree_local_repo)"
+			}
+        ],
     "views": {
       "lazy-sidebar": [
+        {
+          "id": "fast-repo-gui",
+          "name": "fast-repo-gui"
+        },
         {
           "id": "flutter-lazy-cmd",
           "name": "flutter-lazy-cmd"
@@ -39,8 +49,7 @@
         {
           "id": "build_runner-lazy-cmd",
           "name": "build_runner-lazy-cmd"
-        }
-        ,
+        },
         {
           "id": "git-lazy-cmd",
           "name": "git-lazy-cmd"
@@ -69,55 +78,67 @@
       {
         "category": "lazy Jack",
         "command": "command_create_freezed_class_by_base_fileName",
-        "title": "Create freezed class"
+        "title": "Create freezed class by file name"
       },
       {
         "category": "lazy Jack",
-        "command": "command_create_freezed_class_with_state_by_base_fileName",
-        "title": "Create freezed class with state"
+        "command": "command_create_freezed_union_class_by_base_fileName",
+        "title": "Create freezed Union"
       },
       {
         "category": "lazy Jack",
         "command": "command_add_freezed_state_by_base_fileName",
-        "title": "Add new freezed State"
+        "title": "Add new freezed State by file name"
       },
       {
         "category": "lazy Jack",
         "command": "command_create_from_json",
-        "title": "Crate FromJson by file name"
+        "title": "Create FromJson by file name"
+      },
+      {
+        "category": "lazy Jack",
+        "command": "command_dart_2_require_param",
+        "title": "To require param"
       }
+      
     ],
     "menus": {
       "editor/context": [
         {
           "when": "editorFocus && resourceLangId == dart",
-          "command": "command_dart_generate_getter_setter",
-          "group": "0_jack_dart@1"
-        },
-        {
-          "when": "editorFocus && resourceLangId == dart",
-          "command": "dart.import.freezed",
-          "group": "0_jack_dart@2"
-        },
-        {
-          "when": "editorFocus && resourceLangId == dart",
           "command": "command_create_freezed_class_by_base_fileName",
-          "group": "0_jack_dart@3"
-        },
-        {
-          "when": "editorFocus && resourceLangId == dart",
-          "command": "command_create_freezed_class_with_state_by_base_fileName",
-          "group": "0_jack_dart@4"
+          "group": "0_b_jack_dart_freezed_utils@0"
         },
         {
           "when": "editorFocus && resourceLangId == dart",
           "command": "command_create_from_json",
-          "group": "0_jack_dart@5"
+          "group": "0_b_jack_dart_freezed_utils@1"
+        },
+        {
+          "when": "editorFocus && resourceLangId == dart",
+          "command": "dart.import.freezed",
+          "group": "0_b_jack_dart_freezed_bloc@0"
+        },
+        {
+          "when": "editorFocus && resourceLangId == dart",
+          "command": "command_create_freezed_union_class_by_base_fileName",
+          "group": "0_b_jack_dart_freezed_bloc@1"
         },
         {
           "when": "editorFocus && resourceLangId == dart",
           "command": "command_add_freezed_state_by_base_fileName",
-          "group": "0_jack_dart@6"
+          "group": "0_b_jack_dart_freezed_bloc@2"
+        },
+
+        {
+          "when": "editorFocus && resourceLangId == dart&& editorHasSelection",
+          "command": "command_dart_generate_getter_setter",
+          "group": "0_A_jack_dart_selected@0"
+        },
+        {
+          "when": "editorFocus && resourceLangId == dart && editorHasSelection",
+          "command": "command_dart_2_require_param",
+          "group": "0_A_jack_dart_selected@1"
         }
       ]
     },

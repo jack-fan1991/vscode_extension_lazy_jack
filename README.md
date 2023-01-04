@@ -9,9 +9,9 @@
 
 |  快捷   |  描述  | 補充| 支援|
 |  ----  | ----  |------|-----|
-| c2up     | clipboard to Uppercase|剪貼板的文字為預設值  |Quick fix ( onText Select )|
-| c2low    | clipboard to lowerCase|剪貼板的文字為預設值  |Quick fix ( onText Select )|
-| c2camel  | clipboard to camelCase|剪貼板的文字為預設值  |Quick fix ( onText Select )|
+| c2up     | clipboard to Uppercase|剪貼板的文字為預設值  |Quick fix ( onText Selected )|
+| c2low    | clipboard to lowerCase|剪貼板的文字為預設值  |Quick fix ( onText Selected )|
+| c2camel  | clipboard to camelCase|剪貼板的文字為預設值  |Quick fix ( onText Selected )|
 | fun      | Function definition ||
 
 #### dart 
@@ -20,7 +20,8 @@
 |  ----  | ----  |------|-----|
 | forLoop<br>forl  | just for loop   |||
 | for    | just for loop   ||
-| finalMember<br>fm     | |final member= Member(); |
+| finalMember    | |final member= Member(); |
+| finalMember    | |final member= Member(); |
 | tc     | Try catch||
 | toc    | Try on catch||
 | fun    |  Function definition ||
@@ -35,10 +36,10 @@
 |  快捷   |  描述  | 補充|支援|
 |  ----  | ----  |------|------|
 | fz.p     |import base_filename.g.dart<br>import base_filename.freezed.dart<br>  |引入後可選( .g / .freezed )|右鍵菜單 |
-| fzClass<br>fzc     | Create Freezed Data Class  | 用於任何文件字定義 freezed class |右鍵菜單 |
-| fzWithState<br>fzw     |Create Freezed Data Class with state  |參照freezed Union types and Sealed classes 生成的模板<br>|右鍵菜單 |
-| fzState<br>fzs    | Add New Freezed State | 搭配 freezed Union types|右鍵菜單 |
-| fzC2State<br>fzc2s    | Copy Class Name to Freezed State| 搭配 freezed Union types|
+| fzClass    | Create Freezed Data Class  | 用於任何文件字定義 freezed class |右鍵菜單 |
+| fzUnion   |Create Freezed Data Class with state  |參照freezed Union types and Sealed classes 生成的模板<br>|右鍵菜單 |
+| fzAddState    | Add New Freezed State | 搭配 freezed Union types|右鍵菜單 |
+| fzC2State  | Copy Class Name to Freezed State| 搭配 freezed Union types|
 
 ### 參考文件結構為範例
 
@@ -75,9 +76,9 @@ abstract class DataClass with _$DataClass {
 //fzWithState
 @freezed
 abstract class LoginBloc with _$LoginBloc {
-  const factory LoginBloc.init() = _LoginBlocInit;
+  const factory LoginBloc.init() = _Initial;
   //fzState
-  const factory LoginBloc.newState() = _login_blocNewState;
+  const factory LoginBloc.newState() = _NewState;
     }
 }   
 ```
@@ -88,9 +89,9 @@ abstract class LoginBloc with _$LoginBloc {
 //fzWithState
 @freezed
 abstract class LoginEvent with _$LoginEvent {
-  const factory LoginEvent.init() = _LoginEventInit;
+  const factory LoginEvent.initial() = _Initial;
   //fzState
-  const factory LoginEvent.newState() = _login.eventNewState;
+  const factory LoginEvent.newState() = _NewState;
 }
 
 ```
@@ -101,9 +102,9 @@ abstract class LoginEvent with _$LoginEvent {
 //fzWithState
 @freezed
 abstract class LoginState with _$LoginState {
-  const factory LoginState.init() = _LoginStateInit;
+  const factory LoginState.initial() = _Initial;
   //fzState
-  const factory LoginState.newState() = _login_stateNewState;
+  const factory LoginState.newState() = _NewState;
 }
 ```
 
@@ -115,6 +116,46 @@ abstract class LoginState with _$LoginState {
 | utg    | Define a Unit test group||
 
 ## For more information
+
+#### 右鍵菜單
+
+|  名稱  |  描述  | 補充| 條件|
+|  ----  | ----  |------|-----|
+|Generate getter setter| Generate getter setter||onText Selected|
+|To require param| To require param||onText Selected|
+|  ----  | ----  |------|-----|
+|Import freezed part| ||dart file|
+|Create freezed Union| ||dart file|
+|Add new freezed State by file name| ||dart file|
+|  ----  | ----  |------|-----|
+|Add new freezed State by file name| ||dart file|
+|Create FromJson by file name| ||dart file|
+
+* Generate getter setter
+
+```dart
+class Sample {
+  bool open;
+  //  selected 'bool open' => right click menu Generate getter setter
+  //  auto Generate getter setter
+  bool get getOpen => this.open;
+  set setOpen(bool open) => this.open = open;
+  Sample(this.open);
+}
+
+```
+
+* To require param
+
+```dart
+class Sample {
+  Sample(this.open, bool close);
+  //  selected 'this.open' => right click menu To require param
+  >> Sample({required this.open, required  bool close, });
+
+}
+
+```
 
 * [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
 * [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)

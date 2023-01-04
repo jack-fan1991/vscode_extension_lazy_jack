@@ -3,12 +3,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deactivate = exports.activate = void 0;
 const vscode = require("vscode");
 const snippet_utils_1 = require("./utils/snippet_utils");
-const generate_getter_setter_1 = require("./dart/generate getter_setter");
+const generate_getter_setter_1 = require("./dart/generate_getter_setter");
+const to_require_params_1 = require("./dart/to_require_params");
+const fast_cmd_1 = require("./github/fast_cmd");
 const sidebar = require("./sidebar");
 function activate(context) {
     console.log('your extension "sugar-demo-vscode" is now active!');
     (0, snippet_utils_1.registerDartSnippet)(context);
     (0, generate_getter_setter_1.registerGenerateGetterSetter)(context);
+    (0, fast_cmd_1.registerFastGithubCmd)(context);
+    (0, to_require_params_1.registerTpRequireParams)(context);
     //註冊 views id
     vscode.window.registerTreeDataProvider("flutter-lazy-cmd", new sidebar.FlutterTreeDataProvider());
     vscode.window.registerTreeDataProvider("build_runner-lazy-cmd", new sidebar.RunBuilderTreeDataProvider());

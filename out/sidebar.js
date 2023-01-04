@@ -13,11 +13,9 @@ exports.onTreeItemSelect = exports.GitTreeDataProvider = exports.VscodeExtension
 const vscode = require("vscode");
 const common_1 = require("./utils/common");
 const terminal_util = require("./utils/terminal_utils");
-const child_process = require("child_process");
 var ScriptsType;
 (function (ScriptsType) {
     ScriptsType["terminal"] = "terminal";
-    ScriptsType["gitBrowser"] = "gitBrowser";
 })(ScriptsType || (ScriptsType = {}));
 exports.sidebar_command = "sidebar_command.onSelected";
 const flutterScripts = [
@@ -54,12 +52,6 @@ const vsceScripts = [
     },
 ];
 const gitScripts = [
-    {
-        scriptsType: ScriptsType.gitBrowser,
-        label: "open remote wiki",
-        script: 'git config --get remote.origin.url',
-        args: "wiki"
-    },
     {
         scriptsType: ScriptsType.terminal,
         label: "git force push",
@@ -223,9 +215,6 @@ function onTreeItemSelect(context, args) {
         case ScriptsType.terminal:
             terminalAction(context, script);
             break;
-        case ScriptsType.gitBrowser:
-            gitBrowserAction(context, script, args['args'] == null ? [] : args['args'].split(','));
-            break;
         default:
             vscode.window.showInformationMessage("Only show => " + script);
     }
@@ -236,36 +225,12 @@ function terminalAction(context, command) {
         console.log('[terminalAction] 選擇:', command);
         if (command.includes("push -f")) {
             const cwd = vscode.workspace.rootPath;
-            let branch = yield runCommand("cd " + cwd + " && git rev-parse --abbrev-ref HEAD");
+            let branch = yield terminal_util.runCommand("cd " + cwd + " && git rev-parse --abbrev-ref HEAD");
             let gitCommand = command + " " + branch;
             (0, common_1.showInfo2OptionMessage)("你確定要執行 " + gitCommand, undefined, undefined, () => (terminal_util.runTerminal(context, gitCommand)));
             return;
         }
         (0, common_1.showInfo2OptionMessage)("你確定要執行 " + command, undefined, undefined, () => (terminal_util.runTerminal(context, command)));
-    });
-}
-function gitBrowserAction(context, command, args) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const cwd = vscode.workspace.rootPath;
-        let uri = yield runCommand("cd " + cwd + " && " + command);
-        uri = uri.replace("git@github.com:", "https://git@github.com/").split('.git')[0];
-        if (args.length > 0) {
-            uri = uri + "/" + args[0];
-        }
-        vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(uri));
-        return;
-    });
-}
-function runCommand(command) {
-    return new Promise((resolve, reject) => {
-        child_process.exec(command, (error, stdout, stderr) => {
-            if (error) {
-                reject(error);
-            }
-            else {
-                resolve(stdout);
-            }
-        });
     });
 }
 //# sourceMappingURL=sidebar.js.map

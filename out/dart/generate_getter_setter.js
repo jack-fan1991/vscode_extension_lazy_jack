@@ -12,9 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerGenerateGetterSetter = void 0;
 const vscode = require("vscode");
 const command_dart_generate_getter_setter = "command_dart_generate_getter_setter";
-let s;
-let setter;
-let arr = [];
 function registerGenerateGetterSetter(context) {
     context.subscriptions.push(vscode.commands.registerCommand(command_dart_generate_getter_setter, () => __awaiter(this, void 0, void 0, function* () {
         generator();
@@ -23,6 +20,9 @@ function registerGenerateGetterSetter(context) {
 exports.registerGenerateGetterSetter = registerGenerateGetterSetter;
 function generator() {
     const editor = vscode.window.activeTextEditor;
+    let s;
+    let setter;
+    let arr = [];
     if (!editor)
         return;
     const selection = editor.selection;
@@ -35,15 +35,32 @@ function generator() {
     let generatedMethods = [];
     for (let p of properties) {
         console.log(p);
-        generatedMethods = generateGetterAndSetter(p);
+        generatedMethods = generateGetterAndSetter(p, s, setter, arr);
     }
     editor.edit(edit => editor.selections.forEach(selection => {
         edit.insert(selection.end, generatedMethods.join("\n"));
     }));
 }
-function generateGetterAndSetter(prop) {
+function generateGetterAndSetter(prop, s, setter, arr) {
     const editor = vscode.window.activeTextEditor;
+    let isFinal = false;
+    let start = 0;
+    for (let s of prop) {
+        if (s != " ") {
+            start = prop.indexOf(s);
+            break;
+        }
+    }
+    prop = prop.slice(start);
     let type = prop.split(" ").splice(0)[0];
+    if (type.includes("final")) {
+        isFinal = true;
+        type = '';
+        if (!prop.split(" ").splice(0)[2].startsWith("_")) {
+            vscode.window.showErrorMessage(prop + ' no need Setter and Getter');
+            return arr;
+        }
+    }
     if (prop.includes("=")) {
         prop = prop.substring(0, prop.lastIndexOf("=")).trim();
     }
@@ -51,12 +68,16 @@ function generateGetterAndSetter(prop) {
     let varUpprName = variableName.toString().charAt(0).toUpperCase() + variableName.toString().slice(1);
     if (prop.includes("_")) {
         let varLowerName = variableName.toString().charAt(0).toLowerCase() + variableName.toString().slice(1);
+        if (!isFinal) {
+            setter = `\n set ${varLowerName.replace("_", "")}(${type} value) => this.${variableName} = value;`;
+        }
         s = `\n ${type} get ${varLowerName.replace("_", "")} => this.${variableName};`;
-        setter = `\n set ${varLowerName.replace("_", "")}(${type} value) => this.${variableName} = value;`;
     }
     else {
         s = `\n ${type} get get${varUpprName} => this.${variableName};`;
-        setter = `\n set set${varUpprName}(${type} ${variableName}) => this.${variableName} = ${variableName};`;
+        if (!isFinal) {
+            setter = `\n set set${varUpprName}(${type} ${variableName}) => this.${variableName} = ${variableName};`;
+        }
     }
     let uri = vscode.window.activeTextEditor.document.getText();
     if (uri.includes(`=> this.${variableName}`)) {
@@ -69,4 +90,4 @@ function generateGetterAndSetter(prop) {
     arr = Array.from(it);
     return arr;
 }
-//# sourceMappingURL=generate%20getter_setter.js.map
+//# sourceMappingURL=generate_getter_setter.js.map
