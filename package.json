@@ -2,7 +2,7 @@
   "name": "jack",
   "displayName": "lazyJack",
   "description": "lets go",
-  "version": "0.0.23",
+  "version": "0.0.24",
   "publisher": "jackFan",
   "icon": "image/lazy_man.png",
   "engines": {

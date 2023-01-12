@@ -257,9 +257,78 @@ async function terminalAction(context: vscode.ExtensionContext, command: string)
         );
         return;
     }
-    showInfo2OptionMessage("你確定要執行 " + command, undefined, undefined, () => (
-        terminal_util.runTerminal(context, command))
-    );
+    if (command.includes("reflog")) {
+
+        let terminal = vscode.window.createTerminal("reflog");
+
+        createReflogOptionsInput(terminal)
+        // inputBox.onDidAccept(() => {
+        //     terminal.sendText("q");
+        //     showInfo2OptionMessage(`你確定要 reset hard to ${inputBox.value}`, undefined, undefined, () => (
+        //         terminal.sendText(`git reset --hard ${inputBox.value}`)
+        //     )
+        //     );
+        // });
+
+
+        vscode.window.onDidChangeActiveTerminal((terminal: vscode.Terminal | undefined) => {
+            if (terminal && terminal.name === "reflog") {
+                console.log("reflog Terminal is focused");
+                terminal.sendText("q");
+                terminal.sendText(command)
+                createReflogOptionsInput(terminal)
+            }
+        });
+        terminal.show();
+        terminal.sendText(command)
+        return;
+
+    }
+    vscode.window.showInformationMessage("執行 " + command)
+    terminal_util.runTerminal(context, command);
+
+    // showInfo2OptionMessage("你確定要執行 " + command, undefined, undefined, () => (
+    //     terminal_util.runTerminal(context, command))
+
+    // );
+
 }
 
+async function createReflogOptionsInput(terminal: vscode.Terminal) {
+    const cwd = vscode.workspace.rootPath;
+    let text = await terminal_util.runCommand(` cd ${cwd} && git reflog`)
+    let regex = /^(\b[0-9a-f]{7,40}\b)\s(.*)/gm
+    let matches = text.match(regex);
+    let items = [];
+    if (matches == undefined) {
+        return
+    }
+    for (let match of matches) {
+        let m = match.match(/^(\b[0-9a-f]{7,40}\b)\s(.*)/);;
+        if (m == undefined) {
+            return
+        }
+        items.push({ label: m[1], description: m[2] })
+    }
+
+    let quickPick = vscode.window.createQuickPick();
+    quickPick.items = items;
+    quickPick.placeholder = 'select reset hash';
+    quickPick.onDidAccept(() => {
+        let hash = quickPick.selectedItems[0].label
+        console.log(`Selected item: ${hash}`);
+        quickPick.dispose();
+        terminal.sendText("q");
+        showInfo2OptionMessage(`Hard reset  to ${hash}`, undefined, undefined, () => (
+            terminal.sendText(`git reset --hard ${hash}`)
+        )
+        );
+    });
+    quickPick.show();
+}
+
+
+function sleep(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
