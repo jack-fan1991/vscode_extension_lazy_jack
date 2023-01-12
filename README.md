@@ -59,7 +59,7 @@ login
 ```dart
 // fzc
 @freezed
-abstract class DataClass with _$DataClass {
+class DataClass with _$DataClass {
   const factory DataClass() = _DataClass;
   // copy class name "DataClass"
   // now "DataClass" in your copy board
@@ -75,7 +75,7 @@ abstract class DataClass with _$DataClass {
 ```dart
 //fzWithState
 @freezed
-abstract class LoginBloc with _$LoginBloc {
+class LoginBloc with _$LoginBloc {
   const factory LoginBloc.init() = _Initial;
   //fzState
   const factory LoginBloc.newState() = _NewState;
@@ -88,7 +88,7 @@ abstract class LoginBloc with _$LoginBloc {
 ```dart
 //fzWithState
 @freezed
-abstract class LoginEvent with _$LoginEvent {
+class LoginEvent with _$LoginEvent {
   const factory LoginEvent.initial() = _Initial;
   //fzState
   const factory LoginEvent.newState() = _NewState;
@@ -101,7 +101,7 @@ abstract class LoginEvent with _$LoginEvent {
 ```dart
 //fzWithState
 @freezed
-abstract class LoginState with _$LoginState {
+class LoginState with _$LoginState {
   const factory LoginState.initial() = _Initial;
   //fzState
   const factory LoginState.newState() = _NewState;

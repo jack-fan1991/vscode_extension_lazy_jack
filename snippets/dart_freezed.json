@@ -8,7 +8,7 @@
     "prefix": "fzClass",
     "body": [
       "@freezed",
-      "abstract class ${1:${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/g}} with _$$1{",
+      "class ${1:${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/g}} with _$$1{",
       "  const ${1}._();",
       "  const factory ${1}(${2}) = _${1};",
       "}"
@@ -19,7 +19,7 @@
     "prefix": "fzUnion",
     "body": [
       "@freezed",
-      "abstract class ${1:${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/g}} with _$$1{",
+      "class ${1:${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/g}} with _$$1{",
       "  const ${1}._();",
       "  const factory $1.${2:initial}(${3}) = _${2/(.*)/${1:/capitalize}/};",
       "\t$4",
