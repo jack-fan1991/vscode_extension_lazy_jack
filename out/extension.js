@@ -4,6 +4,7 @@ exports.deactivate = exports.activate = void 0;
 const vscode = require("vscode");
 const snippet_utils_1 = require("./utils/snippet_utils");
 const generate_getter_setter_1 = require("./dart/generate_getter_setter");
+const freezed_to_json_1 = require("./dart/freezed_to_json");
 const to_require_params_1 = require("./dart/to_require_params");
 const fast_cmd_1 = require("./github/fast_cmd");
 const sidebar = require("./sidebar");
@@ -12,7 +13,8 @@ function activate(context) {
     (0, snippet_utils_1.registerDartSnippet)(context);
     (0, generate_getter_setter_1.registerGenerateGetterSetter)(context);
     (0, fast_cmd_1.registerFastGithubCmd)(context);
-    (0, to_require_params_1.registerTpRequireParams)(context);
+    (0, to_require_params_1.registerToRequireParams)(context);
+    (0, freezed_to_json_1.registerFreezedToJson)(context);
     //註冊 views id
     vscode.window.registerTreeDataProvider("flutter-lazy-cmd", new sidebar.FlutterTreeDataProvider());
     vscode.window.registerTreeDataProvider("build_runner-lazy-cmd", new sidebar.RunBuilderTreeDataProvider());

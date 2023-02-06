@@ -4,7 +4,7 @@ let s;
 let setter;
 let arr: string[] = [];
 
-export function registerTpRequireParams(context: vscode.ExtensionContext) {
+export function registerToRequireParams(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand(command_dart_2_require_param, async () => {
         generator()
     }));

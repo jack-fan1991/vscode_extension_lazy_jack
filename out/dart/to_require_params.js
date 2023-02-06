@@ -9,18 +9,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.registerTpRequireParams = void 0;
+exports.registerToRequireParams = void 0;
 const vscode = require("vscode");
 const command_dart_2_require_param = "command_dart_2_require_param";
 let s;
 let setter;
 let arr = [];
-function registerTpRequireParams(context) {
+function registerToRequireParams(context) {
     context.subscriptions.push(vscode.commands.registerCommand(command_dart_2_require_param, () => __awaiter(this, void 0, void 0, function* () {
         generator();
     })));
 }
-exports.registerTpRequireParams = registerTpRequireParams;
+exports.registerToRequireParams = registerToRequireParams;
 function generator() {
     const editor = vscode.window.activeTextEditor;
     if (!editor)
