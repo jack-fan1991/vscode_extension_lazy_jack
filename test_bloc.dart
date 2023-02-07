@@ -1,6 +1,13 @@
 part 'test_bloc.g.dart';
 
-
+@freezed
+class ExternalLaunchResponse with _$ExternalLaunchResponse {
+  const ExternalLaunchResponse._();
+  const factory ExternalLaunchResponse(final Data data) =
+      _ExternalLaunchResponse;
+  factory ExternalLaunchResponse.fromJson(Map<String, dynamic> json) =>
+      _$ExternalLaunchResponseFromJson(json);
+}
 
 @freezed
 class Data with _$Data {
@@ -29,10 +36,35 @@ class WhiteList with _$WhiteList {
   const WhiteList._();
   const factory WhiteList(
       {@Default([]) final List<String> startWith,
-      @Default([]) final List<String> contains}) = _WhiteList;
+      @Default([]) final List<int> contains}) = _WhiteList;
  
 
 
   factory WhiteList.fromJson(Map<String, dynamic> json) => _WhiteListFromJson(json);
   Map<String, dynamic> toJson() => _$WhiteListToJson(this);
  }
+
+
+{
+  "data": {
+    "whitelist": {
+      "startsWithList": [
+        "blog.owlting.com"
+      ],
+      "containsList": [
+        "blog.owlting.com"
+      ]
+    }
+  },
+  "data2": {
+    "whitelist": {
+      "startsWithList": [
+        "blog.owlting.com"
+      ],
+      "containsList": [
+        "blog.owlting.com"
+      ]
+    }
+  }
+  
+}

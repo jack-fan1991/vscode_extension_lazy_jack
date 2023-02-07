@@ -18,7 +18,7 @@ export function registerFastGithubCmd(context: vscode.ExtensionContext) {
         openGitHubBrowserAction(context, "wiki");
     }));
     context.subscriptions.push(vscode.commands.registerCommand(command_open_sourcetree_local_repo, async () => {
-        terminal_util.runTerminal(context,"open -a SourceTree ./")
+        terminal_util.runTerminal("open -a SourceTree ./")
     }));
 }
 

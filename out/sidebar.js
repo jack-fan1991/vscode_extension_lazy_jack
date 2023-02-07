@@ -227,7 +227,7 @@ function terminalAction(context, command) {
             const cwd = vscode.workspace.rootPath;
             let branch = yield terminal_util.runCommand("cd " + cwd + " && git rev-parse --abbrev-ref HEAD");
             let gitCommand = command + " " + branch;
-            (0, common_1.showInfo2OptionMessage)("你確定要執行 " + gitCommand, undefined, undefined, () => (terminal_util.runTerminal(context, gitCommand)));
+            (0, common_1.showInfo2OptionMessage)("你確定要執行 " + gitCommand, undefined, undefined, () => (terminal_util.runTerminal(gitCommand)));
             return;
         }
         if (command.includes("reflog")) {
@@ -253,7 +253,7 @@ function terminalAction(context, command) {
             return;
         }
         vscode.window.showInformationMessage("執行 " + command);
-        terminal_util.runTerminal(context, command);
+        terminal_util.runTerminal(command);
         // showInfo2OptionMessage("你確定要執行 " + command, undefined, undefined, () => (
         //     terminal_util.runTerminal(context, command))
         // );

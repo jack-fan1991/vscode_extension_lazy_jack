@@ -16,13 +16,8 @@ async function generator() {
     if (!editor)
         return;
     const document = editor.document;
-    const fileName = document.fileName.split("/").pop().split(".")[0];;
-    // const fileNameWithoutExtension = fileName.substring(0, fileName.lastIndexOf('.'));
+    const fileName = document.fileName.split("/").pop().split(".")[0];
     const fileNamePart = `part '${fileName}.g.dart';`;
-
-    // const classNameRegex = /class ([a-zA-Z0-9]+)/g;
-    // const classNameMatch = classNameRegex.exec(editor.document.getText());
-
     const text = document.getText();
     const lines = text.split('\n');
     const classNames: string[] = [];
@@ -75,16 +70,11 @@ async function generator() {
 
         }
     }
-    //
-    const e = new vscode.WorkspaceEdit();
     for (const className of classNames) {
         let fromJsonMethod = `factory ${className}.fromJson(Map<String, dynamic> json) => _${className}FromJson(json);`;
         let toJsonMethod = `Map<String, dynamic> toJson() => _$${className}ToJson(this);`;
         let classIndex = -1;
-        let temp: string[] = [];
         for (let i = 0; i < lines.length; i++) {
-            // console.log(`${lines[i]}`);
-            temp.push(lines[i])
             if (lines[i].startsWith(`class ${className}`)) {
                 classIndex = i;
             }
@@ -102,10 +92,10 @@ async function generator() {
                     insertString.push(`\n  ${fromJsonMethod}`)
 
                 }
-                if (!toJsonFactoryRegex.test(text)) {
-                    insertIdx.push(new vscode.Position(classCloseIndex, 0))
-                    insertString.push(`\n  ${toJsonMethod}\n`)
-                }
+                // if (!toJsonFactoryRegex.test(text)) {
+                //     insertIdx.push(new vscode.Position(classCloseIndex, 0))
+                //     insertString.push(`\n  ${toJsonMethod}\n`)
+                // }
                 break;
 
             }
@@ -123,10 +113,9 @@ async function generator() {
     for (let i = 0; i < newText.length; i++) {
         for (let idx in insertString) {
             if (newText[i].includes(insertString[idx].replace(/\n/g, ''))) {
-                msgString.push(`[Line ${i+1}] ${insertString[idx].replace(/\n/g, '')}`)
+                msgString.push(`[Line ${i + 1}] ${insertString[idx].replace(/\n/g, '')}`)
             }
         }
-        msgString
     }
     let msg = msgString.join('\n')
     if (msgString.length == 0) {

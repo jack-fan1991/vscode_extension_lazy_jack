@@ -2,7 +2,7 @@
   "name": "jack",
   "displayName": "lazyJack",
   "description": "lets go",
-  "version": "0.0.26",
+  "version": "0.0.31",
   "publisher": "jackFan",
   "icon": "image/lazy_man.png",
   "engines": {
@@ -104,7 +104,13 @@
       {
         "category": "lazy Jack",
         "command": "command_dart_freezed_2_json",
-        "title": "@freezed To Json"
+        "title": "@freezed add Json serialize"
+      }
+      ,
+      {
+        "category": "lazy Jack",
+        "command": "command_dart_json_to_freezed",
+        "title": "@freezed Json To Freezed"
       }
       
     ],
@@ -147,9 +153,14 @@
           "group": "0_A_jack_dart_selected@1"
         },
         {
+          "when": "editorFocus && resourceLangId == dart && editorHasSelection",
+          "command": "command_dart_json_to_freezed",
+          "group": "0_A_jack_dart_selected@2"
+        },
+        {
           "when": "editorFocus && resourceLangId == dart",
           "command": "command_dart_freezed_2_json",
-          "group": "0_A_jack_dart_selected@2"
+          "group": "0_A_jack_dart_selected@3"
         }
       ]
     },

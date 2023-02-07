@@ -1,8 +1,6 @@
 import * as vscode from 'vscode'
 import { registerDartSnippet } from './utils/snippet_utils';
-import { registerGenerateGetterSetter } from './dart/generate_getter_setter';
-import { registerFreezedToJson } from './dart/freezed_to_json';
-import { registerToRequireParams } from './dart/to_require_params';
+import { registerGenerateGetterSetter,registerFreezedToJson,registerToRequireParams, registerJsonToFreezed } from './dart/dart';
 import { registerFastGithubCmd } from './github/fast_cmd';
 import * as sidebar from './sidebar';
 
@@ -13,6 +11,7 @@ export function activate(context: vscode.ExtensionContext) {
   registerFastGithubCmd(context)
   registerToRequireParams(context)
   registerFreezedToJson(context)
+  registerJsonToFreezed(context)
   //註冊 views id
   vscode.window.registerTreeDataProvider("flutter-lazy-cmd", new sidebar.FlutterTreeDataProvider());
   vscode.window.registerTreeDataProvider("build_runner-lazy-cmd", new sidebar.RunBuilderTreeDataProvider());

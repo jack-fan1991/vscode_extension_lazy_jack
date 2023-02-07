@@ -253,7 +253,7 @@ async function terminalAction(context: vscode.ExtensionContext, command: string)
         let branch = await terminal_util.runCommand("cd " + cwd + " && git rev-parse --abbrev-ref HEAD")
         let gitCommand = command + " " + branch
         showInfo2OptionMessage("你確定要執行 " + gitCommand, undefined, undefined, () => (
-            terminal_util.runTerminal(context, gitCommand))
+            terminal_util.runTerminal(gitCommand))
         );
         return;
     }
@@ -285,7 +285,7 @@ async function terminalAction(context: vscode.ExtensionContext, command: string)
 
     }
     vscode.window.showInformationMessage("執行 " + command)
-    terminal_util.runTerminal(context, command);
+    terminal_util.runTerminal(command);
 
     // showInfo2OptionMessage("你確定要執行 " + command, undefined, undefined, () => (
     //     terminal_util.runTerminal(context, command))

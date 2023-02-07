@@ -27,7 +27,7 @@ function registerFastGithubCmd(context) {
         openGitHubBrowserAction(context, "wiki");
     })));
     context.subscriptions.push(vscode.commands.registerCommand(command_open_sourcetree_local_repo, () => __awaiter(this, void 0, void 0, function* () {
-        terminal_util.runTerminal(context, "open -a SourceTree ./");
+        terminal_util.runTerminal("open -a SourceTree ./");
     })));
 }
 exports.registerFastGithubCmd = registerFastGithubCmd;
