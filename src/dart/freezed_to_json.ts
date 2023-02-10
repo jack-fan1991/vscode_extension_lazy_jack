@@ -106,6 +106,7 @@ async function generator() {
     await editor.edit((editBuilder) => {
         for (let i = 0; i < insertIdx.length; i++) {
             editBuilder.insert(insertIdx[i], insertString[i]);
+            
         }
     })
     let newText = document.getText().split('\n');

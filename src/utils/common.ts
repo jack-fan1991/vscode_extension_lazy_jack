@@ -1,4 +1,7 @@
 import * as vscode from 'vscode';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as yaml from 'yaml';
 
 
 export function showInfo2OptionMessage(msg: string, option1?: string, option2?: string, onOption1?: () => void) {
@@ -14,13 +17,30 @@ export function showInfo2OptionMessage(msg: string, option1?: string, option2?: 
 
 
 
-export async function onFlutter(getData: () => any[], errorData: () => any[]) {
-  const files = await vscode.workspace.findFiles('**/pubspec.yaml');
+export async function onFlutter(getData: (data: any) => any, errorData: () => any, needData: boolean = false) {
+  if (vscode.workspace.rootPath == undefined) {
+    return
+  }
+
+  let absPath = path.join(vscode.workspace.rootPath, 'pubspec.yaml');
+  let filePath = '**/pubspec.yaml';
+  let data;
+  const files = await vscode.workspace.findFiles(filePath);
   if (files.length <= 0) {
     console.log('當前不是flutter 專案');
     return errorData()
   }
-  return getData()
+  if (needData) {
+    if (fs.existsSync(absPath)) {
+      vscode.window.showInformationMessage(`正在解析 ${absPath}`, '關閉')
+
+      const fileContents = fs.readFileSync(absPath, 'utf-8');
+      data = yaml.parse(fileContents);
+    } else {
+      console.error(`The file ${absPath} does not exist.`);
+    }
+  }
+  return getData(data)
 }
 
 export async function onGit(getData: () => any[], errorData: () => any[]) {
@@ -44,3 +64,23 @@ export async function onTypeScript(getData: () => any[], errorData: () => any[])
 }
 
 
+export async function replaceTextInFile(filePath: string, searchValue: string, replaceValue: string) {
+  let text = fs.readFileSync(filePath, 'utf-8');
+  const lines = text.split(/\r?\n/);
+
+  let found = false;
+  let newLines = [];
+  for (let line of lines) {
+    if (line.trim().startsWith(searchValue)) {
+      newLines.push(replaceValue);
+      found = true;
+    } else {
+      newLines.push(line);
+    }
+  }
+
+  if (found) {
+    text = newLines.join('\n');
+    fs.writeFileSync(filePath, text, 'utf-8');
+  }
+}

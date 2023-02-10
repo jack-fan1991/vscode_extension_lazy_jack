@@ -1,163 +1,67 @@
-## Features
+# Feature
+* [Snippets Menu](./doc/snippets.md)
+* [Right click Menu](./doc/menu_right_click.md)
+# Convert selected json to freezed code 
+  + Right click Menu => @freezed json to freezed
+  + auto run build_runner 
 
-* Use tab to next cursor, modify snippets code
-* Prefix "c2" snippets, means "clipboard to" will use clipboard as value
-* Prefix "b2" snippets means "baseFileName to" will use baseFileName as value
-* Quick fix(on_text_selected) => Extension can be used on selected text 
+### Before 
 
-#### 一般
+![Before](./image/json_to_freezed_before.png)
 
-|  快捷   |  描述  | 補充| 支援|
-|  ----  | ----  |------|-----|
-| c2up     | clipboard to Uppercase|剪貼板的文字為預設值  |Quick fix ( onText Selected )|
-| c2low    | clipboard to lowerCase|剪貼板的文字為預設值  |Quick fix ( onText Selected )|
-| c2camel  | clipboard to camelCase|剪貼板的文字為預設值  |Quick fix ( onText Selected )|
-| fun      | Function definition ||
+### After
 
-#### dart 
-
-|  快捷   |  描述  | 補充| 支援|
-|  ----  | ----  |------|-----|
-| forLoop<br>forl  | just for loop   |||
-| for    | just for loop   ||
-| finalMember    | |final member= Member(); |
-| finalMember    | |final member= Member(); |
-| tc     | Try catch||
-| toc    | Try on catch||
-| fun    |  Function definition ||
-| c2Factory  | clipboard to factory | const factory Clipboard.name() = Clipboard(); |
-| c2FromJson   | clipboard to FromJson |  factory Clipboard.fromJson(Map<String, dynamic> json) => _ClipboardFromJson(json); <br>  Map<String, dynamic> toJson() => _$ClipboardToJson(this); |
-| b2FromJson   | base file name to FromJson |factory baseFileName.fromJson(Map<String, dynamic> json) => _baseFileNameFromJson(json); <br> Map<String, dynamic> toJson() => _$baseFileNameToJson(this); |右鍵菜單|
-
-#### freezed 
-
-* State  snippets: will take base file name as class name 
-
-|  快捷   |  描述  | 補充|支援|
-|  ----  | ----  |------|------|
-| fz.p     |import base_filename.g.dart<br>import base_filename.freezed.dart<br>  |引入後可選( .g / .freezed )|右鍵菜單 |
-| fzClass    | Create Freezed Data Class  | 用於任何文件字定義 freezed class |右鍵菜單 |
-| fzUnion   |Create Freezed Data Class with state  |參照freezed Union types and Sealed classes 生成的模板<br>|右鍵菜單 |
-| fzAddState    | Add New Freezed State | 搭配 freezed Union types|右鍵菜單 |
-| fzC2State  | Copy Class Name to Freezed State| 搭配 freezed Union types|
-
-### 參考文件結構為範例
-
-```
-login
-    |___bloc 
-    |   |___login_bLoc.dart
-    |   |___login_event.dart   
-    |   |___login_state.dart
-    |
-    |__login_view.dart
-    
-```
-
-### customer freeze class
+* Base file name will set as json class Name
 
 ```dart
-// fzc
+import 'package:freezed_annotation/freezed_annotation.dart';
+part 'api_resp.g.dart';
+part 'api_resp.freezed.dart';
+
 @freezed
-class DataClass with _$DataClass {
-  const factory DataClass() = _DataClass;
-  // copy class name "DataClass"
-  // now "DataClass" in your copy board
-  // fzc2State
-  const factory DataClass.newState() = _DataClassNewState;
-} 
-```
-
-### Use state snippets 
-
-*  login_bLoc.dart
-
-```dart
-//fzWithState
-@freezed
-class LoginBloc with _$LoginBloc {
-  const factory LoginBloc.init() = _Initial;
-  //fzState
-  const factory LoginBloc.newState() = _NewState;
-    }
-}   
-```
-
-*  login_event.dart
-
-```dart
-//fzWithState
-@freezed
-class LoginEvent with _$LoginEvent {
-  const factory LoginEvent.initial() = _Initial;
-  //fzState
-  const factory LoginEvent.newState() = _NewState;
+class ApiResp with _$ApiResp {
+	const ApiResp._();
+	const factory ApiResp({
+		final User? user,
+		final Location? location,
+		@Default([]) final List<String> devices,
+	}) = _ApiResp;
+	factory ApiResp.fromJson(Map<String, dynamic> json) => _$ApiRespFromJson(json);
 }
 
-```
-
-*  login_event.dart
-
-```dart
-//fzWithState
 @freezed
-class LoginState with _$LoginState {
-  const factory LoginState.initial() = _Initial;
-  //fzState
-  const factory LoginState.newState() = _NewState;
+class Location with _$Location {
+	const Location._();
+	const factory Location({
+		final String? city,
+		final String? state,
+		final int? zipcode,
+	}) = _Location;
+	factory Location.fromJson(Map<String, dynamic> json) => _$LocationFromJson(json);
+}
+
+@freezed
+class User with _$User {
+	const User._();
+	const factory User({
+		final Name? name,
+		final int? age,
+		final String? email,
+	}) = _User;
+	factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
+}
+
+@freezed
+class Name with _$Name {
+	const Name._();
+	const factory Name({
+		final String? first,
+		final String? last,
+	}) = _Name;
+	factory Name.fromJson(Map<String, dynamic> json) => _$NameFromJson(json);
 }
 ```
 
-#### dart test
+# SideBar GUI
 
-|  快捷   |  描述  | 補充|
-|  ----  | ----  |------|
-| ut     | Define a Unit test||
-| utg    | Define a Unit test group||
-
-## For more information
-
-#### 右鍵菜單
-
-|  名稱  |  描述  | 補充| 條件|
-|  ----  | ----  |------|-----|
-|Generate getter setter| Generate getter setter||onText Selected|
-|To require param| To require param||onText Selected|
-|  ----  | ----  |------|-----|
-|Import freezed part| ||dart file|
-|Create freezed Union| ||dart file|
-|Add new freezed State by file name| ||dart file|
-|  ----  | ----  |------|-----|
-|Add new freezed State by file name| ||dart file|
-|Create FromJson by file name| ||dart file|
-
-* Generate getter setter
-
-```dart
-class Sample {
-  bool open;
-  //  selected 'bool open' => right click menu Generate getter setter
-  //  auto Generate getter setter
-  bool get getOpen => this.open;
-  set setOpen(bool open) => this.open = open;
-  Sample(this.open);
-}
-
-```
-
-* To require param
-
-```dart
-class Sample {
-  Sample(this.open, bool close);
-  //  selected 'this.open' => right click menu To require param
-  >> Sample({required this.open, required  bool close, });
-
-}
-
-```
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+![Before](./image/sideBar.png)

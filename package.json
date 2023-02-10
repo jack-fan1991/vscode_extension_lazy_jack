@@ -2,7 +2,7 @@
   "name": "jack",
   "displayName": "lazyJack",
   "description": "lets go",
-  "version": "0.0.31",
+  "version": "0.0.32",
   "publisher": "jackFan",
   "icon": "image/lazy_man.png",
   "engines": {
@@ -29,13 +29,13 @@
           "icon": "/image/rocket.svg"
         }
       ]
-    },    
+    },
     "viewsWelcome": [
-			{
-					"view": "fast-repo-gui",
-					"contents": "Open github Repository \n[Open](command:command_open_github_repo)\n[Actions](command:command_open_github_actions)\n[Wiki](command:command_open_github_wiki)\nOpen local sourcetree\n[Open](command:command_open_sourcetree_local_repo)"
-			}
-        ],
+      {
+        "view": "fast-repo-gui",
+        "contents": "Open github Repository \n[Open](command:command_open_github_repo)\n[Actions](command:command_open_github_actions)\n[Wiki](command:command_open_github_wiki)\nOpen local sourcetree\n[Open](command:command_open_sourcetree_local_repo)"
+      }
+    ],
     "views": {
       "lazy-sidebar": [
         {
@@ -99,20 +99,17 @@
         "category": "lazy Jack",
         "command": "command_dart_2_require_param",
         "title": "To require param"
-      }
-      ,
+      },
       {
         "category": "lazy Jack",
         "command": "command_dart_freezed_2_json",
         "title": "@freezed add Json serialize"
-      }
-      ,
+      },
       {
         "category": "lazy Jack",
         "command": "command_dart_json_to_freezed",
-        "title": "@freezed Json To Freezed"
+        "title": "@freezed Json to freezed"
       }
-      
     ],
     "menus": {
       "editor/context": [
@@ -141,7 +138,6 @@
           "command": "command_add_freezed_state_by_base_fileName",
           "group": "0_b_jack_dart_freezed_bloc@2"
         },
-
         {
           "when": "editorFocus && resourceLangId == dart&& editorHasSelection",
           "command": "command_dart_generate_getter_setter",
@@ -197,5 +193,9 @@
     "@types/vscode": "^1.74.0",
     "typescript": "^4.9.4",
     "vscode": "^1.1.34"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "yaml": "^2.2.1"
   }
 }

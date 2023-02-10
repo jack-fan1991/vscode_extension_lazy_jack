@@ -9,8 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onTypeScript = exports.onGit = exports.onFlutter = exports.showInfo2OptionMessage = void 0;
+exports.replaceTextInFile = exports.onTypeScript = exports.onGit = exports.onFlutter = exports.showInfo2OptionMessage = void 0;
 const vscode = require("vscode");
+const fs = require("fs");
+const path = require("path");
+const yaml = require("yaml");
 function showInfo2OptionMessage(msg, option1, option2, onOption1) {
     vscode.window.showInformationMessage(msg, option1 !== null && option1 !== void 0 ? option1 : '執行', option2 !== null && option2 !== void 0 ? option2 : '取消').then((selectedOption) => {
         if (onOption1 == null)
@@ -24,14 +27,30 @@ function showInfo2OptionMessage(msg, option1, option2, onOption1) {
     });
 }
 exports.showInfo2OptionMessage = showInfo2OptionMessage;
-function onFlutter(getData, errorData) {
+function onFlutter(getData, errorData, needData = false) {
     return __awaiter(this, void 0, void 0, function* () {
-        const files = yield vscode.workspace.findFiles('**/pubspec.yaml');
+        if (vscode.workspace.rootPath == undefined) {
+            return;
+        }
+        let absPath = path.join(vscode.workspace.rootPath, 'pubspec.yaml');
+        let filePath = '**/pubspec.yaml';
+        let data;
+        const files = yield vscode.workspace.findFiles(filePath);
         if (files.length <= 0) {
             console.log('當前不是flutter 專案');
             return errorData();
         }
-        return getData();
+        if (needData) {
+            if (fs.existsSync(absPath)) {
+                vscode.window.showInformationMessage(`正在解析 ${absPath}`, '關閉');
+                const fileContents = fs.readFileSync(absPath, 'utf-8');
+                data = yaml.parse(fileContents);
+            }
+            else {
+                console.error(`The file ${absPath} does not exist.`);
+            }
+        }
+        return getData(data);
     });
 }
 exports.onFlutter = onFlutter;
@@ -57,4 +76,26 @@ function onTypeScript(getData, errorData) {
     });
 }
 exports.onTypeScript = onTypeScript;
+function replaceTextInFile(filePath, searchValue, replaceValue) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let text = fs.readFileSync(filePath, 'utf-8');
+        const lines = text.split(/\r?\n/);
+        let found = false;
+        let newLines = [];
+        for (let line of lines) {
+            if (line.trim().startsWith(searchValue)) {
+                newLines.push(replaceValue);
+                found = true;
+            }
+            else {
+                newLines.push(line);
+            }
+        }
+        if (found) {
+            text = newLines.join('\n');
+            fs.writeFileSync(filePath, text, 'utf-8');
+        }
+    });
+}
+exports.replaceTextInFile = replaceTextInFile;
 //# sourceMappingURL=common.js.map

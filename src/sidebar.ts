@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
 import { showInfo2OptionMessage, onFlutter, onGit, onTypeScript } from './utils/common';
 import * as terminal_util from './utils/terminal_utils';
+import * as github from './github/fast_cmd';
+
 
 enum ScriptsType {
     terminal = 'terminal',
@@ -13,6 +15,13 @@ const flutterScripts = [
         scriptsType: ScriptsType.terminal,
         label: 'flutter pub get',
         script: 'flutter pub get',
+
+    },
+    {
+        scriptsType: ScriptsType.terminal,
+        label: 'Update git extension',
+        script: 'Update flutter git extension',
+
     }
 ]
 
@@ -248,6 +257,10 @@ export function onTreeItemSelect(context: vscode.ExtensionContext, args: any) {
 
 async function terminalAction(context: vscode.ExtensionContext, command: string) {
     console.log('[terminalAction] 選擇:', command)
+    if(command.includes("Update flutter git extension")){
+        github.updateFLutterGitExtension();
+        return
+    }
     if (command.includes("push -f")) {
         const cwd = vscode.workspace.rootPath;
         let branch = await terminal_util.runCommand("cd " + cwd + " && git rev-parse --abbrev-ref HEAD")

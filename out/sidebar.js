@@ -13,6 +13,7 @@ exports.onTreeItemSelect = exports.GitTreeDataProvider = exports.VscodeExtension
 const vscode = require("vscode");
 const common_1 = require("./utils/common");
 const terminal_util = require("./utils/terminal_utils");
+const github = require("./github/fast_cmd");
 var ScriptsType;
 (function (ScriptsType) {
     ScriptsType["terminal"] = "terminal";
@@ -23,6 +24,11 @@ const flutterScripts = [
         scriptsType: ScriptsType.terminal,
         label: 'flutter pub get',
         script: 'flutter pub get',
+    },
+    {
+        scriptsType: ScriptsType.terminal,
+        label: 'Update git extension',
+        script: 'Update flutter git extension',
     }
 ];
 const buildRunnerScripts = [
@@ -223,6 +229,10 @@ exports.onTreeItemSelect = onTreeItemSelect;
 function terminalAction(context, command) {
     return __awaiter(this, void 0, void 0, function* () {
         console.log('[terminalAction] 選擇:', command);
+        if (command.includes("Update flutter git extension")) {
+            github.updateFLutterGitExtension();
+            return;
+        }
         if (command.includes("push -f")) {
             const cwd = vscode.workspace.rootPath;
             let branch = yield terminal_util.runCommand("cd " + cwd + " && git rev-parse --abbrev-ref HEAD");
