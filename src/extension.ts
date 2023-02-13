@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
 import { registerDartSnippet } from './utils/snippet_utils';
-import { registerGenerateGetterSetter,registerFreezedToJson,registerToRequireParams, registerJsonToFreezed } from './dart/dart';
-import { registerFastGithubCmd } from './github/fast_cmd';
+import { registerGenerateGetterSetter, registerFreezedToJson, registerToRequireParams, registerJsonToFreezed } from './dart/dart';
+import { registerFastGithubCmd } from './github/github_utils';
 import * as sidebar from './sidebar';
 
 export function activate(context: vscode.ExtensionContext) {

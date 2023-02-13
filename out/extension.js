@@ -4,13 +4,13 @@ exports.deactivate = exports.activate = void 0;
 const vscode = require("vscode");
 const snippet_utils_1 = require("./utils/snippet_utils");
 const dart_1 = require("./dart/dart");
-const fast_cmd_1 = require("./github/fast_cmd");
+const github_utils_1 = require("./github/github_utils");
 const sidebar = require("./sidebar");
 function activate(context) {
     console.log('your extension "sugar-demo-vscode" is now active!');
     (0, snippet_utils_1.registerDartSnippet)(context);
     (0, dart_1.registerGenerateGetterSetter)(context);
-    (0, fast_cmd_1.registerFastGithubCmd)(context);
+    (0, github_utils_1.registerFastGithubCmd)(context);
     (0, dart_1.registerToRequireParams)(context);
     (0, dart_1.registerFreezedToJson)(context);
     (0, dart_1.registerJsonToFreezed)(context);

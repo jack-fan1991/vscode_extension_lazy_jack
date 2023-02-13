@@ -1,7 +1,8 @@
 import * as vscode from 'vscode';
 import { showInfo2OptionMessage, onFlutter, onGit, onTypeScript } from './utils/common';
 import * as terminal_util from './utils/terminal_utils';
-import * as github from './github/fast_cmd';
+import * as github from './github/github_utils';
+import * as ts from './typescript/ts_utils';
 
 
 enum ScriptsType {
@@ -19,8 +20,8 @@ const flutterScripts = [
     },
     {
         scriptsType: ScriptsType.terminal,
-        label: 'Update git extension',
-        script: 'Update flutter git extension',
+        label: 'Update git dependencies',
+        script: 'Update flutter git dependencies',
 
     }
 ]
@@ -257,7 +258,7 @@ export function onTreeItemSelect(context: vscode.ExtensionContext, args: any) {
 
 async function terminalAction(context: vscode.ExtensionContext, command: string) {
     console.log('[terminalAction] 選擇:', command)
-    if(command.includes("Update flutter git extension")){
+    if (command.includes("Update flutter git dependencies")) {
         github.updateFLutterGitExtension();
         return
     }
@@ -296,6 +297,10 @@ async function terminalAction(context: vscode.ExtensionContext, command: string)
         terminal.sendText(command)
         return;
 
+    }
+    if (command === 'vsce publish') {
+        await ts.publishVsCodeExtension()
+        return
     }
     vscode.window.showInformationMessage("執行 " + command)
     terminal_util.runTerminal(command);

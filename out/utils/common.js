@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.replaceTextInFile = exports.onTypeScript = exports.onGit = exports.onFlutter = exports.showInfo2OptionMessage = void 0;
+exports.replaceText = exports.showPicker = exports.onTypeScript = exports.onGit = exports.onFlutter = exports.showInfo2OptionMessage = void 0;
 const vscode = require("vscode");
 const fs = require("fs");
 const path = require("path");
@@ -27,7 +27,7 @@ function showInfo2OptionMessage(msg, option1, option2, onOption1) {
     });
 }
 exports.showInfo2OptionMessage = showInfo2OptionMessage;
-function onFlutter(getData, errorData, needData = false) {
+function onFlutter(getData, errorData, returnData = false) {
     return __awaiter(this, void 0, void 0, function* () {
         if (vscode.workspace.rootPath == undefined) {
             return;
@@ -40,15 +40,8 @@ function onFlutter(getData, errorData, needData = false) {
             console.log('當前不是flutter 專案');
             return errorData();
         }
-        if (needData) {
-            if (fs.existsSync(absPath)) {
-                vscode.window.showInformationMessage(`正在解析 ${absPath}`, '關閉');
-                const fileContents = fs.readFileSync(absPath, 'utf-8');
-                data = yaml.parse(fileContents);
-            }
-            else {
-                console.error(`The file ${absPath} does not exist.`);
-            }
+        if (returnData) {
+            data = yield readFile(absPath);
         }
         return getData(data);
     });
@@ -65,37 +58,75 @@ function onGit(getData, errorData) {
     });
 }
 exports.onGit = onGit;
-function onTypeScript(getData, errorData) {
+function readFile(absPath) {
+    if (fs.existsSync(absPath)) {
+        vscode.window.showInformationMessage(`正在解析 ${absPath}`, '關閉');
+        const fileContents = fs.readFileSync(absPath, 'utf-8');
+        return yaml.parse(fileContents);
+    }
+    else {
+        console.error(`The file ${absPath} does not exist.`);
+    }
+}
+function onTypeScript(getData, errorData, returnData = false) {
     return __awaiter(this, void 0, void 0, function* () {
-        const files = yield vscode.workspace.findFiles('**/package.json', '**/ios/**');
+        if (vscode.workspace.rootPath == undefined) {
+            return;
+        }
+        let absPath = path.join(vscode.workspace.rootPath, 'package.json');
+        let filePath = '**/package.json';
+        let data;
+        const files = yield vscode.workspace.findFiles(filePath);
         if (files.length <= 0) {
             console.log('當前不是TypeScript 專案');
             return errorData();
         }
-        return getData();
+        if (returnData) {
+            data = yield readFile(absPath);
+        }
+        return getData(data);
     });
 }
 exports.onTypeScript = onTypeScript;
-function replaceTextInFile(filePath, searchValue, replaceValue) {
+function showPicker(placeholder, items, onItemSelect) {
+    let quickPick = vscode.window.createQuickPick();
+    quickPick.placeholder = placeholder;
+    quickPick.items = items;
+    quickPick.onDidAccept(() => onItemSelect(quickPick.selectedItems[0]));
+    quickPick.show();
+}
+exports.showPicker = showPicker;
+function replaceText(filePath, searchValue, replaceValue) {
     return __awaiter(this, void 0, void 0, function* () {
-        let text = fs.readFileSync(filePath, 'utf-8');
-        const lines = text.split(/\r?\n/);
-        let found = false;
-        let newLines = [];
-        for (let line of lines) {
-            if (line.trim().startsWith(searchValue)) {
-                newLines.push(replaceValue);
-                found = true;
-            }
-            else {
-                newLines.push(line);
-            }
+        // find yaml editor
+        let editor = vscode.window.visibleTextEditors.find(e => e.document.fileName === filePath);
+        if (!editor) {
+            yield vscode.workspace.openTextDocument(filePath).then((document) => __awaiter(this, void 0, void 0, function* () { return editor = yield vscode.window.showTextDocument(document, vscode.ViewColumn.Beside, false).then(editor => editor); }));
         }
-        if (found) {
-            text = newLines.join('\n');
-            fs.writeFileSync(filePath, text, 'utf-8');
+        if (!editor) {
+            return false;
+        }
+        // 修改yaml 中的 version
+        const document = editor.document;
+        const start = new vscode.Position(0, 0);
+        const end = new vscode.Position(document.lineCount - 1, document.lineAt(document.lineCount - 1).text.length);
+        const textRange = new vscode.Range(start, end);
+        const text = document.getText();
+        const startIndex = text.indexOf(searchValue);
+        if (startIndex !== -1) {
+            const endIndex = startIndex + searchValue.length;
+            const range = new vscode.Range(document.positionAt(startIndex), document.positionAt(endIndex));
+            yield editor.edit((editBuilder) => {
+                editBuilder.replace(range, replaceValue);
+            });
+            editor.document.save();
+            return true;
+        }
+        else {
+            vscode.window.showErrorMessage(`filePath 中找不到${replaceValue}`);
+            return false;
         }
     });
 }
-exports.replaceTextInFile = replaceTextInFile;
+exports.replaceText = replaceText;
 //# sourceMappingURL=common.js.map

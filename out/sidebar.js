@@ -13,7 +13,8 @@ exports.onTreeItemSelect = exports.GitTreeDataProvider = exports.VscodeExtension
 const vscode = require("vscode");
 const common_1 = require("./utils/common");
 const terminal_util = require("./utils/terminal_utils");
-const github = require("./github/fast_cmd");
+const github = require("./github/github_utils");
+const ts = require("./typescript/ts_utils");
 var ScriptsType;
 (function (ScriptsType) {
     ScriptsType["terminal"] = "terminal";
@@ -27,8 +28,8 @@ const flutterScripts = [
     },
     {
         scriptsType: ScriptsType.terminal,
-        label: 'Update git extension',
-        script: 'Update flutter git extension',
+        label: 'Update git dependencies',
+        script: 'Update flutter git dependencies',
     }
 ];
 const buildRunnerScripts = [
@@ -229,7 +230,7 @@ exports.onTreeItemSelect = onTreeItemSelect;
 function terminalAction(context, command) {
     return __awaiter(this, void 0, void 0, function* () {
         console.log('[terminalAction] 選擇:', command);
-        if (command.includes("Update flutter git extension")) {
+        if (command.includes("Update flutter git dependencies")) {
             github.updateFLutterGitExtension();
             return;
         }
@@ -260,6 +261,10 @@ function terminalAction(context, command) {
             });
             terminal.show();
             terminal.sendText(command);
+            return;
+        }
+        if (command === 'vsce publish') {
+            yield ts.publishVsCodeExtension();
             return;
         }
         vscode.window.showInformationMessage("執行 " + command);

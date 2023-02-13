@@ -17,7 +17,7 @@ export function showInfo2OptionMessage(msg: string, option1?: string, option2?: 
 
 
 
-export async function onFlutter(getData: (data: any) => any, errorData: () => any, needData: boolean = false) {
+export async function onFlutter(getData: (data: any) => any, errorData: () => any, returnData: boolean = false) {
   if (vscode.workspace.rootPath == undefined) {
     return
   }
@@ -30,15 +30,8 @@ export async function onFlutter(getData: (data: any) => any, errorData: () => an
     console.log('當前不是flutter 專案');
     return errorData()
   }
-  if (needData) {
-    if (fs.existsSync(absPath)) {
-      vscode.window.showInformationMessage(`正在解析 ${absPath}`, '關閉')
-
-      const fileContents = fs.readFileSync(absPath, 'utf-8');
-      data = yaml.parse(fileContents);
-    } else {
-      console.error(`The file ${absPath} does not exist.`);
-    }
+  if (returnData) {
+    data = await readFile(absPath)
   }
   return getData(data)
 }
@@ -53,34 +46,73 @@ export async function onGit(getData: () => any[], errorData: () => any[]) {
   return getData()
 }
 
+function readFile(absPath: string): any {
+  if (fs.existsSync(absPath)) {
+    vscode.window.showInformationMessage(`正在解析 ${absPath}`, '關閉')
+    const fileContents = fs.readFileSync(absPath, 'utf-8');
+    return yaml.parse(fileContents);
+  } else {
+    console.error(`The file ${absPath} does not exist.`);
+  }
+}
 
-export async function onTypeScript(getData: () => any[], errorData: () => any[]) {
-  const files = await vscode.workspace.findFiles('**/package.json', '**/ios/**');
+export async function onTypeScript(getData: (data: any) => any, errorData: () => any, returnData: boolean = false) {
+  if (vscode.workspace.rootPath == undefined) {
+    return
+  }
+  let absPath = path.join(vscode.workspace.rootPath, 'package.json');
+  let filePath = '**/package.json';
+  let data;
+  const files = await vscode.workspace.findFiles(filePath);
   if (files.length <= 0) {
     console.log('當前不是TypeScript 專案');
     return errorData()
   }
-  return getData()
+  if (returnData) {
+    data = await readFile(absPath)
+  }
+  return getData(data)
+
 }
 
+export function showPicker(placeholder: string, items: any, onItemSelect: (item: any) => void) {
+  let quickPick = vscode.window.createQuickPick();
+  quickPick.placeholder = placeholder
+  quickPick.items = items;
+  quickPick.onDidAccept(() => onItemSelect(quickPick.selectedItems[0]));
+  quickPick.show()
+}
 
-export async function replaceTextInFile(filePath: string, searchValue: string, replaceValue: string) {
-  let text = fs.readFileSync(filePath, 'utf-8');
-  const lines = text.split(/\r?\n/);
-
-  let found = false;
-  let newLines = [];
-  for (let line of lines) {
-    if (line.trim().startsWith(searchValue)) {
-      newLines.push(replaceValue);
-      found = true;
-    } else {
-      newLines.push(line);
-    }
+export async function replaceText(filePath: string, searchValue: string, replaceValue: string):Promise<boolean> {
+  // find yaml editor
+  let editor = vscode.window.visibleTextEditors.find(e => e.document.fileName === filePath)
+  if (!editor) {
+    await vscode.workspace.openTextDocument(filePath).then(async (document) =>
+      editor = await vscode.window.showTextDocument(document, vscode.ViewColumn.Beside, false).then(editor => editor))
   }
+  if (!editor) {
+    return false
+  }
+  // 修改yaml 中的 version
+  const document = editor.document;
+  const start = new vscode.Position(0, 0);
+  const end = new vscode.Position(document.lineCount - 1, document.lineAt(document.lineCount - 1).text.length);
+  const textRange = new vscode.Range(start, end);
+  const text = document.getText();
+  const startIndex = text.indexOf(searchValue);
+  if (startIndex !== -1) {
+    const endIndex = startIndex + searchValue.length;
+    const range = new vscode.Range(document.positionAt(startIndex), document.positionAt(endIndex));
+    await editor.edit((editBuilder) => {
+      editBuilder.replace(range, replaceValue);
+    });
+    
+    editor.document.save()
+    return true
+  }
+  else {
+    vscode.window.showErrorMessage(`filePath 中找不到${replaceValue}`)
+    return false
 
-  if (found) {
-    text = newLines.join('\n');
-    fs.writeFileSync(filePath, text, 'utf-8');
   }
 }
