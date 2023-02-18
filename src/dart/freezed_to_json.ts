@@ -89,7 +89,7 @@ async function generator() {
                 console.log(`} => ${classCloseIndex}=>${fromJsonMethod}`);
                 if (!factoryRegex.test(text)) {
                     insertIdx.push(new vscode.Position(classCloseIndex, 0))
-                    insertString.push(`\n  ${fromJsonMethod}`)
+                    insertString.push(`\n  ${fromJsonMethod}\n`)
 
                 }
                 // if (!toJsonFactoryRegex.test(text)) {

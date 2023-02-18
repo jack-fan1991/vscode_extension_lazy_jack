@@ -14,6 +14,7 @@ function activate(context) {
     (0, dart_1.registerToRequireParams)(context);
     (0, dart_1.registerFreezedToJson)(context);
     (0, dart_1.registerJsonToFreezed)(context);
+    (0, dart_1.registerCommandDartSelectedToFactory)(context);
     //註冊 views id
     vscode.window.registerTreeDataProvider("flutter-lazy-cmd", new sidebar.FlutterTreeDataProvider());
     vscode.window.registerTreeDataProvider("build_runner-lazy-cmd", new sidebar.RunBuilderTreeDataProvider());
