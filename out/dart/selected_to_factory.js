@@ -41,7 +41,7 @@ function generator() {
         let factoryRequiredParams = [];
         let classParams = [];
         let classRequiredParams = [];
-        let extendsClassMatch = text.match(regex_utils_1.extndsClassRegex);
+        let extendsClassMatch = text.match(regex_utils_1.extendsClassRegex);
         let extendsClass = extendsClassMatch == null ? "" : extendsClassMatch[1];
         let isWidget = extendsClass.includes('StatefulWidget') || extendsClass.includes('StatelessWidget');
         if (isWidget) {

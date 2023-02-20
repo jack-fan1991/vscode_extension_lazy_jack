@@ -3,4 +3,4 @@
 ///然后是 extends 和一个单词（\w+），表示类的继承关系
 ///这个正则表达式会匹配整个 class 声明语句，而类名会匹配为第一个捕获组。
 export const firstClassRegex = /class\s+([a-zA-Z]\w*)\s+extends\s+\w*/;
-export const extndsClassRegex = /extends\s+([a-zA-Z]\w*)/;
+export const extendsClassRegex = /extends\s+([a-zA-Z]\w*)/;

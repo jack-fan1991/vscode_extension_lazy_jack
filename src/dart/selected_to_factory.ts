@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { extndsClassRegex, firstClassRegex as findFirstClassNameRegex } from '../utils/regex_utils';
+import { extendsClassRegex, firstClassRegex as findFirstClassNameRegex } from '../utils/regex_utils';
 const command_dart_selected_to_factory = "command_dart_selected_to_factory"
 
 
@@ -31,7 +31,7 @@ async function generator() {
     let factoryRequiredParams: string[] = [];
     let classParams: string[] = [];
     let classRequiredParams: string[] = [];
-    let extendsClassMatch = text.match(extndsClassRegex)
+    let extendsClassMatch = text.match(extendsClassRegex)
     let extendsClass = extendsClassMatch == null ? "" : extendsClassMatch[1]
     let isWidget = extendsClass.includes('StatefulWidget') || extendsClass.includes('StatelessWidget')
     if (isWidget) {

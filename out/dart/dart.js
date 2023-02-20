@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.registerCommandDartSelectedToFactory = exports.registerJsonToFreezed = exports.registerFreezedToJson = exports.registerToRequireParams = exports.registerGenerateGetterSetter = void 0;
+exports.registerGenerateAssert = exports.registerCommandDartSelectedToFactory = exports.registerJsonToFreezed = exports.registerFreezedToJson = exports.registerToRequireParams = exports.registerGenerateGetterSetter = void 0;
 var generate_getter_setter_1 = require("./generate_getter_setter");
 Object.defineProperty(exports, "registerGenerateGetterSetter", { enumerable: true, get: function () { return generate_getter_setter_1.registerGenerateGetterSetter; } });
 var to_require_params_1 = require("./to_require_params");
@@ -11,4 +11,6 @@ var json_to_freezed_1 = require("./json_to_freezed");
 Object.defineProperty(exports, "registerJsonToFreezed", { enumerable: true, get: function () { return json_to_freezed_1.registerJsonToFreezed; } });
 var selected_to_factory_1 = require("./selected_to_factory");
 Object.defineProperty(exports, "registerCommandDartSelectedToFactory", { enumerable: true, get: function () { return selected_to_factory_1.registerCommandDartSelectedToFactory; } });
+var generate_assert_1 = require("./generate_assert");
+Object.defineProperty(exports, "registerGenerateAssert", { enumerable: true, get: function () { return generate_assert_1.registerGenerateAssert; } });
 //# sourceMappingURL=dart.js.map
