@@ -1,7 +1,9 @@
 # Feature
 * [Snippets Menu](./doc/snippets.md)
 * [Right click Menu](./doc/menu_right_click.md)
-# Convert selected json to freezed code 
+
+## Convert selected json to freezed code 
+
   + Right click Menu => @freezed json to freezed
   + auto run build_runner 
 
@@ -62,6 +64,18 @@ class Name with _$Name {
 }
 ```
 
-# SideBar GUI
+## SideBar GUI
 
 ![Before](./image/sideBar.png)
+
+##  Class to factory 
+
+* Select text
+
+![](./image/to_factory/menu.png)
+* Enter name
+
+![](./image/to_factory/input.png)
+* Finish
+
+![](./image/to_factory/finsh.png)

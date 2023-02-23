@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { extendsClassRegex, firstClassRegex as findFirstClassNameRegex } from '../utils/regex_utils';
+import { findSuperClassRegex, findClassRegex } from '../utils/regex_utils';
 const command_dart_selected_to_factory = "command_dart_selected_to_factory"
 
 
@@ -19,7 +19,7 @@ async function generator() {
         vscode.window.showErrorMessage('No selected properties.');
         return;
     }
-    let match = text.match(findFirstClassNameRegex)
+    let match = text.match(findClassRegex)
     if (match == null) {
         vscode.window.showErrorMessage("No class name in selected text")
         return
@@ -27,20 +27,26 @@ async function generator() {
     let className = match[1]
 
     let properties = text.split(/\r?\n/).filter(x => !x.includes("class") && !x.includes("{") && !x.includes("}") && !x.includes(",")).filter(x => x.length > 2).map(x => x.replace(';', ''));
+    let isNameConstructor = text.split(/\r?\n/).filter(x => x.includes("(") && x.includes(")") && x.includes("{") && x.includes("}") && x.includes(`${className}`)).length > 0
     let factoryParams: string[] = [];
     let factoryRequiredParams: string[] = [];
     let classParams: string[] = [];
     let classRequiredParams: string[] = [];
-    let extendsClassMatch = text.match(extendsClassRegex)
+    let extendsClassMatch = text.match(findSuperClassRegex)
     let extendsClass = extendsClassMatch == null ? "" : extendsClassMatch[1]
     let isWidget = extendsClass.includes('StatefulWidget') || extendsClass.includes('StatelessWidget')
     if (isWidget) {
         factoryRequiredParams.push("Key? key")
         classRequiredParams.push("key:key")
     }
+    let targetString = ''
     for (let p of properties) {
+        targetString = p
         console.log(p)
-        let parseResult = generateGetterAndSetter(p,);
+        if (p.includes('=')) {
+            continue
+        }
+        let parseResult = generateParam(p, isNameConstructor);
         console.log(parseResult)
         if (parseResult[0].includes('required')) {
             factoryRequiredParams.push(parseResult[0])
@@ -49,14 +55,25 @@ async function generator() {
             factoryParams.push(parseResult[0])
             classParams.push(parseResult[1])
         }
+
+    }
+    let hasConstructor = text.split(/\r?\n/).filter(x => x.includes("(") && x.includes(")")).length > 0
+    let superParam:string[] = []
+    if (hasConstructor) {
+        targetString = text.split(/\r?\n/).filter(x => x.includes(className) && x.includes("(") && x.includes(")"))[0]
+        superParam = targetString.match(/\b\w+\b(?=,|\s*})/g) as string[]
     }
     let r = await createFactory(className, [...factoryRequiredParams, ...factoryParams], [...classRequiredParams, ...classParams])
     console.log(r);
-
+    if (hasConstructor) {
+        targetString = text.split(/\r?\n/).filter(x => x.includes(className) && x.includes("(") && x.includes(")"))[0]
+    }
+    let startIndex = text.indexOf(targetString);
+    let insertPosition = new vscode.Position(editor.document.positionAt(startIndex).line + 1, 0)
     editor.edit(
         edit => editor.selections.forEach(
             selection => {
-                edit.insert(selection.end, r);
+                edit.insert(insertPosition, r);
             }
         )
     );
@@ -65,18 +82,18 @@ async function generator() {
 async function createFactory(className: string, factoryParams: string[], classParams: string[]): Promise<string> {
 
     let name = await vscode.window.showInputBox({
-        prompt: 'Enter your name'
+        prompt: 'Enter factory name'
     }).then(name => name) ?? "init"
 
-    return `\n\tfactory ${className}.${name}({
-\t\t${factoryParams.join(',\n\t\t')}
+    return `\n\n\tfactory ${className}.${name}({
+\t\t${factoryParams.join(',\n\t\t')},
  }) =>\t\t\t
-    ${className}(\n\t\t\t\t\t${classParams.join(',\n\t\t\t\t\t')}\n);`
+    ${className}(\n\t\t\t\t${classParams.join(',\n\t\t\t\t')},\n\t\t\t);\n`
 }
 
 function splitField(fieldString: string): string[] {
     let split: string[] = []
-    let list = fieldString.split(" ")
+    let list = fieldString.replace('final', '').split(" ").filter((x) => x != '')
     let index = 0
     for (let s of list) {
         index = list.indexOf(s)
@@ -86,9 +103,13 @@ function splitField(fieldString: string): string[] {
             split = split.filter((x) => x != previous)
         }
         else if (s.includes(')')) {
-            let previous2 = list[list.indexOf(s) - 2]
+            let returnType = list[list.indexOf(s) - 2]
             let previous = list[list.indexOf(s) - 1]
-            split.push(`${previous2} ${previous} ${s}`)
+            if (returnType == undefined) {
+                split.push(`${previous} ${s}`)
+            } else {
+                split.push(`${returnType} ${previous} ${s}`)
+            }
         }
         else {
             split.push(s)
@@ -99,7 +120,7 @@ function splitField(fieldString: string): string[] {
     return split
 }
 
-function generateGetterAndSetter(prop: string): string[] {
+function generateParam(prop: string, isNameConstructor: boolean): string[] {
     let result: string[] = []
     let isFinal = false
     let start = 0;
@@ -126,11 +147,13 @@ function generateGetterAndSetter(prop: string): string[] {
     }
     if (type.includes('?')) {
         result.push(`${type} ${fieldName}`)
-        result.push(`${fieldName}:${fieldName}`)
     } else {
         result.push(`required ${type} ${fieldName}`)
+    }
+    if (isNameConstructor) {
         result.push(`${fieldName}:${fieldName}`)
-
+    } else {
+        result.push(`${fieldName}`)
     }
     return result
 

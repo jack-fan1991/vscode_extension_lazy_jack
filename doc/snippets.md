@@ -23,7 +23,8 @@
 |  ----  | ----  |------|-----|
 | forLoop| just for loop   |||
 | for    | just for loop   ||
-| finalMember    | |final member= Member(); |
+| finalFiledNew   | |final field= Field(); |
+| finalFiled  | |final  Field field; |
 | tc     | Try catch||
 | toc    | Try on catch||
 | fun    |  Function definition ||
@@ -46,12 +47,11 @@
 ### 
 
 #### dart test
+
 |  Shortcut   |  Description  | Supplement| Support|
 |  ----  | ----  |------|
 | ut     | Define a Unit test||
 | utg    | Define a Unit test group||
-
-
 
 ```
 login

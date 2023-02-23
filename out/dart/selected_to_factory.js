@@ -30,27 +30,33 @@ function generator() {
             vscode.window.showErrorMessage('No selected properties.');
             return;
         }
-        let match = text.match(regex_utils_1.firstClassRegex);
+        let match = text.match(regex_utils_1.findClassRegex);
         if (match == null) {
             vscode.window.showErrorMessage("No class name in selected text");
             return;
         }
         let className = match[1];
         let properties = text.split(/\r?\n/).filter(x => !x.includes("class") && !x.includes("{") && !x.includes("}") && !x.includes(",")).filter(x => x.length > 2).map(x => x.replace(';', ''));
+        let isNameConstructor = text.split(/\r?\n/).filter(x => x.includes("(") && x.includes(")") && x.includes("{") && x.includes("}") && x.includes(`${className}`)).length > 0;
         let factoryParams = [];
         let factoryRequiredParams = [];
         let classParams = [];
         let classRequiredParams = [];
-        let extendsClassMatch = text.match(regex_utils_1.extendsClassRegex);
+        let extendsClassMatch = text.match(regex_utils_1.findSuperClassRegex);
         let extendsClass = extendsClassMatch == null ? "" : extendsClassMatch[1];
         let isWidget = extendsClass.includes('StatefulWidget') || extendsClass.includes('StatelessWidget');
         if (isWidget) {
             factoryRequiredParams.push("Key? key");
             classRequiredParams.push("key:key");
         }
+        let targetString = '';
         for (let p of properties) {
+            targetString = p;
             console.log(p);
-            let parseResult = generateGetterAndSetter(p);
+            if (p.includes('=')) {
+                continue;
+            }
+            let parseResult = generateParam(p, isNameConstructor);
             console.log(parseResult);
             if (parseResult[0].includes('required')) {
                 factoryRequiredParams.push(parseResult[0]);
@@ -61,10 +67,21 @@ function generator() {
                 classParams.push(parseResult[1]);
             }
         }
+        let hasConstructor = text.split(/\r?\n/).filter(x => x.includes("(") && x.includes(")")).length > 0;
+        let superParam = [];
+        if (hasConstructor) {
+            targetString = text.split(/\r?\n/).filter(x => x.includes(className) && x.includes("(") && x.includes(")"))[0];
+            superParam = targetString.match(/\b\w+\b(?=,|\s*})/g);
+        }
         let r = yield createFactory(className, [...factoryRequiredParams, ...factoryParams], [...classRequiredParams, ...classParams]);
         console.log(r);
+        if (hasConstructor) {
+            targetString = text.split(/\r?\n/).filter(x => x.includes(className) && x.includes("(") && x.includes(")"))[0];
+        }
+        let startIndex = text.indexOf(targetString);
+        let insertPosition = new vscode.Position(editor.document.positionAt(startIndex).line + 1, 0);
         editor.edit(edit => editor.selections.forEach(selection => {
-            edit.insert(selection.end, r);
+            edit.insert(insertPosition, r);
         }));
     });
 }
@@ -72,17 +89,17 @@ function createFactory(className, factoryParams, classParams) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
         let name = (_a = yield vscode.window.showInputBox({
-            prompt: 'Enter your name'
+            prompt: 'Enter factory name'
         }).then(name => name)) !== null && _a !== void 0 ? _a : "init";
-        return `\n\tfactory ${className}.${name}({
-\t\t${factoryParams.join(',\n\t\t')}
+        return `\n\n\tfactory ${className}.${name}({
+\t\t${factoryParams.join(',\n\t\t')},
  }) =>\t\t\t
-    ${className}(\n\t\t\t\t\t${classParams.join(',\n\t\t\t\t\t')}\n);`;
+    ${className}(\n\t\t\t\t${classParams.join(',\n\t\t\t\t')},\n\t\t\t);\n`;
     });
 }
 function splitField(fieldString) {
     let split = [];
-    let list = fieldString.split(" ");
+    let list = fieldString.replace('final', '').split(" ").filter((x) => x != '');
     let index = 0;
     for (let s of list) {
         index = list.indexOf(s);
@@ -92,9 +109,14 @@ function splitField(fieldString) {
             split = split.filter((x) => x != previous);
         }
         else if (s.includes(')')) {
-            let previous2 = list[list.indexOf(s) - 2];
+            let returnType = list[list.indexOf(s) - 2];
             let previous = list[list.indexOf(s) - 1];
-            split.push(`${previous2} ${previous} ${s}`);
+            if (returnType == undefined) {
+                split.push(`${previous} ${s}`);
+            }
+            else {
+                split.push(`${returnType} ${previous} ${s}`);
+            }
         }
         else {
             split.push(s);
@@ -103,7 +125,7 @@ function splitField(fieldString) {
     }
     return split;
 }
-function generateGetterAndSetter(prop) {
+function generateParam(prop, isNameConstructor) {
     let result = [];
     let isFinal = false;
     let start = 0;
@@ -128,11 +150,15 @@ function generateGetterAndSetter(prop) {
     }
     if (type.includes('?')) {
         result.push(`${type} ${fieldName}`);
-        result.push(`${fieldName}:${fieldName}`);
     }
     else {
         result.push(`required ${type} ${fieldName}`);
+    }
+    if (isNameConstructor) {
         result.push(`${fieldName}:${fieldName}`);
+    }
+    else {
+        result.push(`${fieldName}`);
     }
     return result;
 }

@@ -2,7 +2,7 @@
   "name": "jack",
   "displayName": "lazyJack",
   "description": "lets go",
-  "version": "0.0.44",
+  "version": "0.0.45",
   "publisher": "jackFan",
   "icon": "image/lazy_man.png",
   "engines": {
@@ -94,7 +94,7 @@
       {
         "category": "lazy Jack",
         "command": "command_dart_2_require_param",
-        "title": "Selected field to require param"
+        "title": "To require param (Selected field)"
       },
       {
         "category": "lazy Jack",
@@ -104,17 +104,17 @@
       {
         "category": "lazy Jack",
         "command": "command_dart_json_to_freezed",
-        "title": "Convert selected Json to freezed"
+        "title": "Json to freezed format (Selected json)"
       }      ,
       {
         "category": "lazy Jack",
         "command": "command_dart_selected_to_factory",
-        "title": "Selected field and class to factory constructor"
+        "title": "To factory constructor (Selected field)"
       },
       {
         "category": "lazy Jack",
         "command": "command_dart_generate_getter_setter",
-        "title": "Selected field to getter setter"
+        "title": "To getter setter (Selected field)"
       },
       {
         "category": "lazy Jack",
