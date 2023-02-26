@@ -83,14 +83,22 @@ export function showPicker(placeholder: string, items: any, onItemSelect: (item:
   quickPick.show()
 }
 
-export async function openEditor(filePath: string): Promise<vscode.TextEditor | undefined> {
-  if(!fs.existsSync(filePath))return
+export async function openEditor(filePath: string, focus?: boolean): Promise<vscode.TextEditor | undefined> {
+  if (!fs.existsSync(filePath)) return
   let editor = vscode.window.visibleTextEditors.find(e => e.document.fileName === filePath)
   if (!editor) {
     await vscode.workspace.openTextDocument(filePath).then(async (document) =>
-      editor = await vscode.window.showTextDocument(document, vscode.ViewColumn.Beside, false).then(editor => editor))
+      editor = await vscode.window.showTextDocument(document, vscode.ViewColumn.Beside, focus ?? false).then(editor => editor))
   }
   return editor
+}
+
+export async function hideEditor(filePath: string, focus?: boolean){
+  if (!fs.existsSync(filePath)) return
+  let editor = vscode.window.visibleTextEditors.find(e => e.document.fileName === filePath)
+  if (editor) {
+    editor.hide()
+  }
 }
 
 export async function replaceText(filePath: string, searchValue: string, replaceValue: string): Promise<boolean> {

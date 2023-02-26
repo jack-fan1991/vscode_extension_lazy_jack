@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.replaceText = exports.openEditor = exports.showPicker = exports.onTypeScript = exports.onGit = exports.onFlutter = exports.showInfo2OptionMessage = void 0;
+exports.replaceText = exports.hideEditor = exports.openEditor = exports.showPicker = exports.onTypeScript = exports.onGit = exports.onFlutter = exports.showInfo2OptionMessage = void 0;
 const vscode = require("vscode");
 const fs = require("fs");
 const path = require("path");
@@ -96,18 +96,29 @@ function showPicker(placeholder, items, onItemSelect) {
     quickPick.show();
 }
 exports.showPicker = showPicker;
-function openEditor(filePath) {
+function openEditor(filePath, focus) {
     return __awaiter(this, void 0, void 0, function* () {
         if (!fs.existsSync(filePath))
             return;
         let editor = vscode.window.visibleTextEditors.find(e => e.document.fileName === filePath);
         if (!editor) {
-            yield vscode.workspace.openTextDocument(filePath).then((document) => __awaiter(this, void 0, void 0, function* () { return editor = yield vscode.window.showTextDocument(document, vscode.ViewColumn.Beside, false).then(editor => editor); }));
+            yield vscode.workspace.openTextDocument(filePath).then((document) => __awaiter(this, void 0, void 0, function* () { return editor = yield vscode.window.showTextDocument(document, vscode.ViewColumn.Beside, focus !== null && focus !== void 0 ? focus : false).then(editor => editor); }));
         }
         return editor;
     });
 }
 exports.openEditor = openEditor;
+function hideEditor(filePath, focus) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!fs.existsSync(filePath))
+            return;
+        let editor = vscode.window.visibleTextEditors.find(e => e.document.fileName === filePath);
+        if (editor) {
+            editor.hide();
+        }
+    });
+}
+exports.hideEditor = hideEditor;
 function replaceText(filePath, searchValue, replaceValue) {
     return __awaiter(this, void 0, void 0, function* () {
         // find yaml editor

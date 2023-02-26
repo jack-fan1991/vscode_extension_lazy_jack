@@ -1,8 +1,8 @@
 {
-  "name": "jack",
-  "displayName": "lazyJack",
+  "name": "lazy-jack",
+  "displayName": "lazy Jack",
   "description": "lets go",
-  "version": "0.0.45",
+  "version": "0.0.16",
   "publisher": "jackFan",
   "icon": "image/lazy_man.png",
   "engines": {
@@ -65,7 +65,6 @@
       ]
     },
     "commands": [
-      
       {
         "category": "lazy Jack",
         "command": "dart.import.freezed",
@@ -105,7 +104,7 @@
         "category": "lazy Jack",
         "command": "command_dart_json_to_freezed",
         "title": "Json to freezed format (Selected json)"
-      }      ,
+      },
       {
         "category": "lazy Jack",
         "command": "command_dart_selected_to_factory",
@@ -120,8 +119,12 @@
         "category": "lazy Jack",
         "command": "command_dart_assert",
         "title": "Generate assert file from folder"
+      },
+      {
+        "category": "lazy Jack",
+        "command": "DartPartFixer.command",
+        "title": "Dart Part Fixer"
       }
-      
     ],
     "menus": {
       "editor/context": [
@@ -170,7 +173,6 @@
           "command": "command_dart_generate_getter_setter",
           "group": "0_A_jack_dart_selected@5"
         }
-        
       ],
       "explorer/context": [
         {
@@ -178,7 +180,7 @@
           "title": "Generate assert file from folder",
           "when": "explorerResourceIsFolder"
         }
-    ]
+      ]
     },
     "snippets": [
       {
@@ -201,20 +203,18 @@
   "scripts": {
     "build": "tsc -p tsconfig.json"
   },
+  "exclude": [
+    "node_modules",
+    ".vscode"
+  ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/jack-fan1991/vscode.git"
+    "url": "https://github.com/jack-fan1991/vscode_extension_lazy_jack"
   },
   "extensionPack": [
     "FelixAngelov.bloc",
     "kisstkondoros.vscode-gutter-preview"
   ],
-  "devDependencies": {
-    "@types/node": "^18.11.18",
-    "@types/vscode": "^1.74.0",
-    "typescript": "^4.9.4",
-    "vscode": "^1.1.34"
-  },
   "dependencies": {
     "axios": "^1.3.2",
     "cheerio": "^1.0.0-rc.12",

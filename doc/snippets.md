@@ -1,3 +1,4 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 ## Features
 
 * Prefix "c2" snippets, means "clipboard to" will use clipboard as value
