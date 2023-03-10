@@ -1,8 +1,7 @@
 import path = require('path');
 import * as vscode from 'vscode';
 import * as fs from 'fs';
-import { title } from 'process';
-import { hideEditor, openEditor, replaceText } from '../../utils/common';
+import {  openEditor, replaceText } from '../../utils/common';
 import { CodeActionProviderInterface } from '../code_action';
 import { StatusCode } from '../error_code';
 import { getAbsFilePath } from '../../utils/file_utils';
@@ -55,17 +54,20 @@ export class DartPartFixer implements CodeActionProviderInterface<PartFixInfo> {
 
             let textEditor = await openEditor(targetPath, true)
             if (textEditor) {
-                let lastPartLine = 0
-                let lines = document.getText().split(/\r?\n/)
+                let lastImportLine = 0
+                let lines = textEditor.document.getText().split(/\r?\n/)
                 for (let l of lines) {
-                    lastPartLine++
-                    if (l.includes('part')) {
+                    if (!l.includes('import')) {
                         break
                     }
-                }
+                    lastImportLine++
+                }   
                 await textEditor.edit((editBuilder) => {
-                    editBuilder.insert(new vscode.Position(importText.includes('of') ? 0 : lastPartLine, 0), importText + '\n');
+                    editBuilder.insert(new vscode.Position(importText.includes('part') ?   lastImportLine:0, 0), importText + '\n');
                 })
+                if(textEditor.document.isDirty){
+                  await  textEditor.document.save()
+                }
                 // trigger refresh
                 replaceText(getAbsFilePath(document.uri), document.getText(), document.getText())
             }
@@ -88,18 +90,20 @@ export class DartPartFixer implements CodeActionProviderInterface<PartFixInfo> {
     }
     handleLine(document: vscode.TextDocument, range: vscode.Range): PartFixInfo | undefined {
         let partLine = document.lineAt(range.start.line).text;
-        let pathRegExp = new RegExp(/'(\.\/)+(.+?)'/);
-        let includeOf = partLine.includes('of');
-        if (includeOf) {
-            pathRegExp = new RegExp(/'(\.\.\/)+(.+?)'/);
+        let pathRegExp = new RegExp(/(^|\s)\.?\/?(\w+)/);
+        let partMatch=partLine.match(new RegExp( /part\s+(\'*\"*[a-zA-Z]\w*).dart/))
+        let partOfMatch= partLine.match(new RegExp( /part\s+of\s+(\'*\"*[a-zA-Z]\w*).dart/))
+        let isPartOf =partOfMatch!=null;
+        let targetDart =''
+        if (isPartOf&& partOfMatch!=null ) {
+            targetDart = partOfMatch[1].replace(/'/g,'')+'.dart'
+        }else if(partMatch!=null){
+            targetDart=partMatch[1].replace(/'/g,'')+'.dart'
         }
-        let match = partLine.match(pathRegExp);
-        if (match) {
-            partLine = match[0].replace(/'/g, '').replace(/"/g, '');
-        }
+        
         let currentDir = path.dirname(document.fileName);
         let currentFileName = path.basename(document.fileName);
-        let targetAbsPath = path.resolve(currentDir, partLine);
+        let targetAbsPath = path.resolve(currentDir, targetDart);
         let targetDir = path.dirname(targetAbsPath);
         let targetFileName = path.basename(targetAbsPath);
         if (!fs.existsSync(targetAbsPath)) {
@@ -107,14 +111,14 @@ export class DartPartFixer implements CodeActionProviderInterface<PartFixInfo> {
             return;
         }
         const targetFileContent = fs.readFileSync(targetAbsPath, 'utf-8').replace(/\s/g, '');
-        let keyPoint = includeOf ? 'part' : 'part of';
+        let keyPoint = isPartOf ? 'part' : 'part of';
         let targetImportPartOfName = "";
         targetImportPartOfName = path.join(path.relative(targetDir, currentDir), currentFileName);
-        if (includeOf || targetImportPartOfName.split('/').length === 1) {
+        if (isPartOf || targetImportPartOfName.split('/').length === 1) {
             targetImportPartOfName = `./${targetImportPartOfName}`;
         }
         let importLine = `${keyPoint} '${targetImportPartOfName}';`;
-        if (targetFileContent.includes(importLine.replace(/\s/g, ''))) {
+        if (targetFileContent.includes(importLine.replace(/\s/g, ''))||targetFileContent.includes(importLine.replace(/\s/g, '').replace('./',''))) {
             console.log(`${importLine} already in ${targetAbsPath}`);
             return;
         }

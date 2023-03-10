@@ -58,6 +58,8 @@ function generator() {
             }
             let parseResult = generateParam(p, isNameConstructor);
             console.log(parseResult);
+            if (parseResult.length == 0)
+                continue;
             if (parseResult[0].includes('required')) {
                 factoryRequiredParams.push(parseResult[0]);
                 classRequiredParams.push(parseResult[1]);
@@ -138,6 +140,8 @@ function generateParam(prop, isNameConstructor) {
         }
     }
     prop = prop.slice(start);
+    if (prop.includes('(') || prop.includes(')') || prop.includes('{') || prop.includes('}'))
+        return [];
     let fieldStringArray = splitField(prop);
     isFinal = fieldStringArray.filter((x) => x.includes('final')).length > 0;
     if (isFinal) {

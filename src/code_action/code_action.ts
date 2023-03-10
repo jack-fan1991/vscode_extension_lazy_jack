@@ -7,6 +7,8 @@ import { FreezedFixer } from './dart/freezed_import_fixer';
 // 設定常數，代表指令的名稱
 const dart = 'dart'
 const quickFixCodeAction = [vscode.CodeActionKind.QuickFix];
+export const diagnostics = vscode.languages.createDiagnosticCollection("DartPartFixer");
+
 // 啟動擴充套件
 export function register(context: vscode.ExtensionContext) {
     let providers: CodeActionProviderInterface<any>[] = []
@@ -26,7 +28,6 @@ export function register(context: vscode.ExtensionContext) {
                 }));
     }
     // 建立語言診斷集合
-    const diagnostics = vscode.languages.createDiagnosticCollection("DartPartFixer");
     context.subscriptions.push(diagnostics);
     // 訂閱文件變更事件，以重新計算語言診斷
     subscribeToDocumentChanges(context, diagnostics, providers);
