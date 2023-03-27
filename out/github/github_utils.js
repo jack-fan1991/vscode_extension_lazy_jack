@@ -94,7 +94,7 @@ const onVersionSelect = function onVersionSelect(dependencies, item) {
         }
         console.log(`Selected version: ${version}`);
         vscode.window.showInformationMessage(msg, '確定', '取消').then((option) => __awaiter(this, void 0, void 0, function* () {
-            var _c;
+            var _c, _d;
             console.log(`asd`);
             if (option === '確定') {
                 let searchValue = `${dependencies}:\n    git:\n      url: ${gitUrl.get(dependencies)}\n      ref: ${currentVersion}\n`;
@@ -116,6 +116,17 @@ const onVersionSelect = function onVersionSelect(dependencies, item) {
                 }, () => {
                     vscode.window.showWarningMessage(`找不到${delPubCachePath}`);
                 }, delPubCachePath);
+                let localPath = `../${dependencies}`;
+                let textEditor = yield common.openEditor(yamlPath, true);
+                let overrideActivate = textEditor.document.getText().indexOf(`${dependencies}:\n    path: ${localPath}`) != -1;
+                if (overrideActivate) {
+                    let depString = `${dependencies}:\n    path: ${localPath}`;
+                    let markString = `# ${dependencies}:\n  #   path: ${localPath}`;
+                    let yamlPath = path.join((_d = vscode.workspace.rootPath) !== null && _d !== void 0 ? _d : '', 'pubspec.yaml');
+                    let replace = yield common.replaceText(yamlPath, depString, markString);
+                    vscode.window.showInformationMessage(`${dependencies} remove local override`);
+                    return;
+                }
             }
         }));
     });
@@ -125,6 +136,7 @@ const onPubspecYamlParse = function onPubspecYamlParse(data) {
         let gitDependencies = findGitExtension(data['dependencies']);
         let dependenciesVersionCache = new Map();
         let dependenciesNames = [];
+        let dependencyOverrides = data['dependency_overrides'];
         for (let dependencies of gitDependencies) {
             let items = [];
             let cmd = `git ls-remote --heads  --sort=-v:refname '${dependencies.uri}' | awk '{print $2}' `;
@@ -141,12 +153,41 @@ const onPubspecYamlParse = function onPubspecYamlParse(data) {
             gitUrl.set(dependencies.name, dependencies.uri);
         }
         // 選擇要更新的擴展
-        common.showPicker('Select dependencies', dependenciesNames, (item) => {
+        common.showPicker('Select dependencies', dependenciesNames, (item) => __awaiter(this, void 0, void 0, function* () {
+            var _a;
             let dependencies = item.label;
+            let localPath = `../${dependencies}`;
+            let yamlPath = path.join((_a = vscode.workspace.rootPath) !== null && _a !== void 0 ? _a : '', 'pubspec.yaml');
+            let textEditor = yield common.openEditor(yamlPath, true);
+            let overrideActivate = textEditor.document.getText().indexOf(`${dependencies}:\n    path: ${localPath}`) != -1;
             let versionItems = dependenciesVersionCache.get(dependencies);
+            let description = dependenciesNames.filter((x) => x.label.includes(dependencies)).map((x) => x.description);
             console.log(`Selected dependencies: ${dependencies}`);
             common.showPicker('Select version', versionItems, (item) => onVersionSelect(dependencies, item));
-        });
+            let msg = !overrideActivate ? `on Git ${description}` : "";
+            vscode.window.showInformationMessage(`Dependencies ${msg}  ,default local Path : ${localPath} , Select checkout to `, 'Local', 'Git Remote').then((selectedOption) => __awaiter(this, void 0, void 0, function* () {
+                var _b, _c;
+                let depString = `${dependencies}:\n    path: ${localPath}`;
+                let markString = `# ${dependencies}:\n  #   path: ${localPath}`;
+                let findMarkString = textEditor.document.getText().indexOf(markString) != -1;
+                if (selectedOption === 'Local') {
+                    if (!overrideActivate && findMarkString) {
+                        let yamlPath = path.join((_b = vscode.workspace.rootPath) !== null && _b !== void 0 ? _b : '', 'pubspec.yaml');
+                        let replace = yield common.replaceText(yamlPath, markString, depString);
+                        vscode.window.showInformationMessage(`${dependencies} use local override ${localPath}`);
+                    }
+                }
+                else if (selectedOption === 'Git Remote') {
+                    if (overrideActivate) {
+                        let markString = `# ${dependencies}:\n  #   path: ${localPath}`;
+                        let yamlPath = path.join((_c = vscode.workspace.rootPath) !== null && _c !== void 0 ? _c : '', 'pubspec.yaml');
+                        let replace = yield common.replaceText(yamlPath, depString, markString);
+                        vscode.window.showInformationMessage(`${dependencies} remove local override`);
+                        return;
+                    }
+                }
+            }));
+        }));
     });
 };
 //# sourceMappingURL=github_utils.js.map

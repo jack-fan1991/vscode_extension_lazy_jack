@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { toUpperCamelCase, toLowerCamelCase } from '../utils/regex_utils';
 import { runTerminal } from '../utils/terminal_utils'
 const command_dart_json_to_freezed = "command_dart_json_to_freezed"
 let s;
@@ -118,7 +119,9 @@ function generateClassTemplate(jsonObject: any, parentKey: string = ''): string 
 
 function pramsFmt(type: string, paramName: string): string {
     if (!lowCamelPattern.test(paramName)) {
-        return `// ignore: invalid_annotation_target\n\t\t@JsonKey(name: '${paramName}') final ${type}? ${toLowerCamelCase(paramName)}`;
+        return `\t\t@JsonKey(name: '${paramName}')\tfinal ${type}? ${toLowerCamelCase(paramName)}`;
+
+        return `// ignore: invalid_annotation_target\n\t\t@JsonKey(name: '${paramName}') final ${type}? ${toUpperCamelCase(paramName)}`;
     }
     return `final ${type}? ${paramName}`;
 }
@@ -163,8 +166,12 @@ function arrayPramsFmt(jsonObject: any, parentName: string): string {
     return `@Default([]) final List<${typeString}> ${parentName}`;
 }
 
+function isStringEndsWith(str: string, suffix: string): boolean {
+    return str.indexOf(suffix, str.length - suffix.length) !== -1;
+}
 
 function generateClass(className: string, params: string[]): string {
+    className = toUpperCamelCase(className)
     let fromJsonMethod = `factory ${className}.fromJson(Map<String, dynamic> json) => _$${className}FromJson(json);`;
     let toJsonMethod = `Map<String, dynamic> toJson() => _$${className}ToJson(this);`;
 
@@ -176,23 +183,10 @@ class ${className} with _$${className} {
 \t${fromJsonMethod}
 }`
     console.log(`${clz}`);
+    if (isStringEndsWith(className, 's')) {
+        clz = `/// ignore Verify plural type naming confusion\n${clz}`;
+    }
     return clz
 }
 
-function toUpperCamelCase(str: string): string {
-    return str.replace(/\b(\w)/g, function (match) {
-        return match.toUpperCase();
-    });
-}
 
-
-
-
-function toLowerCamelCase(inputString: string): string {
-    const words = inputString.split("_");
-    const outputWords = [
-        words[0].toLowerCase(),
-        ...words.slice(1).map(word => word[0].toUpperCase() + word.slice(1).toLowerCase())
-    ];
-    return outputWords.join("");
-}

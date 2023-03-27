@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerJsonToFreezed = void 0;
 const vscode = require("vscode");
+const regex_utils_1 = require("../utils/regex_utils");
 const terminal_utils_1 = require("../utils/terminal_utils");
 const command_dart_json_to_freezed = "command_dart_json_to_freezed";
 let s;
@@ -49,7 +50,7 @@ function generator() {
             vscode.window.showErrorMessage(`Json 格式錯誤 ${e}`);
             throw e;
         }
-        let className = fileName.split('_').map(e => toUpperCamelCase(e)).join('');
+        let className = fileName.split('_').map(e => (0, regex_utils_1.toUpperCamelCase)(e)).join('');
         generateClassTemplate(jsonObject, className);
         // generateResponseData(className, jsonObject);
         let importResult = [firstImport, fileNameGPart, fileNameFPart,];
@@ -106,13 +107,13 @@ function generateClassTemplate(jsonObject, parentKey = '') {
                         else {
                             // Object 拿Key當參數
                             generateClassTemplate(child, key);
-                            typeString = pramsFmt(toUpperCamelCase(key), key);
+                            typeString = pramsFmt((0, regex_utils_1.toUpperCamelCase)(key), key);
                             prams.push(typeString);
                             break;
                         }
                 }
             }
-            result.push(generateClass(toUpperCamelCase(parentKey), prams));
+            result.push(generateClass((0, regex_utils_1.toUpperCamelCase)(parentKey), prams));
             console.log(``);
         }
     }
@@ -123,7 +124,8 @@ function generateClassTemplate(jsonObject, parentKey = '') {
 }
 function pramsFmt(type, paramName) {
     if (!lowCamelPattern.test(paramName)) {
-        return `// ignore: invalid_annotation_target\n\t\t@JsonKey(name: '${paramName}') final ${type}? ${toLowerCamelCase(paramName)}`;
+        return `\t\t@JsonKey(name: '${paramName}')\tfinal ${type}? ${(0, regex_utils_1.toLowerCamelCase)(paramName)}`;
+        return `// ignore: invalid_annotation_target\n\t\t@JsonKey(name: '${paramName}') final ${type}? ${(0, regex_utils_1.toUpperCamelCase)(paramName)}`;
     }
     return `final ${type}? ${paramName}`;
 }
@@ -154,7 +156,7 @@ function arrayPramsFmt(jsonObject, parentName) {
         let child = jsonObject[key];
         if (typeof child === 'object') {
             generateClassTemplate(child, parentName);
-            return `@Default ([]) final List<${toUpperCamelCase(parentName)}> ${parentName}`;
+            return `@Default ([]) final List<${(0, regex_utils_1.toUpperCamelCase)(parentName)}> ${parentName}`;
         }
         if (typeof child != type) {
             typeString = 'dynamic';
@@ -163,7 +165,11 @@ function arrayPramsFmt(jsonObject, parentName) {
     }
     return `@Default([]) final List<${typeString}> ${parentName}`;
 }
+function isStringEndsWith(str, suffix) {
+    return str.indexOf(suffix, str.length - suffix.length) !== -1;
+}
 function generateClass(className, params) {
+    className = (0, regex_utils_1.toUpperCamelCase)(className);
     let fromJsonMethod = `factory ${className}.fromJson(Map<String, dynamic> json) => _$${className}FromJson(json);`;
     let toJsonMethod = `Map<String, dynamic> toJson() => _$${className}ToJson(this);`;
     let clz = `@freezed
@@ -174,19 +180,9 @@ class ${className} with _$${className} {
 \t${fromJsonMethod}
 }`;
     console.log(`${clz}`);
+    if (isStringEndsWith(className, 's')) {
+        clz = `/// ignore Verify plural type naming confusion\n${clz}`;
+    }
     return clz;
-}
-function toUpperCamelCase(str) {
-    return str.replace(/\b(\w)/g, function (match) {
-        return match.toUpperCase();
-    });
-}
-function toLowerCamelCase(inputString) {
-    const words = inputString.split("_");
-    const outputWords = [
-        words[0].toLowerCase(),
-        ...words.slice(1).map(word => word[0].toUpperCase() + word.slice(1).toLowerCase())
-    ];
-    return outputWords.join("");
 }
 //# sourceMappingURL=json_to_freezed.js.map
