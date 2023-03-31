@@ -28,11 +28,11 @@ class PartFixInfo {
 exports.PartFixInfo = PartFixInfo;
 class DartPartFixer {
     getCommand() { return DartPartFixer.command; }
-    getProvidedCodeActionKinds() { return [vscode.CodeActionKind.QuickFix]; }
+    getProvidedCodeActionKinds() { return [vscode.CodeActionKind.Refactor]; }
     getErrorCode() { return error_code_1.StatusCode.MissingDartPart; }
     getLangrageType() { return 'dart'; }
     createFixAction(document, range, data) {
-        const fix = new vscode.CodeAction(`${data.msg}`, vscode.CodeActionKind.QuickFix);
+        const fix = new vscode.CodeAction(`${data.msg}`, vscode.CodeActionKind.Refactor);
         fix.command = { command: DartPartFixer.command, title: data.title, arguments: [document, range, data.targetAbsPath, data.importLine] };
         fix.diagnostics = [this.createDiagnostic(range, data)];
         fix.isPreferred = true;
@@ -90,6 +90,8 @@ class DartPartFixer {
     }
     handleLine(document, range) {
         let partLine = document.lineAt(range.start.line).text;
+        if (partLine.includes('.g.') || partLine.includes('.freezed.'))
+            return;
         let pathRegExp = new RegExp(/(^|\s)\.?\/?(\w+)/);
         let partMatch = partLine.match(new RegExp(/part\s+(\'*\"*[a-zA-Z]\w*).dart/));
         let partOfMatch = partLine.match(new RegExp(/part\s+of\s+(\'*\"*[a-zA-Z]\w*).dart/));

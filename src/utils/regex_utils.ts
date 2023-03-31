@@ -9,6 +9,8 @@ export const findSuperClassRegex = /extends\s+([a-zA-Z]\w*)/;
 export const findImportRegex = /import\s+/;
 export const findPartLine = /part\s+([a-zA-Z]\w*).dart/;
 export const findPartOfLine = /part of\s+([a-zA-Z]\w*).dart/;
+export const findFreezedClassRegex = /with _\$/;
+
 
 
 export function toUpperCamelCase(str: string): string {

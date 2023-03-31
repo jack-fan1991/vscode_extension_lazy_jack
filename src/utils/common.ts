@@ -129,7 +129,7 @@ export async function replaceText(filePath: string, searchValue: string, replace
     return true
   }
   else {
-    vscode.window.showErrorMessage(`filePath 中找不到${replaceValue}`)
+    vscode.window.showErrorMessage(`filePath 中找不到${searchValue}`)
     return false
 
   }

@@ -10,7 +10,7 @@ import { CodeActionProviderInterface } from '../code_action';
 export class DiagnosticsErrorCodeHandler implements vscode.CodeActionProvider {
     providers: CodeActionProviderInterface<any>[] | undefined
     public static readonly providedCodeActionKinds = [
-        vscode.CodeActionKind.QuickFix
+        vscode.CodeActionKind.Refactor
     ];
     DiagnosticsErrorCodeHandler(providers: CodeActionProviderInterface<any>[]) {
         this.providers = providers

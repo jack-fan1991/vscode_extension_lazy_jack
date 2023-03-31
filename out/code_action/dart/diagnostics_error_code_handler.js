@@ -32,6 +32,6 @@ class DiagnosticsErrorCodeHandler {
 }
 exports.DiagnosticsErrorCodeHandler = DiagnosticsErrorCodeHandler;
 DiagnosticsErrorCodeHandler.providedCodeActionKinds = [
-    vscode.CodeActionKind.QuickFix
+    vscode.CodeActionKind.Refactor
 ];
 //# sourceMappingURL=diagnostics_error_code_handler.js.map

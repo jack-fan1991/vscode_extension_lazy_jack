@@ -1,7 +1,5 @@
 import path = require('path');
 import * as vscode from 'vscode';
-import * as fs from 'fs';
-import { title } from 'process';
 import { openEditor } from '../../utils/common';
 import { CodeActionProviderInterface } from '../code_action';
 import { StatusCode } from '../error_code';
@@ -26,7 +24,7 @@ export class FreezedFixer implements CodeActionProviderInterface<FreezedFixInfo>
     public static freezedLineRegex = new RegExp(/@freezed\s+/)
     public static readonly importLibName = `import 'package:freezed_annotation/freezed_annotation.dart';`
     getCommand() { return FreezedFixer.command }
-    getProvidedCodeActionKinds() { return [vscode.CodeActionKind.QuickFix]; }
+    getProvidedCodeActionKinds() { return [vscode.CodeActionKind.Refactor]; }
     getErrorCode() { return StatusCode.MissingFreezedImport }
     getLangrageType() { return 'dart' }
 
@@ -63,7 +61,7 @@ export class FreezedFixer implements CodeActionProviderInterface<FreezedFixInfo>
     }
 
     createFixAction(document: vscode.TextDocument, range: vscode.Range, data: FreezedFixInfo): vscode.CodeAction {
-        const fix = new vscode.CodeAction(`${data.msg}`, vscode.CodeActionKind.QuickFix);
+        const fix = new vscode.CodeAction(`${data.msg}`, vscode.CodeActionKind.Refactor);
         fix.command = { command: FreezedFixer.command, title: data.title, arguments: [document, range, data.targetAbsPath, data.importLine] };
         fix.diagnostics = [this.createDiagnostic(range, data)];
         fix.isPreferred = true;

@@ -2,7 +2,7 @@
   "name": "lazy-jack",
   "displayName": "lazy Jack",
   "description": "lets go",
-  "version": "0.0.20",
+  "version": "0.0.23",
   "publisher": "jackFan",
   "icon": "image/lazy_man.png",
   "engines": {
@@ -97,11 +97,6 @@
       },
       {
         "category": "lazy Jack",
-        "command": "command_dart_freezed_2_json",
-        "title": "@freezed Add Json serialize"
-      },
-      {
-        "category": "lazy Jack",
         "command": "command_dart_json_to_freezed",
         "title": "Json to freezed format (Selected json)"
       },
@@ -119,11 +114,6 @@
         "category": "lazy Jack",
         "command": "command_dart_assert",
         "title": "Generate assert file from folder"
-      },
-      {
-        "category": "lazy Jack",
-        "command": "DartPartFixer.command",
-        "title": "Dart Part Fixer"
       }
     ],
     "menus": {
@@ -135,11 +125,6 @@
         },
         {
           "when": "editorFocus && resourceLangId == dart",
-          "command": "command_dart_freezed_2_json",
-          "group": "0_b_jack_dart_freezed_utils@2"
-        },
-        {
-          "when": "editorFocus && resourceLangId == dart",
           "command": "dart.import.freezed",
           "group": "0_b_jack_dart_freezed_bloc@0"
         },
@@ -147,11 +132,6 @@
           "when": "editorFocus && resourceLangId == dart",
           "command": "command_create_freezed_union_class_by_base_fileName",
           "group": "0_b_jack_dart_freezed_bloc@1"
-        },
-        {
-          "when": "editorFocus && resourceLangId == dart",
-          "command": "command_add_freezed_state_by_base_fileName",
-          "group": "0_b_jack_dart_freezed_bloc@2"
         },
         {
           "when": "editorFocus && resourceLangId == dart && editorHasSelection",

@@ -146,7 +146,7 @@ function replaceText(filePath, searchValue, replaceValue) {
             return true;
         }
         else {
-            vscode.window.showErrorMessage(`filePath 中找不到${replaceValue}`);
+            vscode.window.showErrorMessage(`filePath 中找不到${searchValue}`);
             return false;
         }
     });

@@ -8,7 +8,7 @@ let arr: string[] = [];
 const lowCamelPattern = /^[a-z]+([A-Z][a-z]+)*$/;
 export function registerJsonToFreezed(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand(command_dart_json_to_freezed, async () => {
-        await generator()
+        await freezedGenerator()
         runTerminal('flutter pub run build_runner build --delete-conflicting-outputs', "build_runner")
 
     }));
@@ -20,7 +20,7 @@ const firstImport = `import 'package:freezed_annotation/freezed_annotation.dart'
 
 let result: string[];
 
-async function generator() {
+export async function freezedGenerator() {
     const editor = vscode.window.activeTextEditor;
     if (!editor)
         return;

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.registerToRequireParams = void 0;
+exports.paramToRequireGenerator = exports.registerToRequireParams = void 0;
 const vscode = require("vscode");
 const command_dart_2_require_param = "command_dart_2_require_param";
 let s;
@@ -17,11 +17,11 @@ let setter;
 let arr = [];
 function registerToRequireParams(context) {
     context.subscriptions.push(vscode.commands.registerCommand(command_dart_2_require_param, () => __awaiter(this, void 0, void 0, function* () {
-        generator();
+        paramToRequireGenerator();
     })));
 }
 exports.registerToRequireParams = registerToRequireParams;
-function generator() {
+function paramToRequireGenerator() {
     const editor = vscode.window.activeTextEditor;
     if (!editor)
         return;
@@ -47,4 +47,5 @@ function generator() {
     e.replace(editor.document.uri, editor.selection, result);
     vscode.workspace.applyEdit(e);
 }
+exports.paramToRequireGenerator = paramToRequireGenerator;
 //# sourceMappingURL=to_require_params.js.map

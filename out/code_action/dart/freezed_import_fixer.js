@@ -26,7 +26,7 @@ class FreezedFixInfo {
 exports.FreezedFixInfo = FreezedFixInfo;
 class FreezedFixer {
     getCommand() { return FreezedFixer.command; }
-    getProvidedCodeActionKinds() { return [vscode.CodeActionKind.QuickFix]; }
+    getProvidedCodeActionKinds() { return [vscode.CodeActionKind.Refactor]; }
     getErrorCode() { return error_code_1.StatusCode.MissingFreezedImport; }
     getLangrageType() { return 'dart'; }
     isFreezed(text) {
@@ -58,7 +58,7 @@ class FreezedFixer {
         return `part '${baseFileName}.freezed.dart';`;
     }
     createFixAction(document, range, data) {
-        const fix = new vscode.CodeAction(`${data.msg}`, vscode.CodeActionKind.QuickFix);
+        const fix = new vscode.CodeAction(`${data.msg}`, vscode.CodeActionKind.Refactor);
         fix.command = { command: FreezedFixer.command, title: data.title, arguments: [document, range, data.targetAbsPath, data.importLine] };
         fix.diagnostics = [this.createDiagnostic(range, data)];
         fix.isPreferred = true;

@@ -26,12 +26,12 @@ export class DartPartFixer implements CodeActionProviderInterface<PartFixInfo> {
     public static readonly command = 'DartPartFixer.command';
     public static partLineRegex = new RegExp(/^part.*[;'"]$/)
     getCommand() { return DartPartFixer.command }
-    getProvidedCodeActionKinds() { return [vscode.CodeActionKind.QuickFix]; }
+    getProvidedCodeActionKinds() { return [vscode.CodeActionKind.Refactor]; }
     getErrorCode() { return StatusCode.MissingDartPart }
     getLangrageType() { return 'dart' }
 
     createFixAction(document: vscode.TextDocument, range: vscode.Range, data: PartFixInfo): vscode.CodeAction {
-        const fix = new vscode.CodeAction(`${data.msg}`, vscode.CodeActionKind.QuickFix);
+        const fix = new vscode.CodeAction(`${data.msg}`, vscode.CodeActionKind.Refactor);
         fix.command = { command: DartPartFixer.command, title: data.title, arguments: [document, range, data.targetAbsPath, data.importLine] };
         fix.diagnostics = [this.createDiagnostic(range, data)];
         fix.isPreferred = true;
@@ -90,7 +90,8 @@ export class DartPartFixer implements CodeActionProviderInterface<PartFixInfo> {
     }
     handleLine(document: vscode.TextDocument, range: vscode.Range): PartFixInfo | undefined {
         let partLine = document.lineAt(range.start.line).text;
-        let pathRegExp = new RegExp(/(^|\s)\.?\/?(\w+)/);
+        if(partLine.includes('.g.')||partLine.includes('.freezed.'))return
+        let pathRegExp = new RegExp(/(^|\s)\.?\/?(\w+)/) 
         let partMatch=partLine.match(new RegExp( /part\s+(\'*\"*[a-zA-Z]\w*).dart/))
         let partOfMatch= partLine.match(new RegExp( /part\s+of\s+(\'*\"*[a-zA-Z]\w*).dart/))
         let isPartOf =partOfMatch!=null;

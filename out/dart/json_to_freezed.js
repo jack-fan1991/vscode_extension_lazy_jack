@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.registerJsonToFreezed = void 0;
+exports.freezedGenerator = exports.registerJsonToFreezed = void 0;
 const vscode = require("vscode");
 const regex_utils_1 = require("../utils/regex_utils");
 const terminal_utils_1 = require("../utils/terminal_utils");
@@ -20,14 +20,14 @@ let arr = [];
 const lowCamelPattern = /^[a-z]+([A-Z][a-z]+)*$/;
 function registerJsonToFreezed(context) {
     context.subscriptions.push(vscode.commands.registerCommand(command_dart_json_to_freezed, () => __awaiter(this, void 0, void 0, function* () {
-        yield generator();
+        yield freezedGenerator();
         (0, terminal_utils_1.runTerminal)('flutter pub run build_runner build --delete-conflicting-outputs', "build_runner");
     })));
 }
 exports.registerJsonToFreezed = registerJsonToFreezed;
 const firstImport = `import 'package:freezed_annotation/freezed_annotation.dart';`;
 let result;
-function generator() {
+function freezedGenerator() {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
         const editor = vscode.window.activeTextEditor;
@@ -58,6 +58,7 @@ function generator() {
         vscode.workspace.applyEdit(e);
     });
 }
+exports.freezedGenerator = freezedGenerator;
 function generateClassTemplate(jsonObject, parentKey = '') {
     let prams = [];
     let isRequiredConstructor = true;
