@@ -93,15 +93,17 @@ class DartPartFixer {
         if (partLine.includes('.g.') || partLine.includes('.freezed.'))
             return;
         let pathRegExp = new RegExp(/(^|\s)\.?\/?(\w+)/);
-        let partMatch = partLine.match(new RegExp(/part\s+(\'*\"*[a-zA-Z]\w*).dart/));
-        let partOfMatch = partLine.match(new RegExp(/part\s+of\s+(\'*\"*[a-zA-Z]\w*).dart/));
-        let isPartOf = partOfMatch != null;
+        let partMatch = partLine.match(new RegExp(/'([^']+)'/));
+        let partOfMatch = partLine.match(new RegExp(/'([^']+)'/));
+        let isPartOf = partLine.replace(/\s/g, '').includes('partof');
         let targetDart = '';
         if (isPartOf && partOfMatch != null) {
-            targetDart = partOfMatch[1].replace(/'/g, '') + '.dart';
+            // targetDart = partOfMatch[1].replace(/'/g,'')+'.dart'
+            targetDart = partOfMatch[1];
         }
         else if (partMatch != null) {
-            targetDart = partMatch[1].replace(/'/g, '') + '.dart';
+            // targetDart=partMatch[1].replace(/'/g,'')+'.dart'
+            targetDart = partMatch[1];
         }
         let currentDir = path.dirname(document.fileName);
         let currentFileName = path.basename(document.fileName);
@@ -116,7 +118,7 @@ class DartPartFixer {
         let keyPoint = isPartOf ? 'part' : 'part of';
         let targetImportPartOfName = "";
         targetImportPartOfName = path.join(path.relative(targetDir, currentDir), currentFileName);
-        if (isPartOf || targetImportPartOfName.split('/').length === 1) {
+        if (isPartOf && targetImportPartOfName.split('/')[0] != '..' || targetImportPartOfName.split('/').length === 1) {
             targetImportPartOfName = `./${targetImportPartOfName}`;
         }
         let importLine = `${keyPoint} '${targetImportPartOfName}';`;

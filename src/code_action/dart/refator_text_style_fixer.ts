@@ -22,10 +22,9 @@ export class RefactorTextStyleFixer implements CodeActionProviderInterface<strin
     public provideCodeActions(document: vscode.TextDocument, range: vscode.Range): vscode.CodeAction[] | undefined {
         const editor = vscode.window.activeTextEditor;
         if (!editor) return [];
-        const selection = editor.selection;
-        const start = range.start;
-        const text = document.getText(selection);
-        if (text.includes('style:')) return [this.createFixAction(document, range, "Use theme text style")];
+        const position = editor.selection.active;
+        let lineText = document.lineAt(position.line).text;
+        if (lineText.includes('style:')) return [this.createFixAction(document, range, "Use theme text style")];
         return []
 
     }

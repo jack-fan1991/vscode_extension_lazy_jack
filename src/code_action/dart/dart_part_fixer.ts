@@ -1,7 +1,7 @@
 import path = require('path');
 import * as vscode from 'vscode';
 import * as fs from 'fs';
-import {  openEditor, replaceText } from '../../utils/common';
+import { openEditor, replaceText } from '../../utils/common';
 import { CodeActionProviderInterface } from '../code_action';
 import { StatusCode } from '../error_code';
 import { getAbsFilePath } from '../../utils/file_utils';
@@ -61,12 +61,12 @@ export class DartPartFixer implements CodeActionProviderInterface<PartFixInfo> {
                         break
                     }
                     lastImportLine++
-                }   
+                }
                 await textEditor.edit((editBuilder) => {
-                    editBuilder.insert(new vscode.Position(importText.includes('part') ?   lastImportLine:0, 0), importText + '\n');
+                    editBuilder.insert(new vscode.Position(importText.includes('part') ? lastImportLine : 0, 0), importText + '\n');
                 })
-                if(textEditor.document.isDirty){
-                   await  textEditor.document.save()
+                if (textEditor.document.isDirty) {
+                    await textEditor.document.save()
                 }
                 // trigger refresh
                 replaceText(getAbsFilePath(document.uri), document.getText(), document.getText())
@@ -90,18 +90,21 @@ export class DartPartFixer implements CodeActionProviderInterface<PartFixInfo> {
     }
     handleLine(document: vscode.TextDocument, range: vscode.Range): PartFixInfo | undefined {
         let partLine = document.lineAt(range.start.line).text;
-        if(partLine.includes('.g.')||partLine.includes('.freezed.'))return
-        let pathRegExp = new RegExp(/(^|\s)\.?\/?(\w+)/) 
-        let partMatch=partLine.match(new RegExp( /part\s+(\'*\"*[a-zA-Z]\w*).dart/))
-        let partOfMatch= partLine.match(new RegExp( /part\s+of\s+(\'*\"*[a-zA-Z]\w*).dart/))
-        let isPartOf =partOfMatch!=null;
-        let targetDart =''
-        if (isPartOf&& partOfMatch!=null ) {
-            targetDart = partOfMatch[1].replace(/'/g,'')+'.dart'
-        }else if(partMatch!=null){
-            targetDart=partMatch[1].replace(/'/g,'')+'.dart'
+        if (partLine.includes('.g.') || partLine.includes('.freezed.')) return
+        let pathRegExp = new RegExp(/(^|\s)\.?\/?(\w+)/)
+        let partMatch = partLine.match(new RegExp(/'([^']+)'/))
+        let partOfMatch = partLine.match(new RegExp(/'([^']+)'/))
+        let isPartOf = partLine.replace(/\s/g, '').includes('partof');
+        let targetDart = ''
+        if (isPartOf && partOfMatch != null) {
+            // targetDart = partOfMatch[1].replace(/'/g,'')+'.dart'
+            targetDart = partOfMatch[1]
+
+        } else if (partMatch != null) {
+            // targetDart=partMatch[1].replace(/'/g,'')+'.dart'
+            targetDart = partMatch[1]
         }
-        
+
         let currentDir = path.dirname(document.fileName);
         let currentFileName = path.basename(document.fileName);
         let targetAbsPath = path.resolve(currentDir, targetDart);
@@ -115,11 +118,11 @@ export class DartPartFixer implements CodeActionProviderInterface<PartFixInfo> {
         let keyPoint = isPartOf ? 'part' : 'part of';
         let targetImportPartOfName = "";
         targetImportPartOfName = path.join(path.relative(targetDir, currentDir), currentFileName);
-        if (isPartOf || targetImportPartOfName.split('/').length === 1) {
+        if (isPartOf && targetImportPartOfName.split('/')[0]!='..'|| targetImportPartOfName.split('/').length === 1) {
             targetImportPartOfName = `./${targetImportPartOfName}`;
         }
         let importLine = `${keyPoint} '${targetImportPartOfName}';`;
-        if (targetFileContent.includes(importLine.replace(/\s/g, ''))||targetFileContent.includes(importLine.replace(/\s/g, '').replace('./',''))) {
+        if (targetFileContent.includes(importLine.replace(/\s/g, '')) || targetFileContent.includes(importLine.replace(/\s/g, '').replace('./', ''))) {
             console.log(`${importLine} already in ${targetAbsPath}`);
             return;
         }
