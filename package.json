@@ -125,11 +125,6 @@
         },
         {
           "when": "editorFocus && resourceLangId == dart",
-          "command": "dart.import.freezed",
-          "group": "0_b_jack_dart_freezed_bloc@0"
-        },
-        {
-          "when": "editorFocus && resourceLangId == dart",
           "command": "command_create_freezed_union_class_by_base_fileName",
           "group": "0_b_jack_dart_freezed_bloc@1"
         },
