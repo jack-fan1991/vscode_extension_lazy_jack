@@ -57,7 +57,9 @@ async function generatorSvg(folderUri: any) {
             const funcName = changeCase.camelCase(fileName.replace('icon_', ''))
             // 返回格式化后的字符串
             let result = `${funcName}('${svgFolder}/${item}')`;
-            newIcon.push(result)
+            if(!enumContent.includes(result)){
+                newIcon.push(result)
+            }
             return result;
         });
     } else {
@@ -73,7 +75,7 @@ async function generatorSvg(folderUri: any) {
         });
     }
     vscode.window.showInformationMessage(``)
-    vscode.window.showInformationMessage(`新增${newIcon.length}\n${newIcon.join(',\n\t')}`)
+    vscode.window.showInformationMessage(`新增${newIcon.length}個svg\n${newIcon.join(',\n\t')}`)
     fs.writeFileSync(assertPath, svgTemp(icon));
     openEditor(assertPath)
 }
@@ -123,13 +125,15 @@ async function generatorPng(folderUri: any) {
             const funcName = changeCase.camelCase(fileName)
             // 返回格式化后的字符串
             let result = `${funcName}('${svgFolder}/${item}')`;
-            newIcon.push(result)
+            if(!enumContent.includes(result)){
+                newIcon.push(result)
+            }
             return result;
         });
     } else {
         icon = files.map(item => {
             // 获取文件名
-            const fileName = item.replace(/\.svg$/, '').replace('-', '_');
+            const fileName = changeCase.snakeCase(item.split('.')[0])
             // 转换为驼峰命名
             const funcName = changeCase.camelCase(fileName)
             // 返回格式化后的字符串
@@ -139,7 +143,7 @@ async function generatorPng(folderUri: any) {
         });
     }
     vscode.window.showInformationMessage(``)
-    vscode.window.showInformationMessage(`新增${newIcon.length}\n${newIcon.join(',\n\t')}`)
+    vscode.window.showInformationMessage(`新增${newIcon.length}個png\n${newIcon.join(',\n\t')}`)
     fs.writeFileSync(assertPath, pngTemp(icon));
     openEditor(assertPath)
 
