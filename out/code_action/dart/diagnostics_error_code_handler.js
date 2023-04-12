@@ -30,8 +30,8 @@ class DiagnosticsErrorCodeHandler {
         return fixAction;
     }
 }
-exports.DiagnosticsErrorCodeHandler = DiagnosticsErrorCodeHandler;
 DiagnosticsErrorCodeHandler.providedCodeActionKinds = [
     vscode.CodeActionKind.Refactor
 ];
+exports.DiagnosticsErrorCodeHandler = DiagnosticsErrorCodeHandler;
 //# sourceMappingURL=diagnostics_error_code_handler.js.map

@@ -60,6 +60,6 @@ class ParamToRequiredFixer {
         return undefined;
     }
 }
-exports.ParamToRequiredFixer = ParamToRequiredFixer;
 ParamToRequiredFixer.command = 'ParamToRequiredFixer.command';
+exports.ParamToRequiredFixer = ParamToRequiredFixer;
 //# sourceMappingURL=param_to_required_fixer.js.map

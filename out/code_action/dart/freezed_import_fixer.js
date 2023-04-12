@@ -196,8 +196,8 @@ class FreezedFixer {
         return this.createFixAction(document, range, partFixInfo);
     }
 }
-exports.FreezedFixer = FreezedFixer;
 FreezedFixer.command = 'FreezedFixer.command';
 FreezedFixer.freezedLineRegex = new RegExp(/@freezed\s+/);
 FreezedFixer.importLibName = `import 'package:freezed_annotation/freezed_annotation.dart';`;
+exports.FreezedFixer = FreezedFixer;
 //# sourceMappingURL=freezed_import_fixer.js.map

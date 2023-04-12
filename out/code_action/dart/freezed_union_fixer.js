@@ -121,7 +121,7 @@ class FreezedUnionFixer {
         return undefined;
     }
 }
-exports.FreezedUnionFixer = FreezedUnionFixer;
 FreezedUnionFixer.command = 'FreezedUnionFixer.command';
 FreezedUnionFixer.commandAddFromJson = 'FreezedUnionFixer.commandAddFromJson';
+exports.FreezedUnionFixer = FreezedUnionFixer;
 //# sourceMappingURL=freezed_union_fixer.js.map

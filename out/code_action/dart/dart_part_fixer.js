@@ -158,7 +158,7 @@ class DartPartFixer {
         return this.createFixAction(document, range, partFixInfo);
     }
 }
-exports.DartPartFixer = DartPartFixer;
 DartPartFixer.command = 'DartPartFixer.command';
 DartPartFixer.partLineRegex = new RegExp(/^part.*[;'"]$/);
+exports.DartPartFixer = DartPartFixer;
 //# sourceMappingURL=dart_part_fixer.js.map

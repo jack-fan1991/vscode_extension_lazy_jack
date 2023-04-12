@@ -100,7 +100,7 @@ class JsonToFreezedFixer {
         return undefined;
     }
 }
-exports.JsonToFreezedFixer = JsonToFreezedFixer;
 JsonToFreezedFixer.command = 'JsonToFreezedFixer.command';
 JsonToFreezedFixer.partLineRegex = new RegExp(/^part.*[;'"]$/);
+exports.JsonToFreezedFixer = JsonToFreezedFixer;
 //# sourceMappingURL=json_to_freezed_fixer.js.map

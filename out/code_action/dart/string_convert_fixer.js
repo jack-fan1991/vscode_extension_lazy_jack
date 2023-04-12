@@ -98,8 +98,8 @@ class StringConvertFixer {
         return undefined;
     }
 }
-exports.StringConvertFixer = StringConvertFixer;
 StringConvertFixer.commandToUpperCamel = 'StringConvertFixer.commandToUpperCamel';
 StringConvertFixer.commandLowerCamel = 'StringConvertFixer.commandLowerCamel';
 StringConvertFixer.commandToUpperCase = 'StringConvertFixer.commandToUpperCase';
+exports.StringConvertFixer = StringConvertFixer;
 //# sourceMappingURL=string_convert_fixer.js.map

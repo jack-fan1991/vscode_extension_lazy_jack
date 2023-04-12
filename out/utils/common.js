@@ -96,7 +96,7 @@ function showPicker(placeholder, items, onItemSelect) {
     quickPick.show();
 }
 exports.showPicker = showPicker;
-function openEditor(filePath, focus) {
+function openEditor(filePath, column, focus) {
     return __awaiter(this, void 0, void 0, function* () {
         if (!fs.existsSync(filePath))
             return;

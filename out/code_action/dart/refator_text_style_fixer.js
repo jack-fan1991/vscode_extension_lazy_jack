@@ -55,6 +55,6 @@ class RefactorTextStyleFixer {
         return undefined;
     }
 }
-exports.RefactorTextStyleFixer = RefactorTextStyleFixer;
 RefactorTextStyleFixer.command = 'RefactorTextStyleFixer.command';
+exports.RefactorTextStyleFixer = RefactorTextStyleFixer;
 //# sourceMappingURL=refator_text_style_fixer.js.map
