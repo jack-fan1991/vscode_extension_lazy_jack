@@ -9,7 +9,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createFile = exports.getAbsFilePath = exports.getWorkspaceFolderPath = void 0;
+exports.createFile = exports.removeFolderPath = exports.getAbsFilePath = exports.getWorkspaceFolderPath = void 0;
+const path = require("path");
 const vscode = require("vscode");
 const fs_1 = require("fs");
 function getWorkspaceFolderPath(currentFilePath) {
@@ -29,6 +30,11 @@ function getAbsFilePath(uri) {
     return path;
 }
 exports.getAbsFilePath = getAbsFilePath;
+function removeFolderPath(document) {
+    let currentDir = path.dirname(document.fileName);
+    return document.fileName.replace(currentDir, '');
+}
+exports.removeFolderPath = removeFolderPath;
 // export function getAbsPath(currentFilePath: string,relativePath:string) {
 //     const workspaceFolderPath =getWorkspaceFolderPath(currentFilePath);
 //     const absolutePath = path.join(workspaceFolderPath??, relativePath);

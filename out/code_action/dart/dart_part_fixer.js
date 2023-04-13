@@ -52,32 +52,78 @@ class DartPartFixer {
             // quick fix 點選的行
             // let lineNumber: number = range.start.line
             // let partLine = document.lineAt(lineNumber).text;
+            var _a, _b;
             let textEditor = yield (0, common_1.openEditor)(targetPath, true);
             if (textEditor) {
-                let lastImportLine = 0;
-                let lines = textEditor.document.getText().split(/\r?\n/);
-                for (let l of lines) {
-                    let idx = l.indexOf(l);
-                    let maxTry = 0;
-                    for (let i = idx; i < lines.length - idx; i++) {
-                        if (!l.includes('import')) {
-                            maxTry++;
+                if (importText.includes('part of')) {
+                    let text = textEditor.document.getText();
+                    let allImportNeedInsert = (_a = document.getText().match(/^import\s+['"][^'"]+['"];/gm)) !== null && _a !== void 0 ? _a : [];
+                    let lastImportString = allImportNeedInsert[allImportNeedInsert.length - 1];
+                    let lastImportLineIdx = document.getText().split('\n').indexOf(lastImportString);
+                    let replaceRange = new vscode.Range(new vscode.Position(0, 0), new vscode.Position(lastImportLineIdx, lastImportString.length));
+                    let allImportNeedMove = (_b = text.match(/^import\s+['"][^'"]+['"];/gm)) !== null && _b !== void 0 ? _b : [];
+                    let needMove = allImportNeedMove.filter((string) => { return !document.getText().includes(string); });
+                    let result = [...allImportNeedInsert, ...needMove].join('\n');
+                    let lastImportLine = 0;
+                    let lines = text.split(/\r?\n/);
+                    for (let l of lines) {
+                        let idx = l.indexOf(l);
+                        let maxTry = 0;
+                        for (let i = idx; i < lines.length - idx; i++) {
+                            if (!l.includes('import')) {
+                                maxTry++;
+                            }
+                            if (l.includes('import'))
+                                break;
+                            if (maxTry > 10)
+                                break;
                         }
-                        if (l.includes('import'))
-                            break;
-                        if (maxTry > 10)
-                            break;
+                        lastImportLine++;
                     }
-                    lastImportLine++;
+                    yield textEditor.edit((editBuilder) => {
+                        editBuilder.replace(new vscode.Range(new vscode.Position(0, 0), new vscode.Position(lastImportLine + 1, 0)), importText + '\n');
+                        // editBuilder.insert(new vscode.Position(importText.includes('part') ? lastImportLine : 0, 0), importText + '\n');
+                    });
+                    let moveToEditor = yield (0, common_1.openEditor)(document.uri.path, true);
+                    if (moveToEditor) {
+                        yield moveToEditor.edit((editBuilder) => {
+                            editBuilder.replace(replaceRange, result);
+                        });
+                    }
+                    vscode.window.showInformationMessage(`Move all "import line" form [ ${(0, file_utils_1.removeFolderPath)(textEditor.document)} ] to [ ${(0, file_utils_1.removeFolderPath)(document)} ]`);
+                    if (textEditor.document.isDirty) {
+                        yield textEditor.document.save();
+                    }
+                    // trigger refresh
+                    (0, common_1.replaceText)((0, file_utils_1.getAbsFilePath)(document.uri), document.getText(), document.getText());
                 }
-                yield textEditor.edit((editBuilder) => {
-                    editBuilder.insert(new vscode.Position(importText.includes('part') ? lastImportLine : 0, 0), importText + '\n');
-                });
-                if (textEditor.document.isDirty) {
-                    yield textEditor.document.save();
+                else {
+                    let text = textEditor.document.getText();
+                    let lastImportLine = 0;
+                    let lines = text.split(/\r?\n/);
+                    for (let l of lines) {
+                        let idx = l.indexOf(l);
+                        let maxTry = 0;
+                        for (let i = idx; i < lines.length - idx; i++) {
+                            if (!l.includes('import')) {
+                                maxTry++;
+                            }
+                            if (l.includes('import'))
+                                break;
+                            if (maxTry > 10)
+                                break;
+                        }
+                        lastImportLine++;
+                    }
+                    yield textEditor.edit((editBuilder) => {
+                        editBuilder.insert(new vscode.Position(importText.includes('part') ? lastImportLine : 0, 0), importText + '\n');
+                    });
+                    if (textEditor.document.isDirty) {
+                        yield textEditor.document.save();
+                    }
+                    // trigger refresh
+                    (0, common_1.replaceText)((0, file_utils_1.getAbsFilePath)(document.uri), document.getText(), document.getText());
                 }
-                // trigger refresh
-                (0, common_1.replaceText)((0, file_utils_1.getAbsFilePath)(document.uri), document.getText(), document.getText());
             }
         })));
     }

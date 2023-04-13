@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import { openEditor, replaceText } from '../../utils/common';
 import { CodeActionProviderInterface } from '../code_action';
 import { StatusCode } from '../error_code';
-import { getAbsFilePath } from '../../utils/file_utils';
+import { getAbsFilePath, removeFolderPath } from '../../utils/file_utils';
 
 export class PartFixInfo {
     targetAbsPath: string;
@@ -54,30 +54,70 @@ export class DartPartFixer implements CodeActionProviderInterface<PartFixInfo> {
 
             let textEditor = await openEditor(targetPath, true)
             if (textEditor) {
-                let lastImportLine = 0
-                let lines = textEditor.document.getText().split(/\r?\n/)
-                for (let l of lines) {
-                    let idx = l.indexOf(l);
-                    let maxTry = 0
-                    for (let i = idx; i < lines.length - idx; i++) {
-                        if (!l.includes('import')) {
-                            maxTry++
+                if (importText.includes('part of')) {
+                    let text = textEditor.document.getText()
+                    let allImportNeedInsert = document.getText().match(/^import\s+['"][^'"]+['"];/gm)??[]
+                    let lastImportString =allImportNeedInsert[allImportNeedInsert.length-1]
+                    let lastImportLineIdx = document.getText().split('\n').indexOf(lastImportString)
+                    let replaceRange = new vscode.Range(new vscode.Position(0, 0), new vscode.Position(lastImportLineIdx, lastImportString.length))
+                    let allImportNeedMove = text.match(/^import\s+['"][^'"]+['"];/gm)??[]
+                    let needMove = allImportNeedMove.filter((string) => {return !document.getText().includes(string)} )
+                    let result =[...allImportNeedInsert,...needMove].join('\n')
+                    let lastImportLine = 0
+                    let lines = text.split(/\r?\n/)
+                    for (let l of lines) {
+                        let idx = l.indexOf(l);
+                        let maxTry = 0
+                        for (let i = idx; i < lines.length - idx; i++) {
+                            if (!l.includes('import')) {
+                                maxTry++
+                            }
+                            if (l.includes('import')) break
+                            if (maxTry > 10) break
                         }
-                        if (l.includes('import')) break
-                        if (maxTry > 10) break
+                        lastImportLine++
                     }
-
-
-                    lastImportLine++
+                    await textEditor.edit((editBuilder) => {
+                        editBuilder.replace(new vscode.Range(new vscode.Position(0, 0), new vscode.Position(lastImportLine+1, 0)), importText + '\n')
+                        // editBuilder.insert(new vscode.Position(importText.includes('part') ? lastImportLine : 0, 0), importText + '\n');
+                    })
+                    let moveToEditor = await openEditor(document.uri.path, true)
+                    if(moveToEditor){
+                        await moveToEditor.edit((editBuilder) => {
+                            editBuilder.replace(replaceRange, result)
+                        })
+                    }
+                    vscode.window.showInformationMessage(`Move all "import line" form [ ${removeFolderPath(textEditor.document)} ] to [ ${removeFolderPath(document)} ]`)
+                    if (textEditor.document.isDirty) {
+                        await textEditor.document.save()
+                    }
+                    // trigger refresh
+                    replaceText(getAbsFilePath(document.uri), document.getText(), document.getText())
+                } else {
+                    let text = textEditor.document.getText()
+                    let lastImportLine = 0
+                    let lines = text.split(/\r?\n/)
+                    for (let l of lines) {
+                        let idx = l.indexOf(l);
+                        let maxTry = 0
+                        for (let i = idx; i < lines.length - idx; i++) {
+                            if (!l.includes('import')) {
+                                maxTry++
+                            }
+                            if (l.includes('import')) break
+                            if (maxTry > 10) break
+                        }
+                        lastImportLine++
+                    }
+                    await textEditor.edit((editBuilder) => {
+                        editBuilder.insert(new vscode.Position(importText.includes('part') ? lastImportLine : 0, 0), importText + '\n');
+                    })
+                    if (textEditor.document.isDirty) {
+                        await textEditor.document.save()
+                    }
+                    // trigger refresh
+                    replaceText(getAbsFilePath(document.uri), document.getText(), document.getText())
                 }
-                await textEditor.edit((editBuilder) => {
-                    editBuilder.insert(new vscode.Position(importText.includes('part') ? lastImportLine : 0, 0), importText + '\n');
-                })
-                if (textEditor.document.isDirty) {
-                    await textEditor.document.save()
-                }
-                // trigger refresh
-                replaceText(getAbsFilePath(document.uri), document.getText(), document.getText())
             }
         }));
     }

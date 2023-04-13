@@ -6,7 +6,7 @@
 export const findSubClassRegex = /class\s+([a-zA-Z]\w*)(<[\w\s<>,]*>)?\s+extends\s+\w*/;
 export const findClassRegex = /class\s+([a-zA-Z]\w*)(<[\w\s<>,]*>)?\s*/;
 export const findSuperClassRegex = /extends\s+([a-zA-Z]\w*)/;
-export const findImportRegex = /import\s+/;
+export const findDartImportRegex = /^import\s+['"][^'"]+['"];/gm
 export const findPartLine = /part\s+([a-zA-Z]\w*).dart/;
 export const findPartOfLine = /part of\s+([a-zA-Z]\w*).dart/;
 export const findFreezedClassRegex = /with _\$/;

@@ -19,6 +19,11 @@ export function getAbsFilePath(uri: vscode.Uri): string {
     return path
 }
 
+export function removeFolderPath( document: vscode.TextDocument){
+    let currentDir = path.dirname(document.fileName);
+    return document.fileName.replace(currentDir,'')
+}
+
 // export function getAbsPath(currentFilePath: string,relativePath:string) {
 //     const workspaceFolderPath =getWorkspaceFolderPath(currentFilePath);
 //     const absolutePath = path.join(workspaceFolderPath??, relativePath);
