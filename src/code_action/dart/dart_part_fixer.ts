@@ -57,9 +57,17 @@ export class DartPartFixer implements CodeActionProviderInterface<PartFixInfo> {
                 let lastImportLine = 0
                 let lines = textEditor.document.getText().split(/\r?\n/)
                 for (let l of lines) {
-                    if (!l.includes('import')) {
-                        break
+                    let idx = l.indexOf(l);
+                    let maxTry = 0
+                    for (let i = idx; i < lines.length - idx; i++) {
+                        if (!l.includes('import')) {
+                            maxTry++
+                        }
+                        if (l.includes('import')) break
+                        if (maxTry > 10) break
                     }
+
+
                     lastImportLine++
                 }
                 await textEditor.edit((editBuilder) => {
@@ -118,7 +126,7 @@ export class DartPartFixer implements CodeActionProviderInterface<PartFixInfo> {
         let keyPoint = isPartOf ? 'part' : 'part of';
         let targetImportPartOfName = "";
         targetImportPartOfName = path.join(path.relative(targetDir, currentDir), currentFileName);
-        if (isPartOf && targetImportPartOfName.split('/')[0]!='..'|| targetImportPartOfName.split('/').length === 1) {
+        if (isPartOf && targetImportPartOfName.split('/')[0] != '..' || targetImportPartOfName.split('/').length === 1) {
             targetImportPartOfName = `./${targetImportPartOfName}`;
         }
         let importLine = `${keyPoint} '${targetImportPartOfName}';`;

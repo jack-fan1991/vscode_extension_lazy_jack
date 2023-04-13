@@ -57,8 +57,16 @@ class DartPartFixer {
                 let lastImportLine = 0;
                 let lines = textEditor.document.getText().split(/\r?\n/);
                 for (let l of lines) {
-                    if (!l.includes('import')) {
-                        break;
+                    let idx = l.indexOf(l);
+                    let maxTry = 0;
+                    for (let i = idx; i < lines.length - idx; i++) {
+                        if (!l.includes('import')) {
+                            maxTry++;
+                        }
+                        if (l.includes('import'))
+                            break;
+                        if (maxTry > 10)
+                            break;
                     }
                     lastImportLine++;
                 }

@@ -173,6 +173,7 @@ const onPubspecYamlParse = async function onPubspecYamlParse(data: any) {
         console.log(`Selected dependencies: ${dependencies}`);
         common.showPicker('Select version', versionItems, (item) => onVersionSelect(dependencies, item),)
         let msg = !overrideActivate ? `on Git ${description}` : ""
+        // Switch local or git
         vscode.window.showInformationMessage(`Dependencies ${msg}  ,default local Path : ${localPath} , Select checkout to `, 'Local', 'Git Remote').then(async (selectedOption) => {
             let depString = `${dependencies}:\n    path: ${localPath}`
             let markString = `# ${dependencies}:\n  #   path: ${localPath}`
