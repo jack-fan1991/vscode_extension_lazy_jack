@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
 import { toUpperCamelCase, toLowerCamelCase } from '../utils/regex_utils';
 import { runTerminal } from '../utils/terminal_utils'
+import * as changeCase from "change-case";
+
 const command_dart_json_to_freezed = "command_dart_json_to_freezed"
 let s;
 let setter;
@@ -40,7 +42,7 @@ export async function freezedGenerator() {
         vscode.window.showErrorMessage(`Json 格式錯誤 ${e}`)
         throw e;
     }
-    let className = fileName.split('_').map(e => toUpperCamelCase(e)).join('');
+    let className = toUpperCamelCase(fileName);
     generateClassTemplate(jsonObject, className);
     // generateResponseData(className, jsonObject);
     let importResult: string[] = [firstImport, fileNameGPart, fileNameFPart,];
@@ -119,7 +121,7 @@ function generateClassTemplate(jsonObject: any, parentKey: string = ''): string 
 
 function pramsFmt(type: string, paramName: string): string {
     if (!lowCamelPattern.test(paramName)) {
-        return `\t\t@JsonKey(name: '${paramName}')\tfinal ${type}? ${toLowerCamelCase(paramName)}`;
+        return `\t\t@JsonKey(name: '${paramName}')\tfinal ${type}? ${ changeCase.camelCase(paramName)}`;
 
         return `// ignore: invalid_annotation_target\n\t\t@JsonKey(name: '${paramName}') final ${type}? ${toUpperCamelCase(paramName)}`;
     }
