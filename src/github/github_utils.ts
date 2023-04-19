@@ -109,8 +109,21 @@ const onVersionSelect = async function onVersionSelect(dependencies: string, ite
             env_utils.checkDirInEvn(() => {
                 vscode.window.showInformationMessage(`正在刪除${delPubCachePath}`)
                 env_utils.removeDirInEvn(
-                    () => {
+                    async () => {
                         vscode.window.showInformationMessage(`已清理${delPubCachePath}`)
+                        let localPath = `../${dependencies}`
+
+                        let textEditor = await common.openEditor(yamlPath, true)
+            
+                        let overrideActivate = textEditor!.document.getText().indexOf(`${dependencies}:\n    path: ${localPath}`) != -1
+            
+                        if (overrideActivate) {
+                            let depString = `${dependencies}:\n    path: ${localPath}`
+                            let markString = `# ${dependencies}:\n  #   path: ${localPath}`
+                            let yamlPath = path.join(vscode.workspace.rootPath ?? '', 'pubspec.yaml');
+                            let replace = await common.replaceText(yamlPath, depString, markString);
+                            vscode.window.showInformationMessage(`${dependencies} remove local override`)
+                        }
                         terminal_util.runTerminal('flutter pub get')
                     }, delPubCachePath)
             }, () => {

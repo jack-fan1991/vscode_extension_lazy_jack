@@ -3,6 +3,7 @@ import * as vscode from 'vscode';
 import { CodeActionProviderInterface } from '../code_action';
 import { StatusCode } from '../error_code';
 import { freezedGenerator } from '../../dart/json_to_freezed';
+import { runTerminal } from '../../utils/terminal_utils';
 
 
 export class JsonToFreezedFixer implements CodeActionProviderInterface<string> {
@@ -72,12 +73,12 @@ export class JsonToFreezedFixer implements CodeActionProviderInterface<string> {
         // }
 
 
-     
+
     }
 
     createFixAction(document: vscode.TextDocument, range: vscode.Range, data: string): vscode.CodeAction {
         const fix = new vscode.CodeAction(data, vscode.CodeActionKind.Refactor);
-        fix.command = { command: JsonToFreezedFixer.command, title: data, arguments: [document, range]};
+        fix.command = { command: JsonToFreezedFixer.command, title: data, arguments: [document, range] };
         fix.diagnostics = [this.createDiagnostic(range, data)];
         fix.isPreferred = true;
         return fix;
@@ -91,14 +92,16 @@ export class JsonToFreezedFixer implements CodeActionProviderInterface<string> {
     setOnActionCommandCallback(context: vscode.ExtensionContext) {
         // 注册 Quick Fix 命令
         context.subscriptions.push(vscode.commands.registerCommand(JsonToFreezedFixer.command, async (document: vscode.TextDocument, range: vscode.Range) => {
-            freezedGenerator()  
+            await freezedGenerator()
+            // runTerminal('flutter pub run build_runner build --delete-conflicting-outputs', "build_runner")
+
         }));
     }
 
     handleAllFile(document: vscode.TextDocument): vscode.Diagnostic[] {
         return []
     }
-    
+
 
 
 

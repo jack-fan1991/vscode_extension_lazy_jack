@@ -22,9 +22,11 @@ export function runTerminal(cmd: string, terminalName: string = '') {
 
 }
 
-export function runCommand(command: string,onDone?:(stdout:string)=>void): Promise<string> {
+export function runCommand(command: string,onDone?:(stdout:string)=>void,onError?:(stdout:string)=>void,cmdOnRoot=true): Promise<string> {
     const cwd = vscode.workspace.rootPath;
-    command ="cd " + cwd + ` &&  ${command}`
+    if(cmdOnRoot){
+        command ="cd " + cwd + ` &&  ${command}`
+    }
     return new Promise((resolve, reject) => {
         child_process.exec(command, (error, stdout, stderr) => {
             console.log(`${stderr}`);
@@ -32,6 +34,9 @@ export function runCommand(command: string,onDone?:(stdout:string)=>void): Promi
                 onDone(stdout)
             }
             if (error) {
+                if(onError!=null){
+                    onError(error.message)
+                }
                 reject(error);
             } else {
                 resolve(stdout);
