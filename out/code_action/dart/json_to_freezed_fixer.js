@@ -90,7 +90,8 @@ class JsonToFreezedFixer {
     setOnActionCommandCallback(context) {
         // 注册 Quick Fix 命令
         context.subscriptions.push(vscode.commands.registerCommand(JsonToFreezedFixer.command, (document, range) => __awaiter(this, void 0, void 0, function* () {
-            (0, json_to_freezed_1.freezedGenerator)();
+            yield (0, json_to_freezed_1.freezedGenerator)();
+            // runTerminal('flutter pub run build_runner build --delete-conflicting-outputs', "build_runner")
         })));
     }
     handleAllFile(document) {

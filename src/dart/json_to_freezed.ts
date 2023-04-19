@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
 import { toUpperCamelCase, toLowerCamelCase } from '../utils/regex_utils';
 import { runTerminal } from '../utils/terminal_utils'
+import * as changeCase from "change-case";
+
 const command_dart_json_to_freezed = "command_dart_json_to_freezed"
 let s;
 let setter;
@@ -34,14 +36,22 @@ export async function freezedGenerator() {
     let e = new vscode.WorkspaceEdit()
     // add import
     let jsonObject;
+    let className = toUpperCamelCase(fileName);
+    let specialCase =false;
     try {
         jsonObject = JSON.parse(selectedText);
+        // 最外層沒有key 的情況
+        if(jsonObject.length > 1){
+            jsonObject = JSON.parse(`{"${className}":${selectedText}}`)
+            specialCase=true;
+        }
+
     } catch (e) {
         vscode.window.showErrorMessage(`Json 格式錯誤 ${e}`)
         throw e;
     }
-    let className = fileName.split('_').map(e => toUpperCamelCase(e)).join('');
-    generateClassTemplate(jsonObject, className);
+  
+    generateClassTemplate(jsonObject, className,specialCase);
     // generateResponseData(className, jsonObject);
     let importResult: string[] = [firstImport, fileNameGPart, fileNameFPart,];
     e.replace(editor.document.uri, editor.selection, importResult.join('\n') + '\n\n' + result.reverse().join('\n\n'))
@@ -49,9 +59,43 @@ export async function freezedGenerator() {
 
 
 }
+function generateClassTemplate2(jsonObject: any, parentKey: string = '',specialCase:boolean =false,filed:string[] =[]):string {
+    for (let key in jsonObject) {
+        if (jsonObject.hasOwnProperty(key)) {
+            let subObj = jsonObject[key];
+            let childType = typeof subObj;
+            let isArray = Array.isArray(subObj);
+            let typeString = 'dynamic';
+            // if array 
+            if(isArray){
+                filed.push(generateClassTemplate2(subObj,key))
+            }else{
+                switch (childType) {
+                    case 'string':
+                        typeString = 'String';
+                        filed.push( pramsFmt(typeString, key))
+                        continue;
+                    case 'number':
+                        if (Number.isInteger(subObj)) {
+                            typeString = 'int';
+                        } else {
+                            typeString = 'double';
+                        }
+                        filed.push(pramsFmt(typeString, key))
+                        continue;
+                    case 'boolean':
+                        typeString = 'bool';
+                        filed.push(pramsFmt(typeString, key))
+                        continue;
+                    }
+            }
+        }
+      }
+    return ''
 
+}
 
-function generateClassTemplate(jsonObject: any, parentKey: string = ''): string {
+function generateClassTemplate(jsonObject: any, parentKey: string = '',specialCase:boolean =false): string {
     let prams: string[] = [];
     let isRequiredConstructor = true;
     let keys = Object.keys(jsonObject)
@@ -92,7 +136,8 @@ function generateClassTemplate(jsonObject: any, parentKey: string = ''): string 
                             break;
                         }
                         else if (Array.isArray(child)) {
-                            typeString = generateClassTemplate(child, key)
+
+                            typeString = generateClassTemplate(child, specialCase?`${key}Data`:key,)
                             prams.push(typeString)
                         } else {
                             // Object 拿Key當參數
@@ -119,7 +164,7 @@ function generateClassTemplate(jsonObject: any, parentKey: string = ''): string 
 
 function pramsFmt(type: string, paramName: string): string {
     if (!lowCamelPattern.test(paramName)) {
-        return `\t\t@JsonKey(name: '${paramName}')\tfinal ${type}? ${toLowerCamelCase(paramName)}`;
+        return `\t\t@JsonKey(name: '${paramName}')\tfinal ${type}? ${ changeCase.camelCase(paramName)}`;
 
         return `// ignore: invalid_annotation_target\n\t\t@JsonKey(name: '${paramName}') final ${type}? ${toUpperCamelCase(paramName)}`;
     }

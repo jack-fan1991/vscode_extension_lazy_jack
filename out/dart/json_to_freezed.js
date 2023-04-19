@@ -13,6 +13,7 @@ exports.freezedGenerator = exports.registerJsonToFreezed = void 0;
 const vscode = require("vscode");
 const regex_utils_1 = require("../utils/regex_utils");
 const terminal_utils_1 = require("../utils/terminal_utils");
+const changeCase = require("change-case");
 const command_dart_json_to_freezed = "command_dart_json_to_freezed";
 let s;
 let setter;
@@ -43,15 +44,21 @@ function freezedGenerator() {
         let e = new vscode.WorkspaceEdit();
         // add import
         let jsonObject;
+        let className = (0, regex_utils_1.toUpperCamelCase)(fileName);
+        let specialCase = false;
         try {
             jsonObject = JSON.parse(selectedText);
+            // 最外層沒有key 的情況
+            if (jsonObject.length > 1) {
+                jsonObject = JSON.parse(`{"${className}":${selectedText}}`);
+                specialCase = true;
+            }
         }
         catch (e) {
             vscode.window.showErrorMessage(`Json 格式錯誤 ${e}`);
             throw e;
         }
-        let className = fileName.split('_').map(e => (0, regex_utils_1.toUpperCamelCase)(e)).join('');
-        generateClassTemplate(jsonObject, className);
+        generateClassTemplate(jsonObject, className, specialCase);
         // generateResponseData(className, jsonObject);
         let importResult = [firstImport, fileNameGPart, fileNameFPart,];
         e.replace(editor.document.uri, editor.selection, importResult.join('\n') + '\n\n' + result.reverse().join('\n\n'));
@@ -59,7 +66,43 @@ function freezedGenerator() {
     });
 }
 exports.freezedGenerator = freezedGenerator;
-function generateClassTemplate(jsonObject, parentKey = '') {
+function generateClassTemplate2(jsonObject, parentKey = '', specialCase = false, filed = []) {
+    for (let key in jsonObject) {
+        if (jsonObject.hasOwnProperty(key)) {
+            let subObj = jsonObject[key];
+            let childType = typeof subObj;
+            let isArray = Array.isArray(subObj);
+            let typeString = 'dynamic';
+            // if array 
+            if (isArray) {
+                filed.push(generateClassTemplate2(subObj, key));
+            }
+            else {
+                switch (childType) {
+                    case 'string':
+                        typeString = 'String';
+                        filed.push(pramsFmt(typeString, key));
+                        continue;
+                    case 'number':
+                        if (Number.isInteger(subObj)) {
+                            typeString = 'int';
+                        }
+                        else {
+                            typeString = 'double';
+                        }
+                        filed.push(pramsFmt(typeString, key));
+                        continue;
+                    case 'boolean':
+                        typeString = 'bool';
+                        filed.push(pramsFmt(typeString, key));
+                        continue;
+                }
+            }
+        }
+    }
+    return '';
+}
+function generateClassTemplate(jsonObject, parentKey = '', specialCase = false) {
     let prams = [];
     let isRequiredConstructor = true;
     let keys = Object.keys(jsonObject);
@@ -102,7 +145,7 @@ function generateClassTemplate(jsonObject, parentKey = '') {
                             break;
                         }
                         else if (Array.isArray(child)) {
-                            typeString = generateClassTemplate(child, key);
+                            typeString = generateClassTemplate(child, specialCase ? `${key}Data` : key);
                             prams.push(typeString);
                         }
                         else {
@@ -125,7 +168,7 @@ function generateClassTemplate(jsonObject, parentKey = '') {
 }
 function pramsFmt(type, paramName) {
     if (!lowCamelPattern.test(paramName)) {
-        return `\t\t@JsonKey(name: '${paramName}')\tfinal ${type}? ${(0, regex_utils_1.toLowerCamelCase)(paramName)}`;
+        return `\t\t@JsonKey(name: '${paramName}')\tfinal ${type}? ${changeCase.camelCase(paramName)}`;
         return `// ignore: invalid_annotation_target\n\t\t@JsonKey(name: '${paramName}') final ${type}? ${(0, regex_utils_1.toUpperCamelCase)(paramName)}`;
     }
     return `final ${type}? ${paramName}`;

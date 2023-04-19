@@ -10,10 +10,12 @@ export const findDartImportRegex = /^import\s+['"][^'"]+['"];/gm
 export const findPartLine = /part\s+([a-zA-Z]\w*).dart/;
 export const findPartOfLine = /part of\s+([a-zA-Z]\w*).dart/;
 export const findFreezedClassRegex = /with _\$/;
+import * as changeCase from "change-case";
 
 
 
 export function toUpperCamelCase(str: string): string {
+  return changeCase.capitalCase(str).replace(/\s+/g, "")
   return str
     .replace(/[^a-zA-Z0-9]+/g, '')
     .replace(/(?:^\w|[A-Z]|\b\w)/g, (word) => {
@@ -24,7 +26,8 @@ export function toUpperCamelCase(str: string): string {
 
  
 export function toLowerCamelCase(str: string): string {
-  return str
+  return   changeCase.camelCase(str)
+  str
     .replace(/[^a-zA-Z0-9]+/g, '')
     .replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => {
       return index === 0 ? word.toLowerCase() : word.toUpperCase();
