@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.toLowerCamelCase = exports.toUpperCamelCase = exports.findFreezedClassRegex = exports.findPartOfLine = exports.findPartLine = exports.findDartImportRegex = exports.findSuperClassRegex = exports.findClassRegex = exports.findSubClassRegex = void 0;
+exports.testLowerCamelGroup = exports.isLowerCamelCase = exports.isPlural = exports.toLowerCamelCase = exports.toUpperCamelCase = exports.findFileName = exports.findFreezedClassRegex = exports.findPartOfLine = exports.findPartLine = exports.findDartImportRegex = exports.findSuperClassRegex = exports.findClassRegex = exports.findSubClassRegex = void 0;
 ///这个正则表达式的含义是：以 class 开头，后面可以跟任意数量的空格（\s+）,0~任意空格(\s*/)，
 ///然后是一个以字母开头的单词（[a-zA-Z]\w*）表示类名，
 ///然后是 extends 和一个单词（\w+），表示类的继承关系
@@ -13,7 +13,11 @@ exports.findDartImportRegex = /^import\s+['"][^'"]+['"];/gm;
 exports.findPartLine = /part\s+([a-zA-Z]\w*).dart/;
 exports.findPartOfLine = /part of\s+([a-zA-Z]\w*).dart/;
 exports.findFreezedClassRegex = /with _\$/;
+/// 'd:\work\git\vscode_extension_lazy_jack\test\test1.dart match => ['test1', index: 44, input: 'd:\work\git\vscode_extension_lazy_jack\test\test1.dart', groups: undefined]
+/// fileName =match[0].dart
+exports.findFileName = /[^\\\/]+(?=\.\w+$)/;
 const changeCase = require("change-case");
+const console_1 = require("console");
 function toUpperCamelCase(str) {
     return changeCase.capitalCase(str).replace(/\s+/g, "");
     return str
@@ -34,4 +38,29 @@ function toLowerCamelCase(str) {
         .replace(/\s+/g, '');
 }
 exports.toLowerCamelCase = toLowerCamelCase;
+/// 這個函數的作用是判斷一個單詞是否是複數形式
+function isPlural(word) {
+    return /s$/.test(word);
+}
+exports.isPlural = isPlural;
+function isLowerCamelCase(str) {
+    return /^[a-z]+(?:[A-Z][a-z]*)*$/.test(str);
+}
+exports.isLowerCamelCase = isLowerCamelCase;
+function testLowerCamelGroup() {
+    (0, console_1.assert)(testLowCamel("test1") === true);
+    (0, console_1.assert)(testLowCamel("this_is_not_camel_case") === false);
+    (0, console_1.assert)(testLowCamel("thisIsCamelCase") === true);
+    (0, console_1.assert)(testLowCamel("thisIsCamelCase1") === true);
+    (0, console_1.assert)(testLowCamel("ThisIsNotCamelCase") === false);
+    (0, console_1.assert)(testLowCamel("this-is-not-camel-case") === false);
+    (0, console_1.assert)(testLowCamel("this_is_not_camel_case") === false);
+    (0, console_1.assert)(testLowCamel("this is not camel case") === false);
+    (0, console_1.assert)(testLowCamel("123CamelCase") === false);
+}
+exports.testLowerCamelGroup = testLowerCamelGroup;
+function testLowCamel(string) {
+    console.log(`${string} =>${isLowerCamelCase(string)} `);
+    return isLowerCamelCase(string);
+}
 //# sourceMappingURL=regex_utils.js.map

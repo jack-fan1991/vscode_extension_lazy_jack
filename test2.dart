@@ -1,15 +1,121 @@
-import 'dart:math';
-import 'package:flutter/material.dart';
 
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:owl_mobile_dart_extension/owl_extension.dart';
+{
+    "street": "123 Main St",
+    "city": "Anytown",
+    "phone":1,
+    "isBoy":true,
+    "weight":0.5,
+    "test":null
+  }
 
-import 'package:owl_mobile_dart_extension/ui_utils.dart';
-import 'package:owlmarket/bloc/text_scale_cubit/text_scale_cubit.dart';
+ {
+  "key2": {
+    "innerKey1": "innerValue1",
+    "innerKey2": "innerValue2"
+  }
+}
 
-import 'package:owlmarket/config/title_style_config.dart';
+ {
+  "key1": "value1",
+  "key2": {
+    "innerKey1": "innerValue1",
+    "innerKey2": "innerValue2"
+  },
+  "key3": "value3"
+}
 
-import 'package:owlmarket/const/assets_images_svg.lazyjack.dart';
-import 'package:owlmarket/main.dart';
-import 'package:owlmarket/util/color_helper.dart';
-part of './test.dart';
+
+
+[
+  {"name": "John", "age": 30},
+  {"name": "Jane", "age": 25}
+]
+
+
+[
+  {"name": "John", "age": null},
+  {"name": "Jane", "age": 25}
+]
+
+{
+  "array": [
+    {"name": "John", "age": 30},
+    {"name": "Jane", "age": 25}
+  ]
+}
+
+{
+  "key1": "value1",
+  "key2": [
+    "innerValue1",
+    "innerValue2",
+    "innerValue3"
+  ],
+  "key3": "value3"
+}
+
+
+[
+  {
+    "key1": "value1",
+    "key2": "value2",
+    "key3": "value3"
+  },
+  {
+    "key1": "value1",
+    "key2": "value2",
+    "key3": "value3"
+  }
+]
+
+{
+  "key1": "value1",
+  "key2": {
+    "innerKey1": "innerValue1",
+    "innerKey2": [
+      "innerValue1",
+      "innerValue2",
+      "innerValue3"
+    ]
+  },
+  "key3": "value3"
+}
+
+[
+  {
+    "key1": "value1",
+    "key2": [
+      "innerValue1",
+      "innerValue2",
+      "innerValue3"
+    ],
+    "key3": "value3"
+  },
+  {
+    "key1": "value1",
+    "key2": [
+      "innerValue1",
+      "innerValue2",
+      "innerValue3"
+    ],
+    "key3": "value3"
+  }
+]
+
+{
+  "key": "value1",
+  "key2": {
+    "innerKey1": "innerValue1",
+    "innerKey2": [
+      "innerValue1",
+      "innerValue2",
+      "innerValue3"
+    ]
+  },
+  "key3": "value3",
+  "key4": [
+    "value1",
+    "value2",
+    "value3"
+  ]
+}

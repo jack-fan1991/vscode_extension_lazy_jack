@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 import { registerDartSnippet } from './utils/snippet_utils';
-import {  registerGenerateGetterSetter, registerFreezedToJson, registerToRequireParams, registerJsonToFreezed, registerCommandDartSelectedToFactory, registerGenerateAssert } from './dart/dart';
+import {  registerGenerateGetterSetter, registerToRequireParams, registerJsonToFreezed, registerCommandDartSelectedToFactory, registerGenerateAssert } from './dart/dart';
 import { registerFastGithubCmd } from './github/github_utils';
 import * as sidebar from './sidebar';
 import * as codeAction from './code_action/code_action';
@@ -11,7 +11,6 @@ export function activate(context: vscode.ExtensionContext) {
   registerGenerateGetterSetter(context)
   registerFastGithubCmd(context)
   registerToRequireParams(context)
-  registerFreezedToJson(context)
   registerJsonToFreezed(context)
   registerCommandDartSelectedToFactory(context)
   registerGenerateAssert(context)

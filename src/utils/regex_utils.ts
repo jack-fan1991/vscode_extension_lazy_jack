@@ -10,7 +10,12 @@ export const findDartImportRegex = /^import\s+['"][^'"]+['"];/gm
 export const findPartLine = /part\s+([a-zA-Z]\w*).dart/;
 export const findPartOfLine = /part of\s+([a-zA-Z]\w*).dart/;
 export const findFreezedClassRegex = /with _\$/;
+/// 'd:\work\git\vscode_extension_lazy_jack\test\test1.dart match => ['test1', index: 44, input: 'd:\work\git\vscode_extension_lazy_jack\test\test1.dart', groups: undefined]
+/// fileName =match[0].dart
+export const findFileName = /[^\\\/]+(?=\.\w+$)/;
+
 import * as changeCase from "change-case";
+import { assert } from "console";
 
 
 
@@ -19,14 +24,14 @@ export function toUpperCamelCase(str: string): string {
   return str
     .replace(/[^a-zA-Z0-9]+/g, '')
     .replace(/(?:^\w|[A-Z]|\b\w)/g, (word) => {
-      return word.toUpperCase() ;
+      return word.toUpperCase();
     })
     .replace(/\s+/g, '');
 }
 
- 
+
 export function toLowerCamelCase(str: string): string {
-  return   changeCase.camelCase(str)
+  return changeCase.camelCase(str)
   str
     .replace(/[^a-zA-Z0-9]+/g, '')
     .replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => {
@@ -34,3 +39,31 @@ export function toLowerCamelCase(str: string): string {
     })
     .replace(/\s+/g, '');
 }
+/// 這個函數的作用是判斷一個單詞是否是複數形式
+export function isPlural(word: string): boolean {
+  return /s$/.test(word);
+}
+export function isLowerCamelCase(str: string): boolean {
+  return /^[a-z]+(?:[A-Z][a-z]*)*$/.test(str);
+}
+
+export function testLowerCamelGroup() {
+  assert(testLowCamel("test1") === true)
+  assert(testLowCamel("this_is_not_camel_case") === false)
+  assert(testLowCamel("thisIsCamelCase") === true)
+  assert(testLowCamel("thisIsCamelCase1") === true)
+  assert(testLowCamel("ThisIsNotCamelCase") === false)
+  assert(testLowCamel("this-is-not-camel-case") === false)
+  assert(testLowCamel("this_is_not_camel_case") === false)
+  assert(testLowCamel("this is not camel case") === false)
+  assert(testLowCamel("123CamelCase") === false)
+
+
+}
+
+
+function testLowCamel(string: string): boolean {
+  console.log(`${string} =>${isLowerCamelCase(string)} `)
+  return isLowerCamelCase(string)
+}
+

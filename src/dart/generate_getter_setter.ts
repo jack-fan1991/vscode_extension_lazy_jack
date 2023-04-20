@@ -75,7 +75,7 @@ function generateGetterAndSetter(prop: string, s: string, setter: string, arr: s
             setter = `\n set set${varUpprName}(${type} ${variableName}) => this.${variableName} = ${variableName};`;
         }
     }
-    let uri = vscode.window.activeTextEditor.document.getText();
+    let uri = vscode.window.activeTextEditor!.document.getText();
     if (uri.includes(`=> this.${variableName}`)) {
         vscode.window.showErrorMessage('Setter and Getter already created.');
         return [];

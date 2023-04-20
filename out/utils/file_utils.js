@@ -9,10 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createFile = exports.removeFolderPath = exports.getAbsFilePath = exports.getWorkspaceFolderPath = void 0;
+exports.readFile = exports.createFile = exports.removeFolderPath = exports.getAbsFilePath = exports.getActivityEditorFilePath = exports.getActivityEditorFileName = exports.getWorkspaceFolderPath = void 0;
 const path = require("path");
 const vscode = require("vscode");
 const fs_1 = require("fs");
+const icon_1 = require("./icon");
 function getWorkspaceFolderPath(currentFilePath) {
     const workspaceFolder = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(currentFilePath));
     if (workspaceFolder) {
@@ -21,6 +22,20 @@ function getWorkspaceFolderPath(currentFilePath) {
     }
 }
 exports.getWorkspaceFolderPath = getWorkspaceFolderPath;
+/// 取得當前焦點編輯器文件名
+function getActivityEditorFileName(showFileType = false) {
+    let file = path.basename(getActivityEditorFilePath());
+    (0, icon_1.logInfo)('total file name: ' + file);
+    return showFileType ? file : file.split('.')[0];
+}
+exports.getActivityEditorFileName = getActivityEditorFileName;
+function getActivityEditorFilePath() {
+    let editor = vscode.window.activeTextEditor;
+    if (!editor)
+        throw new Error('No active editor');
+    return editor.document.fileName;
+}
+exports.getActivityEditorFilePath = getActivityEditorFilePath;
 function getAbsFilePath(uri) {
     let path = uri.path;
     let split = path.split(':');
@@ -35,11 +50,6 @@ function removeFolderPath(document) {
     return document.fileName.replace(currentDir, '');
 }
 exports.removeFolderPath = removeFolderPath;
-// export function getAbsPath(currentFilePath: string,relativePath:string) {
-//     const workspaceFolderPath =getWorkspaceFolderPath(currentFilePath);
-//     const absolutePath = path.join(workspaceFolderPath??, relativePath);
-//     return absolutePath
-// }
 function createFile(targetPath, text) {
     if ((0, fs_1.existsSync)(targetPath)) {
         throw Error(`$targetPath already exists`);
@@ -55,4 +65,10 @@ function createFile(targetPath, text) {
     }));
 }
 exports.createFile = createFile;
+function readFile(path) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return vscode.workspace.fs.readFile(vscode.Uri.file(path)).toString();
+    });
+}
+exports.readFile = readFile;
 //# sourceMappingURL=file_utils.js.map

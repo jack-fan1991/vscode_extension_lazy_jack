@@ -13,7 +13,6 @@ function activate(context) {
     (0, dart_1.registerGenerateGetterSetter)(context);
     (0, github_utils_1.registerFastGithubCmd)(context);
     (0, dart_1.registerToRequireParams)(context);
-    (0, dart_1.registerFreezedToJson)(context);
     (0, dart_1.registerJsonToFreezed)(context);
     (0, dart_1.registerCommandDartSelectedToFactory)(context);
     (0, dart_1.registerGenerateAssert)(context);

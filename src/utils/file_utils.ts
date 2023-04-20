@@ -1,6 +1,7 @@
 import path = require('path');
 import * as vscode from 'vscode';
 import { existsSync, lstatSync, writeFile } from "fs";
+import { logInfo } from './icon';
 
 export function getWorkspaceFolderPath(currentFilePath: string) {
     const workspaceFolder = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(currentFilePath));
@@ -9,6 +10,20 @@ export function getWorkspaceFolderPath(currentFilePath: string) {
         return workspaceFolderPath
     }
 }
+/// 取得當前焦點編輯器文件名
+export function getActivityEditorFileName(showFileType:boolean= false): string {
+    let file =path.basename(getActivityEditorFilePath())
+    logInfo('total file name: ' + file)
+    return showFileType ? file : file.split('.')[0]
+}
+
+export function getActivityEditorFilePath(): string {
+    let editor = vscode.window.activeTextEditor
+    if (!editor)
+        throw new Error('No active editor');
+    return editor.document.fileName
+}
+
 
 export function getAbsFilePath(uri: vscode.Uri): string {
     let path = uri.path
@@ -19,16 +34,11 @@ export function getAbsFilePath(uri: vscode.Uri): string {
     return path
 }
 
-export function removeFolderPath( document: vscode.TextDocument){
+export function removeFolderPath(document: vscode.TextDocument) {
     let currentDir = path.dirname(document.fileName);
-    return document.fileName.replace(currentDir,'')
+    return document.fileName.replace(currentDir, '')
 }
 
-// export function getAbsPath(currentFilePath: string,relativePath:string) {
-//     const workspaceFolderPath =getWorkspaceFolderPath(currentFilePath);
-//     const absolutePath = path.join(workspaceFolderPath??, relativePath);
-//     return absolutePath
-// }
 
 
 export function createFile(
@@ -52,4 +62,9 @@ export function createFile(
             }
         );
     });
+}
+
+
+export async function readFile(path: string) {
+    return vscode.workspace.fs.readFile(vscode.Uri.file(path)).toString()
 }

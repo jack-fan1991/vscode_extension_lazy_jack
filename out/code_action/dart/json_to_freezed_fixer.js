@@ -12,8 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.JsonToFreezedFixer = void 0;
 const vscode = require("vscode");
 const error_code_1 = require("../error_code");
-const json_to_freezed_1 = require("../../dart/json_to_freezed");
-const terminal_utils_1 = require("../../utils/terminal_utils");
+const json_to_freezed_1 = require("../../dart/json_to_freezed/json_to_freezed");
 class JsonToFreezedFixer {
     getCommand() { return JsonToFreezedFixer.command; }
     getProvidedCodeActionKinds() { return [vscode.CodeActionKind.Refactor]; }
@@ -91,8 +90,9 @@ class JsonToFreezedFixer {
     setOnActionCommandCallback(context) {
         // 注册 Quick Fix 命令
         context.subscriptions.push(vscode.commands.registerCommand(JsonToFreezedFixer.command, (document, range) => __awaiter(this, void 0, void 0, function* () {
-            yield (0, json_to_freezed_1.freezedGenerator)();
-            (0, terminal_utils_1.runTerminal)('flutter pub run build_runner build --delete-conflicting-outputs', "build_runner");
+            // await freezedGenerator()
+            // runTerminal('flutter pub run build_runner build --delete-conflicting-outputs', "build_runner")
+            yield vscode.commands.executeCommand(json_to_freezed_1.command_dart_json_to_freezed);
         })));
     }
     handleAllFile(document) {
