@@ -57,7 +57,6 @@ export interface CodeActionProviderInterface<T> extends vscode.CodeActionProvide
     createFixAction(document: vscode.TextDocument, range: vscode.Range, data: T): vscode.CodeAction
     createDiagnostic(range: vscode.Range, data: T): vscode.Diagnostic;
     setOnActionCommandCallback(context: vscode.ExtensionContext): void
-    handleLine(document: vscode.TextDocument, range: vscode.Range): T | undefined
     handleAllFile(document: vscode.TextDocument): vscode.Diagnostic[]
     handleError(diagnostic: vscode.Diagnostic, document: vscode.TextDocument, range: vscode.Range): vscode.CodeAction | undefined
     getCommand(): String

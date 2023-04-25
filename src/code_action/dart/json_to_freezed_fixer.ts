@@ -3,11 +3,9 @@ import * as vscode from 'vscode';
 import { CodeActionProviderInterface } from '../code_action';
 import { StatusCode } from '../error_code';
 import { command_dart_json_to_freezed, freezedGenerator } from '../../dart/json_to_freezed/json_to_freezed';
-import { runTerminal } from '../../utils/terminal_utils';
 
 
 export class JsonToFreezedFixer implements CodeActionProviderInterface<string> {
-
     public static readonly command = 'JsonToFreezedFixer.command';
     public static partLineRegex = new RegExp(/^part.*[;'"]$/)
     getCommand() { return JsonToFreezedFixer.command }
@@ -37,8 +35,7 @@ export class JsonToFreezedFixer implements CodeActionProviderInterface<string> {
 
     createFixAction(document: vscode.TextDocument, range: vscode.Range, data: string): vscode.CodeAction {
         const fix = new vscode.CodeAction(data, vscode.CodeActionKind.Refactor);
-        fix.command = { command: JsonToFreezedFixer.command, title: data, arguments: [document, range] };
-        fix.command = { command: JsonToFreezedFixer.command, title: data, arguments: [document, range] };
+        fix.command = { command: JsonToFreezedFixer.command, title: data, arguments: [document, range]};
         fix.diagnostics = [this.createDiagnostic(range, data)];
         fix.isPreferred = true;
         return fix;
