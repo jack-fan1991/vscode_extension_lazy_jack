@@ -21,6 +21,7 @@ import { assert } from "console";
 
 export function toUpperCamelCase(str: string): string {
   return changeCase.capitalCase(str).replace(/\s+/g, "")
+  return changeCase.capitalCase(str).replace(/\s+/g, "")
   return str
     .replace(/[^a-zA-Z0-9]+/g, '')
     .replace(/(?:^\w|[A-Z]|\b\w)/g, (word) => {

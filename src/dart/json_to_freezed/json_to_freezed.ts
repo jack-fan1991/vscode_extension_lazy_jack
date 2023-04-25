@@ -58,34 +58,6 @@ async function parse(jsonObject: any, parentKey: string = "", objInArray: boolea
     baseFileName = toUpperCamelCase(baseFileName);
     try {
         if (Array.isArray(jsonObject)) {
-
-            // if (parentKey === baseFileName) {
-            //     // no key Array
-            //     parentKey = await vscode.window.showInputBox({ placeHolder: 'Please input class name', value: baseFileName + "Data" }).then((className) => {
-            //         let listType = ""
-            //         if (className) {
-            //             listType = className;
-            //         } else {
-            //             listType = baseFileName + "Data";
-            //         }
-            //         let customTypeManger: CustomTypeManger = jsonObjectManger.getCustomTypeManger(parentKey) ?? new CustomTypeManger();
-            //         let customType: CustomType = arrayPramsFmt(jsonObject, parentKey, listType)
-            //         console.log(`freezedFieldFormat: ${customType.toFreezedFieldFormat()}`)
-            //         customTypeManger.addCustomType(customType)
-            //         jsonObjectManger.setCustomTypeManger(parentKey, customTypeManger)
-            //         jsonObjectManger.printCache()
-            //         return listType
-            //     })
-
-            // }
-            // else {
-            //     let customTypeManger: CustomTypeManger = jsonObjectManger.getCustomTypeManger(parentKey) ?? new CustomTypeManger();
-            //     let customType: CustomType = arrayPramsFmt(jsonObject, parentKey, parentKey)
-            //     console.log(`freezedFieldFormat: ${customType.toFreezedFieldFormat()}`)
-            //     customTypeManger.addCustomType(customType)
-            //     jsonObjectManger.setCustomTypeManger(parentKey, customTypeManger)
-            //     jsonObjectManger.printCache()
-            // }
             let arrayObjType = await parseArray(jsonObject, parentKey)
             if (parentKey === baseFileName) {
                 // no key Array

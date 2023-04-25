@@ -38,6 +38,7 @@ export class JsonToFreezedFixer implements CodeActionProviderInterface<string> {
     createFixAction(document: vscode.TextDocument, range: vscode.Range, data: string): vscode.CodeAction {
         const fix = new vscode.CodeAction(data, vscode.CodeActionKind.Refactor);
         fix.command = { command: JsonToFreezedFixer.command, title: data, arguments: [document, range] };
+        fix.command = { command: JsonToFreezedFixer.command, title: data, arguments: [document, range] };
         fix.diagnostics = [this.createDiagnostic(range, data)];
         fix.isPreferred = true;
         return fix;
