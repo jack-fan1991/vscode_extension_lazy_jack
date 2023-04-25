@@ -18,7 +18,7 @@ export class FreezedFixInfo {
 
     }
 }
-export class FreezedFixer implements CodeActionProviderInterface<FreezedFixInfo> {
+export class FreezedFixer implements vscode.CodeActionProvider<FreezedFixInfo> {
 
     public static readonly command = 'FreezedFixer.command';
     public static freezedLineRegex = new RegExp(/@freezed\s+/)
@@ -62,7 +62,7 @@ export class FreezedFixer implements CodeActionProviderInterface<FreezedFixInfo>
 
     createFixAction(document: vscode.TextDocument, range: vscode.Range, data: FreezedFixInfo): vscode.CodeAction {
         const fix = new vscode.CodeAction(`${data.msg}`, vscode.CodeActionKind.Refactor);
-        fix.command = { command: FreezedFixer.command, title: data.title, arguments: [document, range, data.targetAbsPath, data.importLine] };
+        fix.command = { command: FreezedFixer.command, title: data.title, arguments: [document,  data] };
         fix.diagnostics = [this.createDiagnostic(range, data)];
         fix.isPreferred = true;
         return fix;
@@ -80,7 +80,6 @@ export class FreezedFixer implements CodeActionProviderInterface<FreezedFixInfo>
             // quick fix 點選的行
             // let lineNumber: number = range.start.line
             // let partLine = document.lineAt(lineNumber).text;
-            data = document['arguments'][1]
             let textEditor = await openEditor(data.targetAbsPath)
             if (textEditor) {
                 let text = textEditor.document.getText()
@@ -167,15 +166,10 @@ export class FreezedFixer implements CodeActionProviderInterface<FreezedFixInfo>
             let data = new FreezedFixInfo(getAbsFilePath(document.uri), 'fixImport', `Fix import ${partFLine}`, partFLine)
             this.runCommand(document, data)
         }
-        // if (!text.replace(/\s/g, '').includes('partof') && text.includes()&& !text.includes(partGLine)) {
-        //     let data = new FreezedFixInfo(getAbsFilePath(document.uri), 'fixImport', `Fix import ${partGLine}`, partGLine)
-        //     this.runCommand(document, data)
-        // }
-
-    }
+       }
 
     async runCommand(document: vscode.TextDocument, data: FreezedFixInfo) {
-        await vscode.commands.executeCommand(this.getCommand(), { command: FreezedFixer.command, title: data.title, data: data, arguments: [document, data] });
+        await vscode.commands.executeCommand(this.getCommand(),    document,data);
 
     }
 

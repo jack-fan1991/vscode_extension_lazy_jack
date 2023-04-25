@@ -12,7 +12,7 @@ export class DiagnosticsErrorCodeHandler implements vscode.CodeActionProvider {
     public static readonly providedCodeActionKinds = [
         vscode.CodeActionKind.Refactor
     ];
-    DiagnosticsErrorCodeHandler(providers: CodeActionProviderInterface<any>[]) {
+    constructor(providers: CodeActionProviderInterface<any>[]) {
         this.providers = providers
     }
     /**

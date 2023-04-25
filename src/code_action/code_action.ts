@@ -7,7 +7,7 @@ import { FreezedFixer } from './dart/freezed_import_fixer';
 import { JsonToFreezedFixer } from './dart/json_to_freezed_fixer';
 import { FreezedUnionFixer } from './dart/freezed_union_fixer';
 import { ParamToRequiredFixer } from './dart/param_to_required_fixer';
-import { StringConvertFixer } from './dart/string_convert_fixer';
+// import { StringConvertFixer } from './dart/string_convert_fixer';
 import { RefactorTextStyleFixer } from './dart/refator_text_style_fixer';
 // 設定常數，代表指令的名稱
 const DART_MODE = { language: "dart", scheme: "file" };

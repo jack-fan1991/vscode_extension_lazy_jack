@@ -7,11 +7,13 @@ export function registerGenerateGetterSetter(context: vscode.ExtensionContext) {
         generator()
     }));
 }
+let s :string;
+let setter:string;
 
 function generator() {
     const editor = vscode.window.activeTextEditor;
-    let s;
-    let setter;
+    s=''
+    setter=''
     let arr: string[] = [];
     if (!editor)
         return;
