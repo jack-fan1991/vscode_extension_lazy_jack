@@ -1,12 +1,12 @@
 import * as vscode from 'vscode';
 import { toUpperCamelCase, toLowerCamelCase, findFreezedClassRegex, findFileName, testLowerCamelGroup, findClassRegex } from '../../utils/regex_utils';
 import { runTerminal } from '../../utils/terminal_utils'
-import { getSelectedText } from '../../utils/workout_space_utils';
 import { getActivityEditorFileName } from '../../utils/file_utils';
 import { tryParseJson } from '../../utils/json_utils';
 import { assert } from 'console';
 import { CustomType, CustomTypeManger, JsonObjectManger } from './json_object_helper';
 import { Icon_Warning, logError } from '../../utils/icon';
+import { getSelectedText } from '../../utils/vscode_utils';
 
 export const command_dart_json_to_freezed = "command_dart_json_to_freezed"
 

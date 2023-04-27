@@ -4,9 +4,11 @@ import {  registerGenerateGetterSetter, registerToRequireParams, registerJsonToF
 import { registerFastGithubCmd } from './github/github_utils';
 import * as sidebar from './sidebar';
 import * as codeAction from './code_action/code_action';
+import { parseDartGitExtensionInYaml } from './utils/dart/pubspec/find_dart_git_dependency';
 
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
   console.log('your extension "sugar-demo-vscode" is now active!')
+  await parseDartGitExtensionInYaml()
   registerDartSnippet(context)
   registerGenerateGetterSetter(context)
   registerFastGithubCmd(context)

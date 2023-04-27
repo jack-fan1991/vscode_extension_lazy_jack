@@ -2,7 +2,7 @@
   "name": "lazy-jack",
   "displayName": "lazy Jack",
   "description": "lets go",
-  "version": "0.0.38",
+  "version": "0.0.39",
   "publisher": "jackFan",
   "icon": "image/lazy_man.png",
   "engines": {
@@ -197,6 +197,7 @@
     "change-case": "^4.1.2",
     "cheerio": "^1.0.0-rc.12",
     "js-yaml": "^4.1.0",
+    "lodash": "^4.17.19",
     "yaml": "^2.2.1"
   },
   "devDependencies": {
