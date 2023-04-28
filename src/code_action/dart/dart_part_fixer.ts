@@ -1,10 +1,10 @@
 import path = require('path');
 import * as vscode from 'vscode';
 import * as fs from 'fs';
-import { openEditor, replaceText } from '../../utils/common';
+import { openEditor } from '../../utils/common';
 import { CodeActionProviderInterface } from '../code_action';
 import { StatusCode } from '../error_code';
-import { getAbsFilePath, removeFolderPath } from '../../utils/file_utils';
+import { getAbsFilePath, removeFolderPath, replaceText } from '../../utils/file_utils';
 
 export class PartFixInfo {
     targetAbsPath: string;

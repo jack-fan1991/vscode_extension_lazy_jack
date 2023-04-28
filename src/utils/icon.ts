@@ -8,14 +8,14 @@ export const Icon_Success2 = '✔️';
 export const Icon_Debug = '🐛';
 export const Icon_Star = '⭐';
 
-export function logError(msg: any = "",showOnVscode:boolean = false) {
+export function logError(msg: any = "",showOnVscode:boolean = true) {
     console.log(`${Icon_Error} : ${msg}`);
     if(showOnVscode){
         vscode.window.showErrorMessage(msg)
     }
 }
 
-export function logInfo(msg: string = "",showOnVscode:boolean = false) {
+export function logInfo(msg: string = "",showOnVscode:boolean = true) {
     console.log(`${Icon_Info} : ${msg}`);
     if(showOnVscode){
         vscode.window.showInformationMessage(msg)

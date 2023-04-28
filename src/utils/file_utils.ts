@@ -1,7 +1,8 @@
 import path = require('path');
 import * as vscode from 'vscode';
 import { existsSync, lstatSync, writeFile } from "fs";
-import { logInfo } from './icon';
+import { logError, logInfo } from './icon';
+import * as fs from 'fs';
 
 export function getWorkspaceFolderPath(currentFilePath: string) {
     const workspaceFolder = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(currentFilePath));
@@ -65,6 +66,47 @@ export function createFile(
 }
 
 
-export async function readFile(path: string) {
-    return vscode.workspace.fs.readFile(vscode.Uri.file(path)).toString()
+export function readFileToText(path: string) {
+    if (!existsSync(path)) {
+        throw Error(`readFileToText failed ${path} not exists`);
+    }
+    return fs.readFileSync(path, 'utf8')
 }
+
+
+
+export async function replaceText(filePath: string, searchValue: string, replaceValue: string): Promise<boolean> {
+    // find yaml editor
+    let editor = vscode.window.visibleTextEditors.find(e => e.document.fileName === filePath)
+    if (!editor) {
+      await vscode.workspace.openTextDocument(filePath).then(async (document) =>
+        editor = await vscode.window.showTextDocument(document, vscode.ViewColumn.Beside, false).then(editor => editor))
+    }
+    if (!editor) {
+      return false
+    }
+    // 修改yaml 中的 version
+    const document = editor.document;
+    const start = new vscode.Position(0, 0);
+    const end = new vscode.Position(document.lineCount - 1, document.lineAt(document.lineCount - 1).text.length);
+    const textRange = new vscode.Range(start, end);
+    const text = document.getText();
+    const startIndex = text.indexOf(searchValue);
+    if (startIndex !== -1) {
+      const endIndex = startIndex + searchValue.length;
+      const range = new vscode.Range(document.positionAt(startIndex), document.positionAt(endIndex));
+      await editor.edit((editBuilder) => {
+        editBuilder.replace(range, replaceValue);
+      });
+  
+      editor.document.save()
+      return true
+    }
+    else {
+      logError(`replaceText filePath 中找不到${searchValue}`,true)
+      return false
+  
+    }
+  }
+  
+  

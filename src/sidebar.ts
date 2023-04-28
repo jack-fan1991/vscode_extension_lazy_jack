@@ -3,6 +3,7 @@ import { showInfo2OptionMessage, onFlutter, onGit, onTypeScript } from './utils/
 import * as terminal_util from './utils/terminal_utils';
 import * as github from './github/github_utils';
 import * as ts from './typescript/ts_utils';
+import { selectToUpdate } from './utils/dart/pubspec/analyze_dart_git_dependency';
 
 
 enum ScriptsType {
@@ -259,7 +260,8 @@ export function onTreeItemSelect(context: vscode.ExtensionContext, args: any) {
 async function terminalAction(context: vscode.ExtensionContext, command: string) {
     console.log('[terminalAction] 選擇:', command)
     if (command.includes("Update flutter git dependencies")) {
-        github.updateFLutterGitExtension();
+        selectToUpdate()
+        // github.updateFLutterGitExtension();
         return
     }
     if (command.includes("push -f")) {

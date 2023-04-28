@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as yaml from 'yaml';
+import { convertPathIfWindow } from './vscode_utils';
 
 
 export function showInfo2OptionMessage(msg: string, option1?: string, option2?: string, onOption1?: () => void) {
@@ -84,8 +85,9 @@ export function showPicker(placeholder: string, items: any, onItemSelect: (item:
 }
 
 export async function openEditor(filePath: string, focus?: boolean): Promise<vscode.TextEditor | undefined> {
+  filePath =convertPathIfWindow(filePath)
   if (!fs.existsSync(filePath)) return
-  let editor = vscode.window.visibleTextEditors.find(e => e.document.fileName === filePath)
+  let editor = vscode.window.visibleTextEditors.find(e => convertPathIfWindow(e.document.fileName)  === filePath)
   if (!editor) {
     await vscode.workspace.openTextDocument(filePath).then(async (document) =>
       editor = await vscode.window.showTextDocument(document, vscode.ViewColumn.Beside, focus ?? false).then(editor => editor))
@@ -101,38 +103,4 @@ export async function hideEditor(filePath: string, focus?: boolean) {
   }
 }
 
-
-export async function replaceText(filePath: string, searchValue: string, replaceValue: string): Promise<boolean> {
-  // find yaml editor
-  let editor = vscode.window.visibleTextEditors.find(e => e.document.fileName === filePath)
-  if (!editor) {
-    await vscode.workspace.openTextDocument(filePath).then(async (document) =>
-      editor = await vscode.window.showTextDocument(document, vscode.ViewColumn.Beside, false).then(editor => editor))
-  }
-  if (!editor) {
-    return false
-  }
-  // 修改yaml 中的 version
-  const document = editor.document;
-  const start = new vscode.Position(0, 0);
-  const end = new vscode.Position(document.lineCount - 1, document.lineAt(document.lineCount - 1).text.length);
-  const textRange = new vscode.Range(start, end);
-  const text = document.getText();
-  const startIndex = text.indexOf(searchValue);
-  if (startIndex !== -1) {
-    const endIndex = startIndex + searchValue.length;
-    const range = new vscode.Range(document.positionAt(startIndex), document.positionAt(endIndex));
-    await editor.edit((editBuilder) => {
-      editBuilder.replace(range, replaceValue);
-    });
-
-    editor.document.save()
-    return true
-  }
-  else {
-    vscode.window.showErrorMessage(`filePath 中找不到${searchValue}`)
-    return false
-
-  }
-}
 

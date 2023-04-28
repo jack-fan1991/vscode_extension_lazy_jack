@@ -16,6 +16,9 @@ export const findFileName = /[^\\\/]+(?=\.\w+$)/;
 
 import * as changeCase from "change-case";
 import { assert } from "console";
+import { getActivateText } from "./vscode_utils";
+import { readFileToText } from "./file_utils";
+import { getPubspecPath } from "./dart/pubspec/pubspec_utils";
 
 
 
@@ -67,3 +70,22 @@ function testLowCamel(string: string): boolean {
   return isLowerCamelCase(string)
 }
 
+
+export function getPubspecDependencyOverridePath(dependencyName: string, text: string | undefined=undefined): string | undefined {
+  {
+    const regex = new RegExp(`${dependencyName}:\\s*\\n\\s*#\\s*path:\\s*(.*)`);
+    const regex2 = new RegExp(`#${dependencyName}:\\s*#\\s*path:\\s*(.*)`);
+
+    let t =  readFileToText(getPubspecPath()!)
+    if (text !== undefined) {
+      t = text
+    }
+    const match = t.match(regex);
+    if (match) {
+      const path = match[1];
+      return path;
+    } else {
+      return undefined;
+    }
+  }
+}

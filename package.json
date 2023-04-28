@@ -114,6 +114,11 @@
         "category": "lazy Jack",
         "command": "command_dart_assert",
         "title": "Generate assert file from folder"
+      },
+      {
+        "category": "lazy Jack",
+        "command": "extension.updateDependencyVersion",
+        "title": "Update Dependency Version"
       }
     ],
     "menus": {
@@ -196,6 +201,7 @@
     "axios": "^1.3.2",
     "change-case": "^4.1.2",
     "cheerio": "^1.0.0-rc.12",
+    "iconv-lite": "^0.6.3",
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.19",
     "yaml": "^2.2.1"

@@ -4,11 +4,12 @@ import {  registerGenerateGetterSetter, registerToRequireParams, registerJsonToF
 import { registerFastGithubCmd } from './github/github_utils';
 import * as sidebar from './sidebar';
 import * as codeAction from './code_action/code_action';
-import { parseDartGitExtensionInYaml } from './utils/dart/pubspec/find_dart_git_dependency';
+import { parseDartGitExtensionInYaml } from './utils/dart/pubspec/analyze_dart_git_dependency';
+import { registerUpdateDependencyVersion } from './utils/dart/pubspec/update_git_dependency';
 
 export async function activate(context: vscode.ExtensionContext) {
   console.log('your extension "sugar-demo-vscode" is now active!')
-  await parseDartGitExtensionInYaml()
+  await parseDartGitExtensionInYaml(true)
   registerDartSnippet(context)
   registerGenerateGetterSetter(context)
   registerFastGithubCmd(context)
@@ -16,6 +17,7 @@ export async function activate(context: vscode.ExtensionContext) {
   registerJsonToFreezed(context)
   registerCommandDartSelectedToFactory(context)
   registerGenerateAssert(context)
+  registerUpdateDependencyVersion(context)
   codeAction.register(context)
 
 
