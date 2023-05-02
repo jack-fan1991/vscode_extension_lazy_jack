@@ -6,6 +6,8 @@ import * as sidebar from './sidebar';
 import * as codeAction from './code_action/code_action';
 import { parseDartGitExtensionInYaml } from './utils/dart/pubspec/analyze_dart_git_dependency';
 import { registerUpdateDependencyVersion } from './utils/dart/pubspec/update_git_dependency';
+import { flutterCommandRegister } from './utils/dart/flutter/regiester_flutter_utils';
+import { getSelectedText } from './utils/dart/flutter/get_selected_text';
 
 export async function activate(context: vscode.ExtensionContext) {
   console.log('your extension "sugar-demo-vscode" is now active!')
@@ -18,6 +20,7 @@ export async function activate(context: vscode.ExtensionContext) {
   registerCommandDartSelectedToFactory(context)
   registerGenerateAssert(context)
   registerUpdateDependencyVersion(context)
+  flutterCommandRegister(context)
   codeAction.register(context)
 
 
@@ -31,6 +34,7 @@ export async function activate(context: vscode.ExtensionContext) {
   vscode.commands.registerCommand(sidebar.sidebar_command, (args) => {
     sidebar.onTreeItemSelect(context, args)
   })
+  // getSelectedText(vscode.window.activeTextEditor!)
 }
 
 export function deactivate() { }

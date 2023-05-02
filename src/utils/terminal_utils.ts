@@ -7,14 +7,14 @@ import * as iconv from 'iconv-lite';
 export function runTerminal(cmd: string, terminalName: string = '') {
     vscode.window.showInformationMessage('正在執行' + cmd + ' 命令...');
     const terminal = vscode.window.activeTerminal;
-    if (!terminal) {
-        const newTerminal = vscode.window.createTerminal('Terminal');
+    if (!terminal?.name.startsWith('Lazy_Jack')) {
+        const newTerminal = vscode.window.createTerminal('Lazy_Jack');
         newTerminal.show();
         newTerminal.sendText(cmd);
         return;
     }
     else if (terminalName != '' && terminal.name != terminalName) {
-        const newTerminal = vscode.window.createTerminal(terminalName);
+        const newTerminal = vscode.window.createTerminal(`Lazy_Jack ${terminalName}`);
         newTerminal.show();
         newTerminal.sendText(cmd);
         return;

@@ -3,7 +3,6 @@ import * as vscode from 'vscode';
 import { CodeActionProviderInterface } from '../code_action';
 import { StatusCode } from '../error_code';
 import { paramToRequireGenerator } from '../../dart/to_require_params';
-import { replaceText } from '../../utils/common';
 
 
 export class RefactorTextStyleFixer implements CodeActionProviderInterface<string> {

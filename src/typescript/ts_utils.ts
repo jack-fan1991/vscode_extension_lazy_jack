@@ -6,6 +6,7 @@ import * as common from '../utils/common';
 import * as path from 'path';
 import * as http from '../utils/http';
 import cheerio from 'cheerio';
+import { replaceText } from '../utils/file_utils';
 
 
 export async function publishVsCodeExtension() {
@@ -112,15 +113,19 @@ const onPackageJsonParse = async function onPubspecYamlParse(data: any) {
     versionSplit[versionSplit.length - 1] = `${updateVersion}`
     let replaceVersion = versionSplit.join('.')
     let replaceValue = `version": "${replaceVersion}"`
-    vscode.window.showInformationMessage(`${data['displayName']}${currentVersion} update to ${replaceValue}`, 'publish', 'build and publish').then(async (options) => {
-        await common.replaceText(replacePath, searchValue, replaceValue);
+    vscode.window.showInformationMessage(`${data['displayName']}${currentVersion} update to ${replaceValue}`, 'publish').then(async (options) => {
+        await replaceText(replacePath, searchValue, replaceValue);
         if (options === 'publish') {
             terminal_util.runTerminal("vsce publish");
-        } else {
-            await terminal_util.runCommand("npm run build", (stdout) => {
-                terminal_util.runTerminal("vsce publish");
-            })
-        }
+        } 
+        // else {
+        //     await terminal_util.runCommand("npm run build", (stdout) => {
+        //         terminal_util.runTerminal("vsce publish");
+        //     },
+        //     undefined,
+        //     false,
+        //     )
+        // }
     })
 
 

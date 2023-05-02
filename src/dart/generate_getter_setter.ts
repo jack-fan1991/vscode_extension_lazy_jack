@@ -1,11 +1,19 @@
 import * as vscode from 'vscode';
+import { wrapWith } from '../utils/dart/flutter/get_selected_text';
+import { logInfo } from '../utils/icon';
 const command_dart_generate_getter_setter = "command_dart_generate_getter_setter"
-
+const blocBuilderSnippet = (widget: string) => {
+    return `BlocBuilder<\${1:Subject}\${2|Bloc,Cubit|}, $1State>(
+    builder: (context, state) {
+      return ${widget};
+    },
+  )`;
+  };
 
 export function registerGenerateGetterSetter(context: vscode.ExtensionContext) {
-    context.subscriptions.push(vscode.commands.registerCommand(command_dart_generate_getter_setter, async () => {
-        generator()
-    }));
+    // context.subscriptions.push(vscode.commands.registerCommand(command_dart_generate_getter_setter, async () => {
+    //     wrapWith(blocBuilderSnippet)
+    // }));
 }
 let s :string;
 let setter:string;

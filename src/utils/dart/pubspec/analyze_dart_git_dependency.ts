@@ -192,12 +192,12 @@ function showOverrideDependencySwitcher(dependenciesInfo: DependenciesInfo, depe
     } else {
         msg = `Switch ${dependenciesInfo.name} to override path「 ${dependenciesOverrideInfo.path} 」 `
     }
-    vscode.window.showInformationMessage(` ${msg}`, dependenciesOverrideInfo.isActivate() ? 'uncomment' : 'comment').then(async (selectedOption) => {
-        if (selectedOption === 'uncomment') {
+    vscode.window.showInformationMessage(` ${msg}`, dependenciesOverrideInfo.isActivate() ? 'comment override path' : 'Switch to override path').then(async (selectedOption) => {
+        if (selectedOption === 'comment override path') {
             replaceInPubspecFile(dependenciesOverrideInfo.commentString(), dependenciesOverrideInfo.unCommentString())
             logInfo(`${dependenciesInfo.name} using remote branch ${dependenciesInfo.branch} now`)
         }
-        if (selectedOption === 'comment') {
+        if (selectedOption === 'Switch to override path') {
             replaceInPubspecFile(dependenciesOverrideInfo.unCommentString(), dependenciesOverrideInfo.commentString())
             logInfo(`${dependenciesInfo.name} using override path ${dependenciesOverrideInfo.path} now`)
         }

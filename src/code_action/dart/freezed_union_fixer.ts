@@ -3,8 +3,7 @@ import * as vscode from 'vscode';
 import { CodeActionProviderInterface } from '../code_action';
 import { StatusCode } from '../error_code';
 import { findClassRegex, findFreezedClassRegex } from '../../utils/regex_utils';
-import { replaceText } from '../../utils/common';
-import { getAbsFilePath } from '../../utils/file_utils';
+import { getAbsFilePath, replaceText } from '../../utils/file_utils';
 
 
 export class FreezedUnionFixer implements CodeActionProviderInterface<string> {
