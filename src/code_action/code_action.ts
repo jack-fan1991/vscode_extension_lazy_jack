@@ -9,6 +9,7 @@ import { FreezedUnionFixer } from './dart/freezed_union_fixer';
 import { ParamToRequiredFixer } from './dart/param_to_required_fixer';
 // import { StringConvertFixer } from './dart/string_convert_fixer';
 import { RefactorTextStyleFixer } from './dart/refator_text_style_fixer';
+import { StringConvertFixer } from './dart/string_convert_fixer';
 // 設定常數，代表指令的名稱
 const DART_MODE = { language: "dart", scheme: "file" };
 const quickFixCodeAction = [vscode.CodeActionKind.Refactor];
@@ -22,7 +23,7 @@ export function register(context: vscode.ExtensionContext) {
     providers.push(new FreezedFixer())
     providers.push(new JsonToFreezedFixer())
     providers.push(new ParamToRequiredFixer())
-    // providers.push(new StringConvertFixer())
+    providers.push(new StringConvertFixer())
     providers.push(new RefactorTextStyleFixer())
 
     
@@ -62,6 +63,6 @@ export interface CodeActionProviderInterface<T> extends vscode.CodeActionProvide
     getCommand(): String
     getProvidedCodeActionKinds(): vscode.CodeActionKind[]
     getErrorCode(): StatusCode
-    getLangrageType(): string
+    getLangrageType(): vscode.DocumentSelector
 
 }

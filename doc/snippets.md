@@ -9,14 +9,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
   + Menu(option[]:  right click, on text selected) 
   => Extension  will be show in right click menu when text selected
 
-#### common
-
-|  Shortcut   |  Description  | Supplement| Support|
-|  ----  | ----  |------|-----|
-| c2up     | clipboard to Uppercase|  |Quick fix ( onText Selected )|
-| c2low    | clipboard to lowerCase|  |Quick fix ( onText Selected )|
-| c2camel  | clipboard to camelCase|  |Quick fix ( onText Selected )|
-| fun      | Function definition ||
 
 #### dart 
 

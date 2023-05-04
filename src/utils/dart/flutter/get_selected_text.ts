@@ -90,18 +90,18 @@ export const getSelectedText = (editor: TextEditor): Selection => {
 
     return emptySelection;
 };
-async function createNewFile() {
-    // 讓使用者選擇儲存位置
-    const uri = await vscode.window.showSaveDialog();
-    if (!uri) {
-      // 如果使用者取消了操作，則退出函數
-      return;
-    }
+// async function createNewFile() {
+//     // 讓使用者選擇儲存位置
+//     const uri = await vscode.window.showSaveDialog();
+//     if (!uri) {
+//       // 如果使用者取消了操作，則退出函數
+//       return;
+//     }
   
-    // 創建一個空的文件
-    fs.writeFileSync(uri.fsPath, '');
+//     // 創建一個空的文件
+//     fs.writeFileSync(uri.fsPath, '');
   
-    // 打開新創建的文件
-    const document = await vscode.workspace.openTextDocument(uri);
-    await vscode.window.showTextDocument(document);
-  }
+//     // 打開新創建的文件
+//     const document = await vscode.workspace.openTextDocument(uri);
+//     await vscode.window.showTextDocument(document);
+//   }

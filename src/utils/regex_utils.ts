@@ -10,6 +10,9 @@ export const findDartImportRegex = /^import\s+['"][^'"]+['"];/gm
 export const findPartLine = /part\s+([a-zA-Z]\w*).dart/;
 export const findPartOfLine = /part of\s+([a-zA-Z]\w*).dart/;
 export const findFreezedClassRegex = /with _\$/;
+/// 檢查是否符合常用命名規範
+export const nameCheckerRegex = /^(?:[a-z]+(?:[A-Z][a-z]*)*|^[A-Z][a-z]*([A-Z][a-z]*)*$|^[a-z]+(_[a-z]+)*$)$/;
+
 /// 'd:\work\git\vscode_extension_lazy_jack\test\test1.dart match => ['test1', index: 44, input: 'd:\work\git\vscode_extension_lazy_jack\test\test1.dart', groups: undefined]
 /// fileName =match[0].dart
 export const findFileName = /[^\\\/]+(?=\.\w+$)/;
@@ -23,7 +26,7 @@ import { getPubspecPath } from "./dart/pubspec/pubspec_utils";
 
 
 export function toUpperCamelCase(str: string): string {
-  return changeCase.capitalCase(str).replace(/\s+/g, "")
+  return changeCase.pascalCase(str).replace(/\s+/g, "")
   return str
     .replace(/[^a-zA-Z0-9]+/g, '')
     .replace(/(?:^\w|[A-Z]|\b\w)/g, (word) => {
@@ -42,6 +45,11 @@ export function toLowerCamelCase(str: string): string {
     })
     .replace(/\s+/g, '');
 }
+
+export function toSnakeCase(str: string): string {
+  return changeCase.snakeCase(toUpperCamelCase(str))
+}
+
 /// 這個函數的作用是判斷一個單詞是否是複數形式
 export function isPlural(word: string): boolean {
   return /s$/.test(word);
