@@ -41,10 +41,13 @@ export function getSelectedText() {
     return text
 }
 
-export function getActivateText() {
+export function getActivateText(range: vscode.Range | undefined=undefined) {
     let editor = vscode.window.activeTextEditor
     if (!editor)
         throw new Error('No active editor');
+    if (range != null) {
+        return editor.document.getText(range)
+    }
     let text = editor.document.getText()
     return text
 }

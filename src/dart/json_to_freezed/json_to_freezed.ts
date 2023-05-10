@@ -6,7 +6,7 @@ import { tryParseJson } from '../../utils/json_utils';
 import { assert } from 'console';
 import { CustomType, CustomTypeManger, JsonObjectManger } from './json_object_helper';
 import { Icon_Warning, logError } from '../../utils/icon';
-import { getSelectedText } from '../../utils/vscode_utils';
+import { getActivateText, getSelectedText } from '../../utils/vscode_utils';
 
 export const command_dart_json_to_freezed = "command_dart_json_to_freezed"
 
@@ -32,7 +32,13 @@ export async function freezedGenerator() {
     const baseFileName = getActivityEditorFileName()
     const fileNameGPart = `part '${baseFileName}.g.dart';`;
     const fileNameFPart = `part '${baseFileName}.freezed.dart';`;
-    let importLine: string[] = [firstImport, fileNameGPart, fileNameFPart,];
+    let importLine: string[] = [];
+    let text =getActivateText()
+    for(let importText of [firstImport, fileNameGPart, fileNameFPart]){
+      if(!text.includes(importText)){
+        importLine.push(importText)
+      }
+    }
     let jsonObject = tryParseJson(selectedText);
     let className = toUpperCamelCase(baseFileName);
     // 回傳最接近的[type,type,type]

@@ -9,12 +9,14 @@ import { FreezedUnionFixer } from './dart/freezed_union_fixer';
 import { ParamToRequiredFixer } from './dart/param_to_required_fixer';
 // import { StringConvertFixer } from './dart/string_convert_fixer';
 import { RefactorTextStyleFixer } from './dart/refator_text_style_fixer';
-import { StringConvertFixer } from './dart/string_convert_fixer';
+import { StringConvertFixer } from './dart/ez_code_action/string_convert_fixer';
+import { ExtractClassFixer } from './dart/ez_code_action/extract_class_fixer';
 // 設定常數，代表指令的名稱
 const DART_MODE = { language: "dart", scheme: "file" };
 const quickFixCodeAction = [vscode.CodeActionKind.Refactor];
 export const diagnostics = vscode.languages.createDiagnosticCollection("DartPartFixer");
 
+/// 監聽文件變化時會重新刷新的action
 // 啟動擴充套件
 export function register(context: vscode.ExtensionContext) {
     let providers: CodeActionProviderInterface<any>[] = []
@@ -23,10 +25,9 @@ export function register(context: vscode.ExtensionContext) {
     providers.push(new FreezedFixer())
     providers.push(new JsonToFreezedFixer())
     providers.push(new ParamToRequiredFixer())
-    providers.push(new StringConvertFixer())
-    providers.push(new RefactorTextStyleFixer())
+    // providers.push(new RefactorTextStyleFixer())
 
-    
+        
     for (let p of providers) {
         // 註冊命令回調
         p.setOnActionCommandCallback(context)
@@ -63,6 +64,13 @@ export interface CodeActionProviderInterface<T> extends vscode.CodeActionProvide
     getCommand(): String
     getProvidedCodeActionKinds(): vscode.CodeActionKind[]
     getErrorCode(): StatusCode
+    getLangrageType(): vscode.DocumentSelector
+
+}
+
+
+export interface EzCodeActionProviderInterface extends vscode.CodeActionProvider {
+    setOnActionCommandCallback(context: vscode.ExtensionContext): void
     getLangrageType(): vscode.DocumentSelector
 
 }

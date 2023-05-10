@@ -13,6 +13,7 @@ function freezedToJsonMethod(className: string): string {
 
 
 export function toFreezedArrayFieldFormat(dartType: string, fieldName: string): string {
+    let jsonKey = fieldName;
     if (dartType != 'dynamic') {
         dartType = toUpperCamelCase(dartType)
     }
@@ -21,20 +22,39 @@ export function toFreezedArrayFieldFormat(dartType: string, fieldName: string): 
     if (isLowerCamelCase(fieldName)) {
         return `${prefix}@Default([]) final List<${dartType}> ${fieldName}`;
     } else {
-        return `${prefix}@JsonKey(name: '${fieldName}')\t@Default([]) final List<${dartType}> ${fieldName}`;
+        return `${prefix}@JsonKey(name: '${jsonKey}')\t@Default([]) final List<${dartType}> ${fieldName}`;
     }
 }
 
 export function toFreezedFieldFormat(dartType: string, fieldName: string): string {
+    let jsonKey = fieldName;
     if (!['int', 'double', 'dynamic', 'bool'].includes(dartType)) {
         dartType = toUpperCamelCase(dartType)
     }
     fieldName = toLowerCamelCase(fieldName)
+    let defaultVal = setFreezedDefault(dartType);
+    let fDefault = defaultVal ? `@Default(${defaultVal})` : '';
     let prefix = dartType === 'dynamic' ? "// Parse Null value as dynamic\n\t\t" : ''
-    if (isLowerCamelCase(fieldName)) {
-        return `${prefix}final ${dartType}? ${fieldName}`;
+    dartType=  defaultVal ? dartType  : dartType+ '?';
+    if (isLowerCamelCase(jsonKey)) {
+        return `${prefix} ${fDefault} final ${dartType} ${fieldName}`;
     } else {
-        return `${prefix}@JsonKey(name: '${fieldName}')\tfinal ${dartType}? ${fieldName}`;
+        return `${prefix} ${fDefault} @JsonKey(name: '${jsonKey}')\tfinal ${dartType} ${fieldName}`;
+    }
+}
+
+export function setFreezedDefault(dartType: string): string|undefined {
+   if (dartType === 'int') {
+        return '0';
+    } else if (dartType === 'double') {
+        return '0.0';
+    } else if (dartType === 'bool') {
+        return 'false';
+    }else if (dartType === 'String') {
+        return "''"; 
+    }
+    else {
+        return undefined;
     }
 }
 

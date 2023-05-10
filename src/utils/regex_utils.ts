@@ -13,6 +13,9 @@ export const findFreezedClassRegex = /with _\$/;
 /// 檢查是否符合常用命名規範
 export const nameCheckerRegex = /^(?:[a-z]+(?:[A-Z][a-z]*)*|^[A-Z][a-z]*([A-Z][a-z]*)*$|^[a-z]+(_[a-z]+)*$)$/;
 
+export const biggerOpenRegex = /{/g;
+export const biggerCloseRegex = /}/g;
+
 /// 'd:\work\git\vscode_extension_lazy_jack\test\test1.dart match => ['test1', index: 44, input: 'd:\work\git\vscode_extension_lazy_jack\test\test1.dart', groups: undefined]
 /// fileName =match[0].dart
 export const findFileName = /[^\\\/]+(?=\.\w+$)/;

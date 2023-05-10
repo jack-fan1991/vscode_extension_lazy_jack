@@ -4,14 +4,18 @@ import { existsSync, lstatSync, writeFile } from "fs";
 import { logError, logInfo } from './icon';
 import * as fs from 'fs';
 import { reFormat } from './vscode_utils';
-import { nameCheckerRegex } from './regex_utils';
+import { nameCheckerRegex, toSnakeCase } from './regex_utils';
+import { openEditor } from './common';
+import { DartPartFixer } from '../code_action/dart/dart_part_fixer';
 
-export function getWorkspaceFolderPath(currentFilePath: string) {
-    const workspaceFolder = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(currentFilePath));
+export function getWorkspaceFolderPath(): string | undefined {
+    let path = getActivityEditorFilePath()
+    const workspaceFolder = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(path));
     if (workspaceFolder) {
         const workspaceFolderPath = workspaceFolder.uri.fsPath;
         return workspaceFolderPath
     }
+
 }
 /// 取得當前焦點編輯器文件名
 export function getActivityEditorFileName(showFileType: boolean = false): string {
@@ -26,6 +30,21 @@ export function getActivityEditorFilePath(): string {
         throw new Error('No active editor');
     return editor.document.fileName
 }
+
+export function getActivityEditor(): vscode.TextEditor {
+    let editor = vscode.window.activeTextEditor
+    if (!editor)
+        throw new Error('No active editor');
+    return editor
+}
+
+export function getActivityEditorFolder(): string {
+    let editor = vscode.window.activeTextEditor
+    if (!editor)
+        throw new Error('No active editor');
+    return getFolderPath(editor.document)
+}
+
 
 
 export function getAbsFilePath(uri: vscode.Uri): string {
@@ -42,6 +61,9 @@ export function removeFolderPath(document: vscode.TextDocument) {
     return document.fileName.replace(currentDir, '')
 }
 
+export function getFolderPath(document: vscode.TextDocument): string {
+    return path.dirname(document.fileName);
+}
 
 
 export function createFile(
@@ -113,13 +135,13 @@ export async function replaceText(filePath: string, searchValue: string, replace
 
 
 
-export function replaceSelectionText(range: vscode.Range|undefined, replaceWith: (selectText: string) => string) {
+export function replaceSelectionText(range: vscode.Range | undefined, replaceWith: (selectText: string) => string) {
     let editor = vscode.window.activeTextEditor
     if (!editor) {
-        logError(`[No active editor]=> replaceSelectionText`, true)
+        logError(`[No active editor]=> replaceSelectionText`, false)
         return
     }
-    const selection = range?? editor.selection;
+    const selection = range ?? editor.selection;
     const text = editor.document.getText(selection);
     editor.edit(editBuilder => {
         let replaceText = replaceWith(text)
@@ -131,7 +153,7 @@ export function replaceSelectionText(range: vscode.Range|undefined, replaceWith:
 export function getCursorLineText() {
     let editor = vscode.window.activeTextEditor
     if (!editor) {
-        logError(`[No active editor]=> getCursorLineText`, true)
+        logError(`[No active editor]=> getCursorLineText`, false)
         return
     }
     const position = editor.selection.active;
@@ -141,7 +163,7 @@ export function getCursorLineText() {
 export function getCursorWordRange(): vscode.Range | undefined {
     let editor = vscode.window.activeTextEditor
     if (!editor) {
-        logError(`[No active editor]=> getCursorWordText`, true)
+        logError(`[No active editor]=> getCursorWordText`, false)
         return
     }
     const position = editor.selection.active;
@@ -157,6 +179,8 @@ export function getCursorWordRange(): vscode.Range | undefined {
 }
 
 
+
+
 function getWordRangeAtPosition(document: vscode.TextDocument, position: vscode.Position): vscode.Range | undefined {
     const line = document.lineAt(position.line).text;
     let left = position.character - 1
@@ -166,7 +190,7 @@ function getWordRangeAtPosition(document: vscode.TextDocument, position: vscode.
         left--
         let leftRange = new vscode.Range(position.line, left, position.line, position.character);
         let text = document.getText(leftRange)
-        logInfo('text: ' + text, false)
+        // logInfo('text: ' + text, false)
         if (text.match(nameCheckerRegex) === null) {
             left++
             break
@@ -182,7 +206,7 @@ function getWordRangeAtPosition(document: vscode.TextDocument, position: vscode.
         right++
         let rightRange = new vscode.Range(position.line, left, position.line, right);
         let text = document.getText(rightRange)
-        logInfo('text: ' + text, false)
+        // logInfo('text: ' + text, false)
         if (text.match(nameCheckerRegex) === null) {
             right--
             break
@@ -199,3 +223,123 @@ function getWordRangeAtPosition(document: vscode.TextDocument, position: vscode.
 }
 
 
+
+export async function createFileInPicker(editor: vscode.TextEditor, uriPath: string | undefined, fileName: string | undefined, range: vscode.Range) {
+    let uriString = uriPath ?? ""
+    let document = editor.document
+    let data =document.getText(range)
+    let defaultUri;
+    if (uriPath != null) {
+        defaultUri = vscode.Uri.file(uriPath)
+    }
+    else if (uriPath == null && fileName == null) {
+        defaultUri = vscode.window.activeTextEditor?.document.uri
+    } else if (fileName != null) {
+        let folder = getFolderPath(vscode.window.activeTextEditor!.document)
+        let file: string = fileNameFormat(fileName ?? "temp")
+        file += `.${getFileType()}`
+        defaultUri = vscode.Uri.file(path.join(folder, file))
+    }
+    let options: vscode.SaveDialogOptions = {
+        defaultUri: defaultUri,
+        filters: {
+
+            'All Files': ['*']
+        }
+    };
+
+    const uri = await vscode.window.showSaveDialog(options);
+
+    if (uri) {
+        fs.writeFile(uri.fsPath, data, async (err) => {
+            if (err) {
+                vscode.window.showErrorMessage(`Failed to create file: ${err.message}`);
+            } else {
+                let currentDir = path.dirname(document.fileName);
+                let currentFileName = path.basename(document.fileName);
+                let targetAbsPath = path.resolve(currentDir, uri.fsPath);
+                let targetDir = path.dirname(targetAbsPath);
+                let targetFileName = path.basename(targetAbsPath);
+                let targetImportPartOfName = path.join(path.relative(targetDir, currentDir), currentFileName);
+                let newPath = uri.fsPath.replace(getWorkspaceFolderPath() ?? "", '')
+                let partEditor = await openEditor(uri.fsPath)
+                if (targetImportPartOfName.split('/')[0] != '..' || targetImportPartOfName.split('/').length === 1) {
+                    targetImportPartOfName = `./${targetImportPartOfName}`;
+                }
+                await partEditor?.edit((editBuilder) => {
+                    editBuilder.insert(new vscode.Position(0, 0), `part of '${targetImportPartOfName}';\n\n`);
+                })
+                let needPartPath = path.join(path.relative(currentDir,targetDir ), targetFileName);
+                if (needPartPath.split('/')[0] != '..' || needPartPath.split('/').length === 1) {
+                    needPartPath = `./${needPartPath}`;
+                }
+                let importLine = `part '${needPartPath}';`;
+                let needPartFile = path.join(currentDir, currentFileName)
+                await partEditor?.edit((editBuilder) => {
+                    editBuilder.replace(range, '')
+                })
+                await vscode.commands.executeCommand(DartPartFixer.command, document, needPartFile, importLine);
+                vscode.window.showInformationMessage(`File created: ${newPath}`);
+            }
+        });
+    }
+}
+
+
+function fileNameFormat(fileName: string): string {
+    let language = vscode.window.activeTextEditor?.document.languageId
+    let fileType = 'txt'
+    switch (language) {
+        case `dart`:
+            fileName = toSnakeCase(fileName)
+        default:
+            break;
+    }
+    return fileName
+}
+
+
+function getFileType(): string {
+    let language = vscode.window.activeTextEditor?.document.languageId
+    let fileType = 'txt'
+    switch (language) {
+        case 'yaml':
+            fileType = 'yaml'
+            break;
+        case 'json':
+            fileType = 'json'
+            break;
+        case 'xml':
+            fileType = 'xml'
+            break;
+        case 'html':
+            fileType = 'html'
+            break;
+        case 'css':
+            fileType = 'css'
+            break;
+        case 'javascript':
+            fileType = 'js'
+            break;
+        case 'typescript':
+            fileType = 'ts'
+            break;
+        case 'markdown':
+            fileType = 'md'
+            break;
+        case 'python':
+            fileType = 'py'
+            break;
+        case 'java':
+            fileType = 'java'
+            break;
+        case 'c':
+            fileType = 'c'
+            break;
+        case `dart`:
+            fileType = 'dart'
+        default:
+            break;
+    }
+    return fileType
+}

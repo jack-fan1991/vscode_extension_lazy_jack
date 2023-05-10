@@ -5,6 +5,7 @@ import { openEditor } from '../../utils/common';
 import { CodeActionProviderInterface } from '../code_action';
 import { StatusCode } from '../error_code';
 import { getAbsFilePath, removeFolderPath, replaceText } from '../../utils/file_utils';
+import { reFormat } from '../../utils/vscode_utils';
 
 export class PartFixInfo {
     targetAbsPath: string;
@@ -32,7 +33,7 @@ export class DartPartFixer implements CodeActionProviderInterface<PartFixInfo> {
 
     createFixAction(document: vscode.TextDocument, range: vscode.Range, data: PartFixInfo): vscode.CodeAction {
         const fix = new vscode.CodeAction(`${data.msg}`, vscode.CodeActionKind.Refactor);
-        fix.command = { command: DartPartFixer.command, title: data.title, arguments: [document, range, data.targetAbsPath, data.importLine] };
+        fix.command = { command: DartPartFixer.command, title: data.title, arguments: [document,  data.targetAbsPath, data.importLine] };
         fix.diagnostics = [this.createDiagnostic(range, data)];
         fix.isPreferred = true;
         return fix;
@@ -47,13 +48,16 @@ export class DartPartFixer implements CodeActionProviderInterface<PartFixInfo> {
     // 註冊action 按下後的行為
     setOnActionCommandCallback(context: vscode.ExtensionContext) {
         // 注册 Quick Fix 命令
-        context.subscriptions.push(vscode.commands.registerCommand(DartPartFixer.command, async (document: vscode.TextDocument, range: vscode.Range, targetPath: string, importText: string) => {
+        context.subscriptions.push(vscode.commands.registerCommand(DartPartFixer.command, async (document: vscode.TextDocument,  targetPath: string, importText: string) => {
             // quick fix 點選的行
             // let lineNumber: number = range.start.line
             // let partLine = document.lineAt(lineNumber).text;
 
             let textEditor = await openEditor(targetPath, true)
+            
             if (textEditor) {
+                let text = textEditor.document.getText()
+                if(text.includes(importText))return
                 if (importText.includes('part of')) {
                     let text = textEditor.document.getText()
                     let allImportNeedInsert = document.getText().match(/^import\s+['"][^'"]+['"];/gm)??[]
@@ -63,22 +67,17 @@ export class DartPartFixer implements CodeActionProviderInterface<PartFixInfo> {
                     let allImportNeedMove = text.match(/^import\s+['"][^'"]+['"];/gm)??[]
                     let needMove = allImportNeedMove.filter((string) => {return !document.getText().includes(string)} )
                     let result =[...allImportNeedInsert,...needMove].join('\n')
-                    let lastImportLine = 0
+                    let insertIdx=0
                     let lines = text.split(/\r?\n/)
                     for (let l of lines) {
-                        let idx = l.indexOf(l);
-                        let maxTry = 0
-                        for (let i = idx; i < lines.length - idx; i++) {
-                            if (!l.includes('import')) {
-                                maxTry++
-                            }
-                            if (l.includes('import')) break
-                            if (maxTry > 10) break
-                        }
-                        lastImportLine++
+                        if(l .includes('import')) continue
+                        if(l .includes('part') ) continue
+                        if(l==='') continue
+                        insertIdx = lines.indexOf(l)-1;
+                        break
                     }
                     await textEditor.edit((editBuilder) => {
-                        editBuilder.replace(new vscode.Range(new vscode.Position(0, 0), new vscode.Position(lastImportLine+1, 0)), importText + '\n')
+                        editBuilder.replace(new vscode.Range(new vscode.Position(0, 0), new vscode.Position(insertIdx, 0)), importText + '\n')
                         // editBuilder.insert(new vscode.Position(importText.includes('part') ? lastImportLine : 0, 0), importText + '\n');
                     })
                     let moveToEditor = await openEditor(document.uri.path, true)
@@ -95,22 +94,18 @@ export class DartPartFixer implements CodeActionProviderInterface<PartFixInfo> {
                     replaceText(getAbsFilePath(document.uri), document.getText(), document.getText())
                 } else {
                     let text = textEditor.document.getText()
-                    let lastImportLine = 0
                     let lines = text.split(/\r?\n/)
+                    let insertIdx=0
                     for (let l of lines) {
-                        let idx = l.indexOf(l);
-                        let maxTry = 0
-                        for (let i = idx; i < lines.length - idx; i++) {
-                            if (!l.includes('import')) {
-                                maxTry++
-                            }
-                            if (l.includes('import')) break
-                            if (maxTry > 10) break
-                        }
-                        lastImportLine++
+                        if(l .includes('import')) continue
+                        if(l .includes('part') ) continue
+                        if(l==='') continue
+
+                        insertIdx = lines.indexOf(l)-1;
+                        break
                     }
                     await textEditor.edit((editBuilder) => {
-                        editBuilder.insert(new vscode.Position(importText.includes('part') ? lastImportLine : 0, 0), importText + '\n');
+                        editBuilder.insert(new vscode.Position(importText.includes('part') ? insertIdx : 0, 0), importText + '\n');
                     })
                     if (textEditor.document.isDirty) {
                         await textEditor.document.save()
@@ -118,6 +113,7 @@ export class DartPartFixer implements CodeActionProviderInterface<PartFixInfo> {
                     // trigger refresh
                     replaceText(getAbsFilePath(document.uri), document.getText(), document.getText())
                 }
+                reFormat()
             }
         }));
     }
@@ -170,7 +166,7 @@ export class DartPartFixer implements CodeActionProviderInterface<PartFixInfo> {
             targetImportPartOfName = `./${targetImportPartOfName}`;
         }
         let importLine = `${keyPoint} '${targetImportPartOfName}';`;
-        if (targetFileContent.includes(importLine.replace(/\s/g, '')) || targetFileContent.includes(importLine.replace(/\s/g, '').replace('./', ''))) {
+        if (targetFileContent.includes(targetImportPartOfName.replace(/\s/g, '')) || targetFileContent.includes(importLine.replace(/\s/g, '').replace('./', ''))) {
             console.log(`${importLine} already in ${targetAbsPath}`);
             return;
         }
