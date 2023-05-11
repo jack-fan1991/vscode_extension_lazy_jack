@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as yaml from 'yaml';
-import { convertPathIfWindow } from './vscode_utils';
+import { convertPathIfWindow, getRootPath, getWorkspacePath } from './vscode_utils';
 
 
 export function showInfo2OptionMessage(msg: string, option1?: string, option2?: string, onOption1?: () => void) {
@@ -38,13 +38,10 @@ export async function onFlutter(getData: (data: any) => any, errorData: () => an
 }
 
 export async function onGit(getData: () => any[], errorData: () => any[]) {
-  const files = await vscode.workspace.findFiles('**/.gitignore', '**/android/**', 1);
-  if (files.length <= 0) {
-    console.log('當前不是 git 專案');
-    return errorData()
-
+  let workspace = getRootPath()
+  if (fs.existsSync(`${workspace}/.git`)){
+    return getData()
   }
-  return getData()
 }
 
 function readFile(absPath: string): any {

@@ -28,9 +28,17 @@ export class FreezedUnionFixer implements CodeActionProviderInterface<string> {
         let actions: vscode.CodeAction[] = [];
         const text = editor.document.getText();
         let match = line.match(findFreezedClassRegex) ?? [];
+        let classNameMatch = line.match(findClassRegex) ?? []
+
         if (match.length > 0) {
             actions.push(this.createFixAction(document, range, "Add Union state"));
-            actions.push(this.createAddFromJsonFixAction(document, range, "Add from json method"));
+            if (classNameMatch.length > 0) {
+                let className = classNameMatch[1]
+                let factoryLine = `factory ${className}.fromJson`
+                if (!editor.document.getText().includes(factoryLine)) {
+                    actions.push(this.createAddFromJsonFixAction(document, range, "Add from json method"));
+                }
+            }
         }
         return actions;
 
@@ -63,20 +71,20 @@ export class FreezedUnionFixer implements CodeActionProviderInterface<string> {
             const editor = vscode.window.activeTextEditor;
             if (!editor)
                 return;
-            let linePosition =range.start.line
-            let line =document.lineAt(linePosition).text
-            let match= line.match(findClassRegex)??[]
-            let className =match[1]
-            let maxTry =20;
-            let count =0
-            let insertPosition =linePosition;
-            while(count<maxTry){
+            let linePosition = range.start.line
+            let line = document.lineAt(linePosition).text
+            let match = line.match(findClassRegex) ?? []
+            let className = match[1]
+            let maxTry = 20;
+            let count = 0
+            let insertPosition = linePosition;
+            while (count < maxTry) {
                 insertPosition++
                 count++
-                let line:string = document.lineAt(insertPosition).text
-                if (line.includes('._'))continue
-                if(line.replace(/\s+/g,'').includes(`constfactory${className}.`))continue
-                break;  
+                let line: string = document.lineAt(insertPosition).text
+                if (line.includes('._')) continue
+                if (line.replace(/\s+/g, '').includes(`constfactory${className}.`)) continue
+                break;
             }
             await editor.edit((editBuilder) => {
                 editBuilder.insert(new vscode.Position(insertPosition, 0), `\tconst factory ${className}.newState() = _newState;\n`);
@@ -87,26 +95,26 @@ export class FreezedUnionFixer implements CodeActionProviderInterface<string> {
             const editor = vscode.window.activeTextEditor;
             if (!editor)
                 return;
-            let linePosition =range.start.line
-            let line =document.lineAt(linePosition).text
-            let match= line.match(findClassRegex)??[]
-            let className =match[1]
-            let maxTry =20;
-            let count =0
-            let insertPosition =linePosition;
-            while(count<maxTry){
+            let linePosition = range.start.line
+            let line = document.lineAt(linePosition).text
+            let match = line.match(findClassRegex) ?? []
+            let className = match[1]
+            let maxTry = 20;
+            let count = 0
+            let insertPosition = linePosition;
+            while (count < maxTry) {
                 insertPosition++
                 count++
-                let line:string = document.lineAt(insertPosition).text
-                if (line.includes('._'))continue
-                if(line.replace(/\s+/g,'').includes(`constfactory${className}.`))continue
-                break;  
+                let line: string = document.lineAt(insertPosition).text
+                if (line.includes('._')) continue
+                if (line.replace(/\s+/g, '').includes(`constfactory${className}.`)) continue
+                break;
             }
             await editor.edit((editBuilder) => {
-                editBuilder.insert(new vscode.Position(insertPosition, 0), `\tfactory ${className}.fromJson(Map<String, dynamic> json) => _$${className}Json(json);\n`);
+                editBuilder.insert(new vscode.Position(insertPosition, 0), `\tfactory ${className}.fromJson(Map<String, dynamic> json) => _$${className}FromJson(json);\n`);
             })
-             // trigger refresh
-             replaceText(getAbsFilePath(document.uri), document.getText(), document.getText())
+            // trigger refresh
+            replaceText(getAbsFilePath(document.uri), document.getText(), document.getText())
         }));
     }
 
