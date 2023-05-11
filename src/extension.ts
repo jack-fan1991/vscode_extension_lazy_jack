@@ -34,6 +34,7 @@ export async function activate(context: vscode.ExtensionContext) {
   vscode.commands.registerCommand(sidebar.sidebar_command, (args) => {
     sidebar.onTreeItemSelect(context, args)
   })
+  
 }
 
 export function deactivate() { }
