@@ -3,10 +3,15 @@ import * as yaml from "yaml";
 import * as fs from 'fs';
 import { logError, logInfo } from "../../icon";
 import { readFileToText, replaceText } from "../../file_utils";
+import { get } from "lodash";
 
 
 const PUBSPEC_FILE_NAME = "pubspec.yaml";
 const PUBSPEC_LOCK_FILE_NAME = "pubspec.lock";
+
+export function isFlutterProject (){
+  return  getPubspecPath()!= null
+}
 
 export function getPubspecPath(): string | undefined {
   return getWorkspacePath(PUBSPEC_FILE_NAME);

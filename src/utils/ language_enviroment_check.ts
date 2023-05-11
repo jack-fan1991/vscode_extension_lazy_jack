@@ -2,11 +2,11 @@ import path = require('path');
 import * as vscode from 'vscode';
 import { getPubspecAsMap } from './dart/pubspec/pubspec_utils';
 
-export function editorIsDart() {
-    return isEditorLanguage('dart');
+export function activeEditorIsDart() {
+    return isActiveEditorLanguage('dart');
 }
 
-export function isEditorLanguage(languageId: string) {
+export function isActiveEditorLanguage(languageId: string) {
     return vscode.window.activeTextEditor && vscode.window.activeTextEditor.document.languageId === languageId;
 }
 

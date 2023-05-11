@@ -1,29 +1,27 @@
 import * as vscode from 'vscode'
 import { registerDartSnippet } from './utils/snippet_utils';
-import {  registerGenerateGetterSetter, registerToRequireParams, registerJsonToFreezed, registerCommandDartSelectedToFactory, registerGenerateAssert } from './dart/dart';
+import {  registerToRequireParams, registerJsonToFreezed, registerCommandDartSelectedToFactory, registerGenerateAssert } from './dart/dart';
 import { registerFastGithubCmd } from './github/github_utils';
 import * as sidebar from './sidebar';
 import * as codeAction from './code_action/code_action';
 import { parseDartGitExtensionInYaml } from './utils/dart/pubspec/analyze_dart_git_dependency';
 import { registerUpdateDependencyVersion } from './utils/dart/pubspec/update_git_dependency';
-import { flutterCommandRegister } from './utils/dart/flutter/regiester_flutter_utils';
-import { getSelectedText } from './utils/dart/flutter/get_selected_text';
 import { registerEzAction } from './code_action/ez_code_action';
+import { registerFileListener } from './file_listener/filer_listener';
 
 export async function activate(context: vscode.ExtensionContext) {
   console.log('your extension "sugar-demo-vscode" is now active!')
   await parseDartGitExtensionInYaml(true)
   registerDartSnippet(context)
-  registerGenerateGetterSetter(context)
   registerFastGithubCmd(context)
   registerToRequireParams(context)
   registerJsonToFreezed(context)
   registerCommandDartSelectedToFactory(context)
   registerGenerateAssert(context)
   registerUpdateDependencyVersion(context)
-  flutterCommandRegister(context)
   codeAction.register(context)
   registerEzAction(context)
+  registerFileListener(context)
 
 
   //註冊 views id
@@ -36,7 +34,6 @@ export async function activate(context: vscode.ExtensionContext) {
   vscode.commands.registerCommand(sidebar.sidebar_command, (args) => {
     sidebar.onTreeItemSelect(context, args)
   })
-  // getSelectedText(vscode.window.activeTextEditor!)
 }
 
 export function deactivate() { }

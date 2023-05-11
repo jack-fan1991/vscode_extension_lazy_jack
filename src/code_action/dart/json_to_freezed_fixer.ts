@@ -16,7 +16,6 @@ export class JsonToFreezedFixer implements CodeActionProviderInterface<string> {
 
     // 編輯時對單行檢測
     public provideCodeActions(document: vscode.TextDocument, range: vscode.Range): vscode.CodeAction[] | undefined {
-        // const text = document.getText();
         const editor = vscode.window.activeTextEditor;
         if (!editor) return [];
         const selection = editor.selection;
