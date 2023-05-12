@@ -37,7 +37,7 @@ export class StringConvertFixer implements EzCodeActionProviderInterface {
         if(text.length>30){
             data = 'UpperCamel'
         }
-        const fix = new vscode.CodeAction(data, vscode.CodeActionKind.RefactorRewrite);
+        const fix = new vscode.CodeAction(data, vscode.CodeActionKind.QuickFix);
         fix.command = { command: StringConvertFixer.commandToUpperCamel, title: data, arguments: [range] };
         fix.isPreferred = true;
         return fix;
@@ -48,7 +48,7 @@ export class StringConvertFixer implements EzCodeActionProviderInterface {
         if(text.length>30){
             data = 'LowerCamel'
         }
-        const fix = new vscode.CodeAction(data, vscode.CodeActionKind.RefactorRewrite);
+        const fix = new vscode.CodeAction(data, vscode.CodeActionKind.QuickFix);
         fix.command = { command: StringConvertFixer.commandLowerCamel, title: data, arguments: [range] };
         fix.isPreferred = true;
         return fix;
@@ -59,7 +59,7 @@ export class StringConvertFixer implements EzCodeActionProviderInterface {
         if(text.length>30){
             data = 'UpperCase'
         }
-        const fix = new vscode.CodeAction(data, vscode.CodeActionKind.RefactorRewrite);
+        const fix = new vscode.CodeAction(data, vscode.CodeActionKind.QuickFix);
         fix.command = { command: StringConvertFixer.commandToUpperCase, title: data, arguments: [range] };
         fix.isPreferred = true;
         return fix;
@@ -70,7 +70,7 @@ export class StringConvertFixer implements EzCodeActionProviderInterface {
         if(text.length>30){
             data = 'SnackCase'
         }
-        const fix = new vscode.CodeAction(data, vscode.CodeActionKind.RefactorRewrite);
+        const fix = new vscode.CodeAction(data, vscode.CodeActionKind.QuickFix);
         fix.command = { command: StringConvertFixer.commandToSnackCase, title: data, arguments: [range] };
         fix.isPreferred = true;
         return fix;

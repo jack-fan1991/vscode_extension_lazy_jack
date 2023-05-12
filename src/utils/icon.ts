@@ -8,6 +8,7 @@ export const Icon_Success2 = '✔️';
 export const Icon_Debug = '🐛';
 export const Icon_Star = '⭐';
 
+
 export function logError(msg: any = "",showOnVscode:boolean = true) {
     console.log(`${Icon_Error} : ${msg}`);
     if(showOnVscode){

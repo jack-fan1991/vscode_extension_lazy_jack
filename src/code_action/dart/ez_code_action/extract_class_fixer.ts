@@ -1,9 +1,7 @@
 import * as vscode from 'vscode';
-import { CodeActionProviderInterface, EzCodeActionProviderInterface } from '../../code_action';
-import { StatusCode } from '../../error_code';
-import { biggerCloseRegex, biggerOpenRegex, findClassRegex, toLowerCamelCase, toSnakeCase, toUpperCamelCase } from '../../../utils/regex_utils';
-import { createFileInPicker, getActivityEditor, getCursorLineText, findNormalWordFormatFromCursor, replaceSelectionText } from '../../../utils/file_utils';
-import { logInfo } from '../../../utils/icon';
+import {  EzCodeActionProviderInterface } from '../../code_action';
+import { biggerCloseRegex, biggerOpenRegex, findClassRegex,   } from '../../../utils/regex_utils';
+import { createFileInPicker, getActivityEditor, getCursorLineText } from '../../../utils/file_utils';
 import { getActivateText } from '../../../utils/vscode_utils';
 
 export class Counter {
