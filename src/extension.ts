@@ -7,11 +7,11 @@ import * as codeAction from './code_action/code_action';
 import { parseDartGitExtensionInYaml } from './utils/dart/pubspec/analyze_dart_git_dependency';
 import { registerUpdateDependencyVersion } from './utils/dart/pubspec/update_git_dependency';
 import { registerEzAction } from './code_action/ez_code_action';
-import { registerFileListener } from './file_listener/filer_listener';
+import { registerFileListener } from './file_listener/activate_file_listener';
 
 export async function activate(context: vscode.ExtensionContext) {
   console.log('your extension "sugar-demo-vscode" is now active!')
-  await parseDartGitExtensionInYaml(true)
+  parseDartGitExtensionInYaml(true)
   registerDartSnippet(context)
   registerFastGithubCmd(context)
   registerToRequireParams(context)
