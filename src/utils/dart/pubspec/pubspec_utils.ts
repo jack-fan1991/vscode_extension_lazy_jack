@@ -45,7 +45,7 @@ export async function getPubspecAsMap(): Promise<Record<string, any> | undefined
         const fileContents = fs.readFileSync(path, 'utf-8');
         return yaml.parse(fileContents);
       } catch (e) {
-        logError(`getYAMLFileContent ${e}`,true)
+        logError(`getYAMLFileContent ${e}`,false)
       }
     
   }

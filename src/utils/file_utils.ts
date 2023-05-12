@@ -242,7 +242,7 @@ function getWordRangeAtPosition(document: vscode.TextDocument, position: vscode.
 
 
 
-export async function createFileInPicker(editor: vscode.TextEditor, uriPath: string | undefined, fileName: string | undefined, range: vscode.Range) {
+export async function createFileInPicker(editor: vscode.TextEditor, uriPath: string | undefined, fileName: string | undefined, range: vscode.Range,onCreateFile: (uri: vscode.Uri) => void) {
     let uriString = uriPath ?? ""
     let document = editor.document
     let data =document.getText(range)
@@ -298,6 +298,7 @@ export async function createFileInPicker(editor: vscode.TextEditor, uriPath: str
                 })
                 await vscode.commands.executeCommand(DartPartFixer.command, document, needPartFile, importLine);
                 vscode.window.showInformationMessage(`File created: ${newPath}`);
+                onCreateFile(uri)
             }
         });
     }

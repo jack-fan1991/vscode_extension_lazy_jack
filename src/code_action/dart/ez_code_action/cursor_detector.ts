@@ -2,9 +2,9 @@ import * as vscode from 'vscode';
 import { EzCodeActionProviderInterface } from '../../code_action';
 import { runParamToRequireGenerator } from '../../../dart/to_require_params';
 import { getCursorLineText } from '../../../utils/file_utils';
-import { Counter } from './extract_class_fixer';
-import { middleCloseRegex, middleOpenRegex } from '../../../utils/regex_utils';
-let counter = new Counter()
+import { OpenCloseFinder } from './class_action';
+import { smallCloseRegex, smallOpenRegex } from '../../../utils/regex_utils';
+let counter = new OpenCloseFinder()
 
 export class CurserDetector implements EzCodeActionProviderInterface {
 
@@ -35,7 +35,7 @@ export class CurserDetector implements EzCodeActionProviderInterface {
         if (!cursorLineText.includes('(')) return undefined
         counter.reset();
         let start = range.start.line
-        let match = cursorLineText.match(middleOpenRegex)
+        let match = cursorLineText.match(smallOpenRegex)
         let action :vscode.CodeAction | undefined =undefined
         {
             {
@@ -49,8 +49,8 @@ export class CurserDetector implements EzCodeActionProviderInterface {
                         let lineText = lines[i];
                         if(lineText.includes('{')|| lineText.includes('}')) break 
                         currentText += lineText + '\n'
-                        let matchOpen = lineText.match(middleOpenRegex)
-                        let matchClose = lineText.match(middleCloseRegex)
+                        let matchOpen = lineText.match(smallOpenRegex)
+                        let matchClose = lineText.match(smallCloseRegex)
                         counter.incrementOpen(matchOpen != null ? matchOpen.length : 0)
                         counter.incrementClose(matchClose != null ? matchClose.length : 0)
                         if (counter.isDirty()) {
