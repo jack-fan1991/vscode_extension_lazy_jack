@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 import { existsSync, lstatSync, writeFile } from "fs";
 import { logError, logInfo } from './icon';
 import * as fs from 'fs';
-import { reFormat } from './vscode_utils';
+import { convertPathIfWindow, reFormat } from './vscode_utils';
 import { nameCheckerRegex, toSnakeCase } from './regex_utils';
 import { openEditor } from './common';
 import { DartPartFixer } from '../code_action/dart/dart_part_fixer';
@@ -38,14 +38,31 @@ export function getActivityEditor(): vscode.TextEditor {
     return editor
 }
 
+export function getActivityDocument(): vscode.TextDocument {
+    return getActivityEditor().document;
+}
+
+export function getActivityUri(): vscode.Uri {
+    return getActivityDocument().uri;
+}
+
+export function getActivityPath(fullPath:boolean=false): string {
+    let path =  fullPath? getActivityUri().fsPath: getActivityUri().path;
+    path= convertPathIfWindow(path)
+    return path;
+}
+
+export function getActivityFileName(): string {
+    return (getActivityPath().split('/').pop() ?? '').split('.')[0];
+}
+
+
 export function getActivityEditorFolder(): string {
     let editor = vscode.window.activeTextEditor
     if (!editor)
         throw new Error('No active editor');
     return getFolderPath(editor.document)
 }
-
-
 
 export function getAbsFilePath(uri: vscode.Uri): string {
     let path = uri.path

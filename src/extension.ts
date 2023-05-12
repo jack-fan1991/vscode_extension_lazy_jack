@@ -8,6 +8,7 @@ import { parseDartGitExtensionInYaml } from './utils/dart/pubspec/analyze_dart_g
 import { registerUpdateDependencyVersion } from './utils/dart/pubspec/update_git_dependency';
 import { registerEzAction } from './code_action/ez_code_action';
 import { registerFileListener } from './file_listener/activate_file_listener';
+import { registerCompletionItemProvider } from './completion_item_provider/completion_item_provider';
 
 export async function activate(context: vscode.ExtensionContext) {
   console.log('your extension "sugar-demo-vscode" is now active!')
@@ -22,6 +23,7 @@ export async function activate(context: vscode.ExtensionContext) {
   codeAction.register(context)
   registerEzAction(context)
   registerFileListener(context)
+  registerCompletionItemProvider(context)
 
 
   //註冊 views id
@@ -38,3 +40,5 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() { }
+
+

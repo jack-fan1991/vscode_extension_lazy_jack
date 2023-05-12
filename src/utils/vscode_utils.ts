@@ -71,3 +71,13 @@ export function saveActivateEditor() {
     return editor.document.save()
 }
 
+
+export async function insertToActivateEditor(text:string,msg:string|undefined=undefined,range:vscode.Position|undefined=undefined) {
+    await getActivateTextEditor().edit((editBuilder) => {
+        if(msg){
+            vscode.window.showInformationMessage(msg)
+        }
+        editBuilder.insert(range?? new vscode.Position(0,0), text);
+    })
+}
+
