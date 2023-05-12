@@ -3,11 +3,11 @@ import { runCommand } from "../../terminal_utils";
 import * as vscode from 'vscode';
 import path = require("path");
 import { getPubspecAsText, getPubspecPath, replaceInPubspecFile } from "./pubspec_utils";
-import { isWindows, saveActivateEditor } from "../../vscode_utils";
+import { getActivateText, getActivateTextEditor, isWindows, saveActivateEditor } from "../../vscode_utils";
 import { Icon_Info, logInfo } from "../../icon";
 import { extension_updateDependencyVersion } from "./update_git_dependency";
 import { getPubspecDependencyOverridePath } from "../../regex_utils";
-import { showPicker } from "../../common";
+import { openEditor, showPicker } from "../../common";
 export class DependenciesInfo {
     name: string;
     uri: string;
@@ -51,7 +51,7 @@ let versionPickerCache = new Map<string, any>()
 let isFirstOpen = true
 
 
-export async function parseDartGitExtensionInYaml(showUpdate:boolean=false) {
+export async function parseDartGitExtensionInYaml(showUpdate: boolean = false) {
     gitExtensions = []
     gitDependenciesOverrides = []
     gitDependenciesPickerList = []
@@ -65,16 +65,15 @@ export async function parseDartGitExtensionInYaml(showUpdate:boolean=false) {
         gitDependenciesOverrides = [...gitDependenciesOverrides, ...parseIfOverrideMark()]
         if (gitDependencies != undefined) {
             gitExtensions = convertToDependenciesInfo(gitDependencies)
-            await convertDependenciesToPickerItems(pubspecData, gitExtensions,showUpdate)
+            await convertDependenciesToPickerItems(pubspecData, gitExtensions, showUpdate)
         }
-
     }, () => undefined, true)
 
 }
 
 
 
-async function convertDependenciesToPickerItems(pubspecData: any, gitDependencies: DependenciesInfo[],showUpdate:boolean=false) {
+async function convertDependenciesToPickerItems(pubspecData: any, gitDependencies: DependenciesInfo[], showUpdate: boolean = false) {
     let versionPickerList: { label: string; description: string; url: string; }[] = []
     for (let dependenciesInfo of gitDependencies) {
         versionPickerList = []
@@ -105,14 +104,32 @@ async function convertDependenciesToPickerItems(pubspecData: any, gitDependencie
 async function showUpdateIfNotMatch(dependenciesInfo: DependenciesInfo, latestVersion: string) {
     if (dependenciesInfo.branch == latestVersion) return
     let dependencyOverride = gitDependenciesOverrides.filter((x) => x.name.includes(dependenciesInfo.name))[0];
-    let overrideActivate = dependencyOverride.isActivate()
+    let overrideActivate = dependencyOverride == undefined ? false : dependencyOverride.isActivate()
     let localPathInfo = overrideActivate ? `Project using override path「 ${dependencyOverride.path} 」 ` : ""    // show update or use locale
     vscode.window.showInformationMessage(`[ New Version ${latestVersion}] ${dependenciesInfo.name} : In Project from ${dependenciesInfo.branch}=>${latestVersion},  ${localPathInfo} `, 'Update', !overrideActivate ? 'Debug Local' : "").then(async (selectedOption) => {
         if (selectedOption === 'Debug Local') {
             if (!overrideActivate) {
-                await replaceInPubspecFile(dependencyOverride.unCommentString(), dependencyOverride.commentString());
-                logInfo(`Activate ${dependencyOverride.name} local override ${dependencyOverride.path}`)
+                if (dependencyOverride == undefined) {
+                    await vscode.window.showInputBox({ prompt: `Please input ${dependenciesInfo.name} local path`, value: `../${dependenciesInfo.name}` }).then(async (localPath) => {
+                        if (localPath == undefined) return
+                        dependencyOverride = new OverrideDependenciesInfo(dependenciesInfo.name, localPath!)
+                        openEditor(getPubspecPath()!)
+                        let text = getActivateText()
+                        let editor =getActivateTextEditor()
+                        let assertLineAt = text.split('\n').indexOf('assets:')-1
+                        editor.edit((editBuilder) => {
+                            editBuilder.insert(new vscode.Position(assertLineAt, 0),`\ndependency_overrides:\n  ${dependencyOverride.commentString()}\n` )
+                        })
+                        logInfo(`Activate ${dependencyOverride.name} local override ${dependencyOverride.path}`)
+                    
+                    }
+                    )
+                } else {
+                    await replaceInPubspecFile(dependencyOverride.unCommentString(), dependencyOverride.commentString());
+                    logInfo(`Activate ${dependencyOverride.name} local override ${dependencyOverride.path}`)
+                }
             }
+
         } else if (selectedOption === 'Update') {
             await vscode.commands.executeCommand(extension_updateDependencyVersion, dependenciesInfo, latestVersion, dependencyOverride);
         }

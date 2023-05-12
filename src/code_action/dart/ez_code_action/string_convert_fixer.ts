@@ -78,7 +78,7 @@ export class StringConvertFixer implements EzCodeActionProviderInterface {
 
 
     // 註冊action 按下後的行為
-    setOnActionCommandCallback(context: vscode.ExtensionContext) {
+    registerCommand(context: vscode.ExtensionContext) {
         context.subscriptions.push(vscode.commands.registerCommand(StringConvertFixer.commandToUpperCamel, async (range: vscode.Range) => {
             replaceSelectionText(range, toUpperCamelCase)
         }));

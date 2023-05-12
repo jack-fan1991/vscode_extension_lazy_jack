@@ -13,7 +13,7 @@ export function registerEzAction(context: vscode.ExtensionContext) {
     // providers.push(new CurserDetector())
     for (let p of providers) {
         // 註冊命令回調
-        p.setOnActionCommandCallback(context)
+        p.registerCommand(context)
         context.subscriptions.push(
             vscode.languages.registerCodeActionsProvider(
                 p.getLangrageType(),
@@ -25,7 +25,7 @@ export function registerEzAction(context: vscode.ExtensionContext) {
 
 
 export interface EzCodeActionProviderInterface extends vscode.CodeActionProvider {
-    setOnActionCommandCallback(context: vscode.ExtensionContext): void
+    registerCommand(context: vscode.ExtensionContext): void
     getLangrageType(): vscode.DocumentSelector
 
 }

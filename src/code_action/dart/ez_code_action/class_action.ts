@@ -36,15 +36,17 @@ export class ExtractClassFixer implements EzCodeActionProviderInterface {
     }
 
     // 註冊action 按下後的行為
-    setOnActionCommandCallback(context: vscode.ExtensionContext) {
+    registerCommand(context: vscode.ExtensionContext) {
         context.subscriptions.push(vscode.commands.registerCommand(ExtractClassFixer.commandExtractClass, async (editor: vscode.TextEditor, range: vscode.Range) => {
             let text = getActivateText(range)
             let match = text.match(findClassRegex)
 
             createFileInPicker(editor, undefined, match == null ? undefined : match[1], range,(_) => {
                 editor.edit(editBuilder => {
-                    editBuilder.replace(new vscode.Range(new vscode.Position(range.start.line-1,0),new vscode.Position(range.end.line,range.end.character)), '')
+                    editBuilder.replace(new vscode.Range(new vscode.Position(range.start.line+1,0),new vscode.Position(range.end.line+1,range.end.character)), '')
                 })
+                editor.document.save()
+                
             })
         }));
     }

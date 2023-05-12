@@ -33,7 +33,7 @@ export class DartPartFixer implements CodeActionProviderInterface<PartFixInfo> {
 
     createFixAction(document: vscode.TextDocument, range: vscode.Range, data: PartFixInfo): vscode.CodeAction {
         const fix = new vscode.CodeAction(`${data.msg}`, vscode.CodeActionKind.Refactor);
-        fix.command = { command: DartPartFixer.command, title: data.title, arguments: [document,  data.targetAbsPath, data.importLine] };
+        fix.command = { command: DartPartFixer.command, title: data.title, arguments: [document, data.targetAbsPath, data.importLine] };
         fix.diagnostics = [this.createDiagnostic(range, data)];
         fix.isPreferred = true;
         return fix;
@@ -48,72 +48,85 @@ export class DartPartFixer implements CodeActionProviderInterface<PartFixInfo> {
     // 註冊action 按下後的行為
     setOnActionCommandCallback(context: vscode.ExtensionContext) {
         // 注册 Quick Fix 命令
-        context.subscriptions.push(vscode.commands.registerCommand(DartPartFixer.command, async (document: vscode.TextDocument,  targetPath: string, importText: string) => {
+        context.subscriptions.push(vscode.commands.registerCommand(DartPartFixer.command, async (document: vscode.TextDocument, targetPath: string, importText: string) => {
             // quick fix 點選的行
             // let lineNumber: number = range.start.line
             // let partLine = document.lineAt(lineNumber).text;
 
             let textEditor = await openEditor(targetPath, true)
-            
+
             if (textEditor) {
-                let text = textEditor.document.getText()
-                if(text.includes(importText))return
                 if (importText.includes('part of')) {
-                    let text = textEditor.document.getText()
-                    let allImportNeedInsert = document.getText().match(/^import\s+['"][^'"]+['"];/gm)??[]
-                    let lastImportString =allImportNeedInsert[allImportNeedInsert.length-1]
-                    let lastImportLineIdx = document.getText().split('\n').indexOf(lastImportString)
-                    let replaceRange = new vscode.Range(new vscode.Position(0, 0), new vscode.Position(lastImportLineIdx, lastImportString.length))
-                    let allImportNeedMove = text.match(/^import\s+['"][^'"]+['"];/gm)??[]
-                    let needMove = allImportNeedMove.filter((string) => {return !document.getText().includes(string)} )
-                    let result =[...allImportNeedInsert,...needMove].join('\n')
-                    let insertIdx=0
-                    let lines = text.split(/\r?\n/)
-                    for (let l of lines) {
-                        if(l .includes('import')) continue
-                        if(l .includes('part') ) continue
-                        if(l==='') continue
-                        insertIdx = lines.indexOf(l)-1;
-                        break
-                    }
-                    await textEditor.edit((editBuilder) => {
-                        editBuilder.replace(new vscode.Range(new vscode.Position(0, 0), new vscode.Position(insertIdx, 0)), importText + '\n')
-                        // editBuilder.insert(new vscode.Position(importText.includes('part') ? lastImportLine : 0, 0), importText + '\n');
-                    })
-                    let moveToEditor = await openEditor(document.uri.path, true)
-                    if(moveToEditor){
-                        await moveToEditor.edit((editBuilder) => {
-                            editBuilder.replace(replaceRange, result)
+                    let partOfFileText = textEditor.document.getText()
+                    if (!partOfFileText.includes(importText)) {
+                        let partFileText = document.getText()
+                        let partFileImport = partFileText.match(/^import\s+['"][^'"]+['"];/gm) ?? []
+                        let lastImportString = partFileImport.pop() ?? ''
+                        let lastPartFileImportLineIdx = partFileText.split('\n').indexOf(lastImportString)
+                        let moveFromPartOfFile = partOfFileText.match(/^import\s+['"][^'"]+['"];/gm) ?? []
+                        let needMove = moveFromPartOfFile.filter((string) => { return !partFileText.includes(string) })
+                        /// 把現有的加上新的從第一行取代到最後一個import
+                        let result = [...partFileImport, ...needMove].join('\n')
+                        let replaceRange = new vscode.Range(new vscode.Position(0, 0), new vscode.Position(lastPartFileImportLineIdx, lastImportString.length))
+                        let insertIdx = 0
+                        let lines = partOfFileText.split(/\r?\n/)
+                        for (let l of lines) {
+                            if (l.includes('import')) continue
+                            if (l.includes('part')) continue
+                            if (l === '') continue
+                            insertIdx = lines.indexOf(l) - 1;
+                            break
+                        }
+                        await textEditor.edit((editBuilder) => {
+                            editBuilder.replace(new vscode.Range(new vscode.Position(0, 0), new vscode.Position(insertIdx < 0 ? 0 : insertIdx, 0)), importText + '\n')
+                            // editBuilder.insert(new vscode.Position(importText.includes('part') ? lastImportLine : 0, 0), importText + '\n');
                         })
+                        let moveToEditor = await openEditor(document.uri.path, true)
+                        if (moveToEditor) {
+                            await moveToEditor.edit((editBuilder) => {
+                                editBuilder.replace(replaceRange, result)
+                            })
+                        }
+                        vscode.window.showInformationMessage(`Move all "import line" form [ ${removeFolderPath(textEditor.document)} ] to [ ${removeFolderPath(document)} ]`)
+                        if (textEditor.document.isDirty) {
+                            await textEditor.document.save()
+                        }
                     }
-                    vscode.window.showInformationMessage(`Move all "import line" form [ ${removeFolderPath(textEditor.document)} ] to [ ${removeFolderPath(document)} ]`)
-                    if (textEditor.document.isDirty) {
-                        await textEditor.document.save()
-                    }
-                    // trigger refresh
-                    replaceText(getAbsFilePath(document.uri), document.getText(), document.getText())
                 } else {
                     let text = textEditor.document.getText()
-                    let lines = text.split(/\r?\n/)
-                    let insertIdx=0
-                    for (let l of lines) {
-                        if(l .includes('import')) continue
-                        if(l .includes('part') ) continue
-                        if(l==='') continue
+                    if (!text.includes(importText)) {
+                        let lines = text.split(/\r?\n/)
+                        let insertIdx = 0
+                        for (let l of lines) {
+                            if (l.includes('import')) continue
+                            if (l.includes('part')) continue
+                            if (l === '') continue
 
-                        insertIdx = lines.indexOf(l)-1;
-                        break
+                            insertIdx = lines.indexOf(l) - 1;
+                            break
+                        }
+
+                        await textEditor.edit((editBuilder) => {
+                            editBuilder.insert(new vscode.Position(importText.includes('part') ? insertIdx : 0, 0), importText + '\n');
+                        })
+                        if (textEditor.document.isDirty) {
+                            await textEditor.document.save()
+                        }
                     }
-                    await textEditor.edit((editBuilder) => {
-                        editBuilder.insert(new vscode.Position(importText.includes('part') ? insertIdx : 0, 0), importText + '\n');
-                    })
-                    if (textEditor.document.isDirty) {
-                        await textEditor.document.save()
-                    }
-                    // trigger refresh
-                    replaceText(getAbsFilePath(document.uri), document.getText(), document.getText())
+                }
+                if (textEditor.document.isDirty) {
+                    await textEditor.document.save()
+                }
+                if (document.isDirty) {
+                    await textEditor.document.save()
                 }
                 reFormat()
+                vscode.commands.executeCommand('workbench.action.nextEditor');
+                reFormat()
+                // 切換到上一個編輯器
+                vscode.commands.executeCommand('workbench.action.previousEditor');
+                reFormat()
+
             }
         }));
     }
