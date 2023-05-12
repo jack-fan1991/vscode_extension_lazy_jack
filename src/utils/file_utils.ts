@@ -160,7 +160,8 @@ export function getCursorLineText() {
     return editor.document.lineAt(position.line).text
 }
 
-export function getCursorWordRange(): vscode.Range | undefined {
+// 找出游標所在的文字符合常用規範的文字
+export function findNormalWordFormatFromCursor(): vscode.Range | undefined {
     let editor = vscode.window.activeTextEditor
     if (!editor) {
         logError(`[No active editor]=> getCursorWordText`, false)

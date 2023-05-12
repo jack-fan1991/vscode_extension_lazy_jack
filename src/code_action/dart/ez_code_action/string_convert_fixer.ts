@@ -1,9 +1,8 @@
 import path = require('path');
 import * as vscode from 'vscode';
-import { CodeActionProviderInterface, EzCodeActionProviderInterface } from '../../code_action';
-import { StatusCode } from '../../error_code';
+import {  EzCodeActionProviderInterface } from '../../code_action';
 import { toLowerCamelCase, toSnakeCase, toUpperCamelCase } from '../../../utils/regex_utils';
-import { getCursorLineText, getCursorWordRange, replaceSelectionText } from '../../../utils/file_utils';
+import {  replaceSelectionText } from '../../../utils/file_utils';
 
 export class StringConvertFixer implements EzCodeActionProviderInterface {
 

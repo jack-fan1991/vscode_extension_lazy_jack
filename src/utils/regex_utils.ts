@@ -16,6 +16,9 @@ export const nameCheckerRegex = /^(?:[a-z]+(?:[A-Z][a-z]*)*|^[A-Z][a-z]*([A-Z][a
 export const biggerOpenRegex = /{/g;
 export const biggerCloseRegex = /}/g;
 
+export const middleOpenRegex = /\(/g
+export const middleCloseRegex = /\)/g
+
 /// 'd:\work\git\vscode_extension_lazy_jack\test\test1.dart match => ['test1', index: 44, input: 'd:\work\git\vscode_extension_lazy_jack\test\test1.dart', groups: undefined]
 /// fileName =match[0].dart
 export const findFileName = /[^\\\/]+(?=\.\w+$)/;
