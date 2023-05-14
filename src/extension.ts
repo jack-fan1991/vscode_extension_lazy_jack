@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 import { registerDartSnippet } from './utils/snippet_utils';
-import {  registerToRequireParams, registerJsonToFreezed, registerCommandDartSelectedToFactory, registerGenerateAssert } from './dart/dart';
+import { registerToRequireParams, registerJsonToFreezed, registerCommandDartSelectedToFactory, registerGenerateAssert } from './dart/dart';
 import { registerFastGithubCmd } from './github/github_utils';
 import * as sidebar from './sidebar';
 import * as codeAction from './code_action/code_action';
@@ -9,6 +9,8 @@ import { registerUpdateDependencyVersion } from './utils/dart/pubspec/update_git
 import { registerEzAction } from './code_action/ez_code_action';
 import { registerFileListener } from './file_listener/activate_file_listener';
 import { registerCompletionItemProvider } from './completion_item_provider/completion_item_provider';
+import { FirebaseDataProvider } from './sidebar/firebase';
+import { BaseTreeDataProvider, sidebar_command_onselect } from './sidebar/base_tree_data_provider';
 
 export async function activate(context: vscode.ExtensionContext) {
   console.log('your extension "sugar-demo-vscode" is now active!')
@@ -32,11 +34,23 @@ export async function activate(context: vscode.ExtensionContext) {
   vscode.window.registerTreeDataProvider("git-lazy-cmd", new sidebar.GitTreeDataProvider());
   vscode.window.registerTreeDataProvider("npm-lazy-cmd", new sidebar.NpmTreeDataProvider());
   vscode.window.registerTreeDataProvider("vscode-extension-lazy-cmd", new sidebar.VscodeExtensionTreeDataProvider());
+
   //註冊命令回調
   vscode.commands.registerCommand(sidebar.sidebar_command, (args) => {
     sidebar.onTreeItemSelect(context, args)
   })
-  
+
+  let sideBars: BaseTreeDataProvider[] = []
+  sideBars.push(new FirebaseDataProvider())
+  for (let sideBar of sideBars) {
+    sideBar.register(context)
+  }
+  //註冊命令回調
+  vscode.commands.registerCommand(sidebar_command_onselect, (args) => {
+    for (let sideBar of sideBars) {
+      sideBar.handleCommand(context, args)
+    }
+  })
 }
 
 export function deactivate() { }

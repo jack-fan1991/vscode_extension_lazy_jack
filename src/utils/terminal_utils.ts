@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as child_process from "child_process";
 import { getRootPath, isWindows } from './vscode_utils';
 import * as iconv from 'iconv-lite';
+import { on } from 'events';
 
 
 export function runTerminal(cmd: string, terminalName: string = '') {
@@ -24,7 +25,7 @@ export function runTerminal(cmd: string, terminalName: string = '') {
 
 }
 
-export function runCommand(command: string, onDone?: (stdout: string) => void, onError?: (stdout: string) => void, cmdOnRoot = true): Promise<string> {
+export function runCommand(command: string, onDone?: (stdout: string) => void, onError?: (stdout: string) => void, cmdOnRoot = true,forceCmd:boolean=false): Promise<string> {
     const cwd = getRootPath();
     if (cmdOnRoot) {
         if (isWindows()) {
@@ -33,7 +34,7 @@ export function runCommand(command: string, onDone?: (stdout: string) => void, o
             command = "cd " + cwd + ` &&  ${command}`
         }
     }
-    if (isWindows()) {
+    if (isWindows()&&!forceCmd) {
         return runPowerShellCommand(command, onDone, onError)
     }
     return new Promise((resolve, reject) => {
@@ -77,6 +78,9 @@ export function runPowerShellCommand(command: string, onDone?: (stdout: string) 
 
         powershell.on('close', (code) => {
             if (code !== 0) {
+                if (onError != null) {
+                    onError(stderr)
+                }
                 reject(new Error(`PowerShell command failed with code ${code}: ${stderr}`));
             } else {
                 resolve(stdout.trim());

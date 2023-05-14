@@ -1,19 +1,28 @@
 import path = require("path");
 import vscode = require("vscode");
+import { logError } from "./icon";
 
 export function isWindows(): boolean {
     return process.platform.startsWith('win');
 }
 
 export function convertPathIfWindow(path: string): string {
-    if (isWindows()) {
-        if (path.startsWith('\\')) {
-            path = path.substring(1)
+    try {
+        if (isWindows()) {
+            if (path.startsWith('\\')) {
+                path = path.substring(1)
+            }
+            return path.replace(/\\/g, '/')
         }
-        return path.replace(/\\/g, '/')
+        else {
+            return path
+        }
     }
-    else {
-        return path
+
+    catch (e) {
+        logError(e, false)
+        return ''
+
     }
 }
 
@@ -41,7 +50,7 @@ export function getSelectedText() {
     return text
 }
 
-export function getActivateText(range: vscode.Range | undefined=undefined) {
+export function getActivateText(range: vscode.Range | undefined = undefined) {
     let editor = vscode.window.activeTextEditor
     if (!editor)
         throw new Error('No active editor');
@@ -72,12 +81,12 @@ export function saveActivateEditor() {
 }
 
 
-export async function insertToActivateEditor(text:string,msg:string|undefined=undefined,range:vscode.Position|undefined=undefined) {
+export async function insertToActivateEditor(text: string, msg: string | undefined = undefined, range: vscode.Position | undefined = undefined) {
     await getActivateTextEditor().edit((editBuilder) => {
-        if(msg){
+        if (msg) {
             vscode.window.showInformationMessage(msg)
         }
-        editBuilder.insert(range?? new vscode.Position(0,0), text);
+        editBuilder.insert(range ?? new vscode.Position(0, 0), text);
     })
 }
 

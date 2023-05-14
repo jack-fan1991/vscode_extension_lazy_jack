@@ -6,8 +6,10 @@ import * as ts from './typescript/ts_utils';
 import { selectToUpdate } from './utils/dart/pubspec/analyze_dart_git_dependency';
 
 
-enum ScriptsType {
+export enum ScriptsType {
     terminal = 'terminal',
+    command = 'command',
+
 }
 export const sidebar_command = "sidebar_command.onSelected";
 

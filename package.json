@@ -61,6 +61,10 @@
         {
           "id": "vscode-extension-lazy-cmd",
           "name": "vscode-extension-lazy-cmd"
+        },
+        {
+          "id": "FirebaseDataProvider",
+          "name": "firebase-lazy-cmd"
         }
       ]
     },
