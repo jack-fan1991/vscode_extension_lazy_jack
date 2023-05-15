@@ -3,30 +3,43 @@ import * as child_process from "child_process";
 import { getRootPath, isWindows } from './vscode_utils';
 import * as iconv from 'iconv-lite';
 import { on } from 'events';
+import { logError } from './icon';
 
 
-export function runTerminal(cmd: string, terminalName: string = '') {
+export function runTerminal(cmd: string, terminalName: string = '',enter:boolean=false) {
     vscode.window.showInformationMessage('正在執行' + cmd + ' 命令...');
     const terminal = vscode.window.activeTerminal;
     if (!terminal?.name.startsWith('Lazy_Jack')) {
         const newTerminal = vscode.window.createTerminal('Lazy_Jack');
         newTerminal.show();
         newTerminal.sendText(cmd);
+        if(enter){
+            newTerminal.sendText('\r');
+        }
         return;
     }
     else if (terminalName != '' && terminal.name != terminalName) {
         const newTerminal = vscode.window.createTerminal(`Lazy_Jack ${terminalName}`);
         newTerminal.show();
         newTerminal.sendText(cmd);
+        if(enter){
+            newTerminal.sendText('\r');
+        }
         return;
     }
     terminal.show();
     terminal.sendText(cmd);
+    if(enter){
+        terminal.sendText('\r');
+    }
 
 }
 
 export function runCommand(command: string, onDone?: (stdout: string) => void, onError?: (stdout: string) => void, cmdOnRoot = true,forceCmd:boolean=false): Promise<string> {
     const cwd = getRootPath();
+    if(cmdOnRoot && cwd==null){
+        logError('No active workspace folder was found.')
+    }
     if (cmdOnRoot) {
         if (isWindows()) {
             command = "cd " + cwd + ` ;  ${command}`

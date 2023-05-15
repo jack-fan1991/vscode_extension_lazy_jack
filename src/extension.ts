@@ -10,7 +10,10 @@ import { registerEzAction } from './code_action/ez_code_action';
 import { registerFileListener } from './file_listener/activate_file_listener';
 import { registerCompletionItemProvider } from './completion_item_provider/completion_item_provider';
 import { FirebaseDataProvider } from './sidebar/firebase';
-import { BaseTreeDataProvider, sidebar_command_onselect } from './sidebar/base_tree_data_provider';
+import { BaseTreeDataProvider, TreeDataScript, sidebar_command_onselect } from './sidebar/base_tree_data_provider';
+import { openBrowser } from './utils/vscode_utils';
+import { ProjectSetupDataProvider } from './sidebar/project_setup';
+
 
 export async function activate(context: vscode.ExtensionContext) {
   console.log('your extension "sugar-demo-vscode" is now active!')
@@ -42,13 +45,21 @@ export async function activate(context: vscode.ExtensionContext) {
 
   let sideBars: BaseTreeDataProvider[] = []
   sideBars.push(new FirebaseDataProvider())
+  sideBars.push(new ProjectSetupDataProvider())
+
   for (let sideBar of sideBars) {
     sideBar.register(context)
   }
   //註冊命令回調
   vscode.commands.registerCommand(sidebar_command_onselect, (args) => {
+    let dataScript = args as TreeDataScript
+    if (dataScript.scriptsType == sidebar.ScriptsType.browser) {
+      openBrowser(dataScript.script)
+      return
+    }
+
     for (let sideBar of sideBars) {
-      sideBar.handleCommand(context, args)
+      sideBar.handleCommand(context, dataScript)
     }
   })
 }

@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 import { runCommand, runTerminal } from "../utils/terminal_utils";
 export const sidebar_command_onselect = 'lazyjack.sidebar.command.onselect';
 
-export type Script = {
+export type TreeDataScript = {
     scriptsType: ScriptsType;
     label: string;
     script: string;
@@ -11,7 +11,7 @@ export type Script = {
 };
 
  
-export function parseScripts(scripts: Script[]): SideBarEntryItem[] {
+export function parseScripts(scripts: TreeDataScript[]): SideBarEntryItem[] {
     let childrenList: SideBarEntryItem[] = []
     for (let index = 0; index < scripts.length; index++) {
         let item = new SideBarEntryItem(
@@ -30,7 +30,7 @@ export function parseScripts(scripts: Script[]): SideBarEntryItem[] {
 }
 
 export class BaseTreeDataProvider implements vscode.TreeDataProvider<SideBarEntryItem> {
-    readonly supportScripts: Script[] = []
+    readonly supportScripts: TreeDataScript[] = []
     readonly providerLabel: string=''
     constructor(private workspaceRoot?: string) { }
     register(context : vscode.ExtensionContext){
@@ -43,7 +43,7 @@ export class BaseTreeDataProvider implements vscode.TreeDataProvider<SideBarEntr
     getChildren(): vscode.ProviderResult<SideBarEntryItem[]> {
         return []
     }
-    handleCommand(context: vscode.ExtensionContext, script: Script) {
+    handleCommand(context: vscode.ExtensionContext, script: TreeDataScript) {
         let allScripts = this.supportScripts.map((item) => { return item.script })
         if (allScripts.includes(script.script)) {
             if (script.scriptsType == ScriptsType.terminal) {

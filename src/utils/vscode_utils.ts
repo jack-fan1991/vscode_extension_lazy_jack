@@ -90,3 +90,6 @@ export async function insertToActivateEditor(text: string, msg: string | undefin
     })
 }
 
+export function openBrowser(url: string){
+    vscode.env.openExternal(vscode.Uri.parse(url));
+}

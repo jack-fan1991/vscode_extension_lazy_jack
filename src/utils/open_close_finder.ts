@@ -1,6 +1,8 @@
 
 import * as vscode from 'vscode';
 import { biggerCloseRegex, biggerOpenRegex, findClassRegex, smallCloseRegex, smallOpenRegex, } from './regex_utils';
+import { run } from 'node:test';
+import { is } from 'cheerio/lib/api/traversing';
 
 
 class OpenCloseFinder {
@@ -8,11 +10,18 @@ class OpenCloseFinder {
     closeCount: number;
     openRegExp: RegExp;
     closeRegExp: RegExp;
-    constructor(openRegExp: RegExp, closeRegExp: RegExp) {
+    reverse: boolean;
+    constructor(openRegExp: RegExp, closeRegExp: RegExp, reverse: boolean = false) {
         this.openCount = 0;
         this.closeCount = 0;
-        this.openRegExp = openRegExp;
-        this.closeRegExp = closeRegExp;
+        this.reverse = reverse
+        if (reverse) {
+            this.openRegExp = closeRegExp;
+            this.closeRegExp = openRegExp;
+        } else {
+            this.openRegExp = openRegExp;
+            this.closeRegExp = closeRegExp;
+        }
     }
 
     isDirty(): Boolean {
@@ -34,11 +43,42 @@ class OpenCloseFinder {
         this.closeCount -= number;
     }
 
-    findRange(document: vscode.TextDocument, range: vscode.Range): vscode.Range | undefined {
+    findRange(document: vscode.TextDocument, startLine:number): vscode.Range | undefined {
+        return this.reverse ? this.findReverse(document, startLine) : this.sequence(document, startLine)
+    }
+
+    private findReverse(document: vscode.TextDocument, startLine:number): vscode.Range | undefined {
         this.reset()
         let classRange: vscode.Range | undefined = undefined;
-        let startLine = range.start.line
-        let endLine = range.start.line;
+        let endLine = startLine;
+        let firstLineText = document.lineAt(startLine).text
+        let match = firstLineText.match(this.openRegExp)
+        if (match == null) return undefined
+        let allText = document.getText(new vscode.Range(0, 0, document.lineCount + 1, 0))
+        const lines = allText.split('\n');
+        for (let i = endLine; i > 0; i--) {
+            let lineText = lines[i];
+            let matchOpen = lineText.match(this.openRegExp)
+            let matchClose = lineText.match(this.closeRegExp)
+            this.incrementOpen(matchOpen != null ? matchOpen.length : 0)
+            this.incrementClose(matchClose != null ? matchClose.length : 0)
+            if (this.isDirty()) {
+                startLine--
+            }
+            else {
+                startLine--
+                classRange = new vscode.Range(startLine, 0, endLine+1, 0)
+                let result = document.getText(classRange)
+                break;
+            }
+        }
+        return classRange
+    }
+
+    private sequence(document: vscode.TextDocument, startLine:number): vscode.Range | undefined {
+        this.reset()
+        let classRange: vscode.Range | undefined = undefined;
+        let endLine = startLine;
         let firstLineText = document.lineAt(startLine).text
         let match = firstLineText.match(this.openRegExp)
         if (match == null) return undefined
@@ -73,14 +113,14 @@ class OpenCloseFinder {
 }
 
 export class BiggerOpenCloseFinder extends OpenCloseFinder {
-    constructor() {
-        super(biggerOpenRegex, biggerCloseRegex)
+    constructor(reverse: boolean = false) {
+        super(biggerOpenRegex, biggerCloseRegex, reverse)
     }
 }
 
 export class SmallerOpenCloseFinder extends OpenCloseFinder {
-    constructor() {
-        super(smallOpenRegex, smallCloseRegex)
+    constructor(reverse: boolean = false) {
+        super(biggerOpenRegex, biggerCloseRegex, reverse)
     }
 }
 
@@ -88,11 +128,11 @@ export class FlutterOpenCloseFinder extends OpenCloseFinder {
     constructor() {
         super(biggerOpenRegex, biggerCloseRegex)
     }
-    findRange(document: vscode.TextDocument, range: vscode.Range): vscode.Range | undefined {
+
+    findRange(document: vscode.TextDocument, startLine:number): vscode.Range | undefined {
         this.reset()
         let classRange: vscode.Range | undefined = undefined;
-        let startLine = range.start.line
-        let endLine = range.start.line;
+        let endLine = startLine;
         let firstLineText = document.lineAt(startLine).text
         let match = firstLineText.match(biggerOpenRegex)
         if (match == null) return undefined

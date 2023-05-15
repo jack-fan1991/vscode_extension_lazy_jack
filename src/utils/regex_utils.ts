@@ -12,6 +12,7 @@ export const findPartOfLine = /part of\s+([a-zA-Z]\w*).dart/;
 export const findFreezedClassRegex = /with _\$/;
 /// 檢查是否符合常用命名規範
 export const nameCheckerRegex = /^(?:[a-z]+(?:[A-Z][a-z]*)*|^[A-Z][a-z]*([A-Z][a-z]*)*$|^[a-z]+(_[a-z]+)*$)$/;
+export const findEmailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g
 
 export const biggerOpenRegex = /{/g;
 export const biggerCloseRegex = /}/g;
@@ -85,12 +86,12 @@ function testLowCamel(string: string): boolean {
 }
 
 
-export function getPubspecDependencyOverridePath(dependencyName: string, text: string | undefined=undefined): string | undefined {
+export function getPubspecDependencyOverridePath(dependencyName: string, text: string | undefined = undefined): string | undefined {
   {
     const regex = new RegExp(`${dependencyName}:\\s*\\n\\s*#\\s*path:\\s*(.*)`);
     const regex2 = new RegExp(`#${dependencyName}:\\s*#\\s*path:\\s*(.*)`);
 
-    let t =  readFileToText(getPubspecPath()!)
+    let t = readFileToText(getPubspecPath()!)
     if (text !== undefined) {
       t = text
     }

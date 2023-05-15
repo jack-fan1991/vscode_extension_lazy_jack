@@ -8,7 +8,9 @@ import { selectToUpdate } from './utils/dart/pubspec/analyze_dart_git_dependency
 
 export enum ScriptsType {
     terminal = 'terminal',
-    command = 'command',
+    command = 'command', 
+    browser= 'browser',
+    customer = 'customer'
 
 }
 export const sidebar_command = "sidebar_command.onSelected";

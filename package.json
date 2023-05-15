@@ -2,7 +2,7 @@
   "name": "lazy-jack",
   "displayName": "lazy Jack",
   "description": "lets go",
-  "version": "0.0.52",
+  "version": "0.0.53",
   "publisher": "jackFan",
   "icon": "image/lazy_man.png",
   "engines": {
@@ -65,6 +65,10 @@
         {
           "id": "FirebaseDataProvider",
           "name": "firebase-lazy-cmd"
+        },{
+          "id": "ProjectSetupDataProvider",
+          "name": "project-setup-lazy-cmd"
+          
         }
       ]
     },

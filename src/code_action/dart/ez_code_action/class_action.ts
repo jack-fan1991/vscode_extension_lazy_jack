@@ -20,7 +20,7 @@ export class ExtractClassFixer implements EzCodeActionProviderInterface {
     public provideCodeActions(document: vscode.TextDocument, range: vscode.Range): vscode.CodeAction[] | undefined {
         let cursorLineText = getCursorLineText()
         if (cursorLineText == undefined) return undefined 
-        let classRange = flutterOpenCloseFinder.findRange(document, range)
+        let classRange = flutterOpenCloseFinder.findRange(document, range.start.line)
         if (classRange != undefined) {
             return [this.createAction(getActivityEditor()!, classRange)]
         }

@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as yaml from 'yaml';
 import { convertPathIfWindow, getRootPath, getWorkspacePath } from './vscode_utils';
+import { type } from 'os';
 
 
 export function showInfo2OptionMessage(msg: string, option1?: string, option2?: string, onOption1?: () => void) {
@@ -80,6 +81,8 @@ export function showPicker(placeholder: string, items: any, onItemSelect: (item:
   quickPick.onDidAccept(() => onItemSelect(quickPick.selectedItems[0]));
   quickPick.show()
 }
+
+
 
 export async function openEditor(filePath: string, focus?: boolean): Promise<vscode.TextEditor | undefined> {
   filePath =convertPathIfWindow(filePath)
