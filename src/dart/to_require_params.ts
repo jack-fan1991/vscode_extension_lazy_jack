@@ -3,6 +3,9 @@ const command_dart_2_require_param = "command_dart_2_require_param"
 let s;
 let setter;
 let arr: string[] = [];
+export function runParamToRequireGenerator(){
+    vscode.commands.executeCommand(command_dart_2_require_param)
+}
 
 export function registerToRequireParams(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand(command_dart_2_require_param, async () => {
@@ -10,7 +13,7 @@ export function registerToRequireParams(context: vscode.ExtensionContext) {
     }));
 }
 
-export function paramToRequireGenerator() {
+function paramToRequireGenerator() {
     const editor = vscode.window.activeTextEditor;
     if (!editor)
         return;

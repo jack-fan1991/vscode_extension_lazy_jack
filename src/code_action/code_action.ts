@@ -8,9 +8,6 @@ import { JsonToFreezedFixer } from './dart/json_to_freezed_fixer';
 import { FreezedUnionFixer } from './dart/freezed_union_fixer';
 import { ParamToRequiredFixer } from './dart/param_to_required_fixer';
 // import { StringConvertFixer } from './dart/string_convert_fixer';
-import { RefactorTextStyleFixer } from './dart/refator_text_style_fixer';
-import { StringConvertFixer } from './dart/ez_code_action/string_convert_fixer';
-import { ExtractClassFixer } from './dart/ez_code_action/extract_class_fixer';
 // 設定常數，代表指令的名稱
 const DART_MODE = { language: "dart", scheme: "file" };
 const quickFixCodeAction = [vscode.CodeActionKind.Refactor];
@@ -56,7 +53,7 @@ export function register(context: vscode.ExtensionContext) {
 }
 
 export interface CodeActionProviderInterface<T> extends vscode.CodeActionProvider {
-    createFixAction(document: vscode.TextDocument, range: vscode.Range, data: T): vscode.CodeAction
+    createAddUnitStateAction(document: vscode.TextDocument, range: vscode.Range, data: T): vscode.CodeAction
     createDiagnostic(range: vscode.Range, data: T): vscode.Diagnostic;
     setOnActionCommandCallback(context: vscode.ExtensionContext): void
     handleAllFile(document: vscode.TextDocument): vscode.Diagnostic[]

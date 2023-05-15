@@ -1,5 +1,7 @@
 import * as vscode from 'vscode';
 import { CodeActionProviderInterface } from '../code_action';
+import { getActivateText, getActivateTextEditor, insertToActivateEditor } from '../../utils/vscode_utils';
+import { activeEditorIsDart } from '../../utils/ language_enviroment_check';
 
 /**
  * 訂閱文檔變更事件
@@ -38,6 +40,7 @@ export function subscribeToDocumentChanges(context: vscode.ExtensionContext, dia
  */
 export function refreshDiagnostics(document: vscode.TextDocument, partFixDiagnostics: vscode.DiagnosticCollection, providers: CodeActionProviderInterface<any>[]): void {
 	let diagnostics: vscode.Diagnostic[] = [];
+	autoImport()
 	// 進行所有檢查 
 	for (let p of providers) {
 		if(document.languageId!=p.getLangrageType())break 
@@ -48,3 +51,16 @@ export function refreshDiagnostics(document: vscode.TextDocument, partFixDiagnos
 
 }
 
+
+function autoImport(){
+	if(!activeEditorIsDart())return
+	let text = getActivateText()
+	if(text.includes("StatelessWidget")||text.includes('StatefulWidget')){
+		if(text.includes("import 'package:flutter/material.dart';"))return
+		if(text.includes("import 'package:flutter/widgets.dart';"))return
+		if(text.includes("import 'package:flutter/widgets.dart';"))return
+		if(text.includes("import 'package:flutter/cupertino.dart';"))return
+		if(text.includes("part of"))return		
+		insertToActivateEditor("import 'package:flutter/material.dart';\n")
+
+	}}

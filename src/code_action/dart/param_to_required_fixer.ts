@@ -27,11 +27,11 @@ export class ParamToRequiredFixer implements CodeActionProviderInterface<string>
         if (text.split(',').length <=1) return
         let start = range.start.line
         if(!editor.document.lineAt(start).text.includes('('))return
-        return [this.createFixAction(document, range, "Convert to required")]
+        return [this.createAddUnitStateAction(document, range, "Convert to required")]
 
     }
 
-    createFixAction(document: vscode.TextDocument, range: vscode.Range, data: string): vscode.CodeAction {
+    createAddUnitStateAction(document: vscode.TextDocument, range: vscode.Range, data: string): vscode.CodeAction {
         const fix = new vscode.CodeAction(data, vscode.CodeActionKind.Refactor);
         fix.command = { command: ParamToRequiredFixer.command, title: data, arguments: [document, range] };
         fix.diagnostics = [this.createDiagnostic(range, data)];

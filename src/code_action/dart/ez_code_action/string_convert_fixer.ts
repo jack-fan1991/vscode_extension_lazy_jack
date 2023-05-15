@@ -1,9 +1,8 @@
 import path = require('path');
 import * as vscode from 'vscode';
-import { CodeActionProviderInterface, EzCodeActionProviderInterface } from '../../code_action';
-import { StatusCode } from '../../error_code';
+import {  EzCodeActionProviderInterface } from '../../code_action';
 import { toLowerCamelCase, toSnakeCase, toUpperCamelCase } from '../../../utils/regex_utils';
-import { getCursorLineText, getCursorWordRange, replaceSelectionText } from '../../../utils/file_utils';
+import {  replaceSelectionText } from '../../../utils/file_utils';
 
 export class StringConvertFixer implements EzCodeActionProviderInterface {
 
@@ -38,7 +37,7 @@ export class StringConvertFixer implements EzCodeActionProviderInterface {
         if(text.length>30){
             data = 'UpperCamel'
         }
-        const fix = new vscode.CodeAction(data, vscode.CodeActionKind.RefactorRewrite);
+        const fix = new vscode.CodeAction(data, vscode.CodeActionKind.QuickFix);
         fix.command = { command: StringConvertFixer.commandToUpperCamel, title: data, arguments: [range] };
         fix.isPreferred = true;
         return fix;
@@ -49,7 +48,7 @@ export class StringConvertFixer implements EzCodeActionProviderInterface {
         if(text.length>30){
             data = 'LowerCamel'
         }
-        const fix = new vscode.CodeAction(data, vscode.CodeActionKind.RefactorRewrite);
+        const fix = new vscode.CodeAction(data, vscode.CodeActionKind.QuickFix);
         fix.command = { command: StringConvertFixer.commandLowerCamel, title: data, arguments: [range] };
         fix.isPreferred = true;
         return fix;
@@ -60,7 +59,7 @@ export class StringConvertFixer implements EzCodeActionProviderInterface {
         if(text.length>30){
             data = 'UpperCase'
         }
-        const fix = new vscode.CodeAction(data, vscode.CodeActionKind.RefactorRewrite);
+        const fix = new vscode.CodeAction(data, vscode.CodeActionKind.QuickFix);
         fix.command = { command: StringConvertFixer.commandToUpperCase, title: data, arguments: [range] };
         fix.isPreferred = true;
         return fix;
@@ -71,7 +70,7 @@ export class StringConvertFixer implements EzCodeActionProviderInterface {
         if(text.length>30){
             data = 'SnackCase'
         }
-        const fix = new vscode.CodeAction(data, vscode.CodeActionKind.RefactorRewrite);
+        const fix = new vscode.CodeAction(data, vscode.CodeActionKind.QuickFix);
         fix.command = { command: StringConvertFixer.commandToSnackCase, title: data, arguments: [range] };
         fix.isPreferred = true;
         return fix;
@@ -79,7 +78,7 @@ export class StringConvertFixer implements EzCodeActionProviderInterface {
 
 
     // 註冊action 按下後的行為
-    setOnActionCommandCallback(context: vscode.ExtensionContext) {
+    registerCommand(context: vscode.ExtensionContext) {
         context.subscriptions.push(vscode.commands.registerCommand(StringConvertFixer.commandToUpperCamel, async (range: vscode.Range) => {
             replaceSelectionText(range, toUpperCamelCase)
         }));

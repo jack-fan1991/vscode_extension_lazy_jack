@@ -1,4 +1,8 @@
 # Feature
+## New 
+
+  * String format (onSelected)
+![](./image/quickfix/string_format.png)
 
 ### Assert image Generate
 * Right click on folder will show "Generate assert file from folder"
@@ -125,9 +129,7 @@ PngImage.googlePay.toImage(width: 20,height: 20,color: Colors.red)
 ![](./image/quickfix/json_to_freezed.png)
   * Menu
 ![](./image/quickfix/json_to_freezed_fix_action.png)
-  * Fix Action
-	  * !! Show Only Json format!!
-![](./image/quickfix/json_to_freezed_menu.png)
+
   * Convert to freezed Result
     ```dart 
     import 'package:freezed_annotation/freezed_annotation.dart';

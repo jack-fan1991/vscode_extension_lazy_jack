@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
-import {  openEditor } from '../utils/common';
+import { openEditor } from '../utils/common';
 const command_dart_assert = "command_dart_assert"
 import * as changeCase from "change-case";
 
@@ -57,7 +57,7 @@ async function generatorSvg(folderUri: any) {
             const funcName = changeCase.camelCase(fileName.replace('icon_', ''))
             // 返回格式化后的字符串
             let result = `${funcName}('${svgFolder}/${item}')`;
-            if(!enumContent.includes(result)){
+            if (!enumContent.includes(result)) {
                 newIcon.push(result)
             }
             return result;
@@ -77,7 +77,9 @@ async function generatorSvg(folderUri: any) {
     vscode.window.showInformationMessage(``)
     vscode.window.showInformationMessage(`新增${newIcon.length}個svg\n${newIcon.join(',\n\t')}`)
     fs.writeFileSync(assertPath, svgTemp(icon));
-    openEditor(assertPath)
+    if (newIcon.length > 0) {
+        openEditor(assertPath)
+    }
 }
 
 
@@ -125,7 +127,7 @@ async function generatorPng(folderUri: any) {
             const funcName = changeCase.camelCase(fileName)
             // 返回格式化后的字符串
             let result = `${funcName}('${svgFolder}/${item}')`;
-            if(!enumContent.includes(result)){
+            if (!enumContent.includes(result)) {
                 newIcon.push(result)
             }
             return result;
@@ -145,7 +147,9 @@ async function generatorPng(folderUri: any) {
     vscode.window.showInformationMessage(``)
     vscode.window.showInformationMessage(`新增${newIcon.length}個png\n${newIcon.join(',\n\t')}`)
     fs.writeFileSync(assertPath, pngTemp(icon));
-    openEditor(assertPath)
+    if (newIcon.length > 0) {
+        openEditor(assertPath)
+    }
 
 }
 

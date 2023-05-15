@@ -16,7 +16,6 @@ export class JsonToFreezedFixer implements CodeActionProviderInterface<string> {
 
     // 編輯時對單行檢測
     public provideCodeActions(document: vscode.TextDocument, range: vscode.Range): vscode.CodeAction[] | undefined {
-        // const text = document.getText();
         const editor = vscode.window.activeTextEditor;
         if (!editor) return [];
         const selection = editor.selection;
@@ -25,7 +24,7 @@ export class JsonToFreezedFixer implements CodeActionProviderInterface<string> {
         try {
             let result = JSON.parse(text)
             console.log(`json: ${result}`);
-            const quickFixPart = this.createFixAction(document, range, "Convert to Freezed");
+            const quickFixPart = this.createAddUnitStateAction(document, range, "Convert to Freezed");
             // 將所有程式碼動作打包成陣列，並回傳
             return [quickFixPart];
         } catch (e) {
@@ -33,7 +32,7 @@ export class JsonToFreezedFixer implements CodeActionProviderInterface<string> {
         }
     }
 
-    createFixAction(document: vscode.TextDocument, range: vscode.Range, data: string): vscode.CodeAction {
+    createAddUnitStateAction(document: vscode.TextDocument, range: vscode.Range, data: string): vscode.CodeAction {
         const fix = new vscode.CodeAction(data, vscode.CodeActionKind.Refactor);
         fix.command = { command: JsonToFreezedFixer.command, title: data, arguments: [document, range]};
         fix.diagnostics = [this.createDiagnostic(range, data)];
