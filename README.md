@@ -1,6 +1,6 @@
 # Feature
 ## New 
-
+  * [Fast to setup Flavor to new project ](./doc/project_setup.md)
   * String format (onSelected)
 ![](./image/quickfix/string_format.png)
 

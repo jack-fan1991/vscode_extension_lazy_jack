@@ -2,7 +2,7 @@
   "name": "lazy-jack",
   "displayName": "lazy Jack",
   "description": "lets go",
-  "version": "0.0.53",
+  "version": "0.0.61",
   "publisher": "jackFan",
   "icon": "image/lazy_man.png",
   "engines": {
@@ -27,6 +27,11 @@
           "id": "lazy-sidebar",
           "title": "lazy-sidebar",
           "icon": "/image/rocket.svg"
+        },
+        {
+          "id": "lazy-flutter-flavor",
+          "title": "lazy-flutter-flavor",
+          "icon": "/image/settings_app.svg"
         }
       ]
     },
@@ -37,6 +42,17 @@
       }
     ],
     "views": {
+      "lazy-flutter-flavor":[
+        {
+          "id": "ProjectSetupDataProvider",
+          "name": "project-setup-lazy-cmd"
+          
+        },
+        {
+          "id": "FirebaseDataProvider",
+          "name": "firebase-lazy-cmd"
+        }
+      ],
       "lazy-sidebar": [
         {
           "id": "fast-repo-gui",
@@ -61,15 +77,8 @@
         {
           "id": "vscode-extension-lazy-cmd",
           "name": "vscode-extension-lazy-cmd"
-        },
-        {
-          "id": "FirebaseDataProvider",
-          "name": "firebase-lazy-cmd"
-        },{
-          "id": "ProjectSetupDataProvider",
-          "name": "project-setup-lazy-cmd"
-          
         }
+       
       ]
     },
     "commands": [

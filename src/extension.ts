@@ -27,7 +27,8 @@ export async function activate(context: vscode.ExtensionContext) {
   registerUpdateDependencyVersion(context)
   codeAction.register(context)
   registerEzAction(context)
-  // registerFileListener(context)
+  registerFileListener(context)
+  // 自動補全
   registerCompletionItemProvider(context)
 
 

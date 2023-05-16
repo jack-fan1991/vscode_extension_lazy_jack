@@ -40,7 +40,7 @@ export async function onFlutter(getData: (data: any) => any, errorData: () => an
 
 export async function onGit(getData: () => any[], errorData: () => any[]) {
   let workspace = getRootPath()
-  if (fs.existsSync(`${workspace}/.git`)){
+  if (fs.existsSync(`${workspace}/.git`)) {
     return getData()
   }
 }
@@ -85,9 +85,9 @@ export function showPicker(placeholder: string, items: any, onItemSelect: (item:
 
 
 export async function openEditor(filePath: string, focus?: boolean): Promise<vscode.TextEditor | undefined> {
-  filePath =convertPathIfWindow(filePath)
+  filePath = convertPathIfWindow(filePath)
   if (!fs.existsSync(filePath)) return
-  let editor = vscode.window.visibleTextEditors.find(e => convertPathIfWindow(e.document.fileName)  === filePath)
+  let editor = vscode.window.visibleTextEditors.find(e => convertPathIfWindow(e.document.fileName) === filePath)
   if (!editor) {
     await vscode.workspace.openTextDocument(filePath).then(async (document) =>
       editor = await vscode.window.showTextDocument(document, vscode.ViewColumn.Beside, focus ?? false).then(editor => editor))
@@ -104,3 +104,23 @@ export async function hideEditor(filePath: string, focus?: boolean) {
 }
 
 
+export function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+export async function tryRun(fn:  () => Promise<boolean>|boolean , minutes: number=3 , msSleepSeconds: number = 5000): Promise<any | undefined> {
+  let count = 0
+  let maxTry = minutes * 60 / (msSleepSeconds / 1000)
+  while (count < maxTry) {
+    try {
+      let result = await fn()
+      if (!result) throw new Error(`tryRun retry remind ${count} times`)
+      return fn()
+    } catch (e) {
+      console.log(e)
+      count++
+      await sleep(msSleepSeconds)
+    }
+  }
+  return undefined
+}

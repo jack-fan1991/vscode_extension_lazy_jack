@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 import { existsSync, lstatSync, writeFile } from "fs";
 import { logError, logInfo } from './icon';
 import * as fs from 'fs';
-import { convertPathIfWindow, reFormat } from './vscode_utils';
+import { convertPathIfWindow, getRootPath, reFormat } from './vscode_utils';
 import { nameCheckerRegex, toSnakeCase } from './regex_utils';
 import { openEditor } from './common';
 import { DartPartFixer } from '../code_action/dart/dart_part_fixer';
@@ -83,13 +83,14 @@ export function getFolderPath(document: vscode.TextDocument): string {
 }
 
 
-export function createFile(
+export async function createFile(
     targetPath: string,
     text: string,
 ) {
     if (existsSync(targetPath)) {
         throw Error(`$targetPath already exists`);
     }
+    fs.openSync(targetPath, 'w');
     return new Promise<void>(async (resolve, reject) => {
         writeFile(
             targetPath,
@@ -101,6 +102,7 @@ export function createFile(
                     return;
                 }
                 resolve();
+                
             }
         );
     });
@@ -114,7 +116,14 @@ export function readFileToText(path: string) {
     return fs.readFileSync(path, 'utf8')
 }
 
-
+export function isFileExist(filePath:string){
+    let root = getRootPath()
+    if(!filePath.startsWith(root)){
+        filePath = path.join(root,filePath)
+    }
+    let exist = existsSync(filePath)
+    return exist
+}
 
 export async function replaceText(filePath: string, searchValue: string, replaceValue: string): Promise<boolean> {
     // find yaml editor
@@ -266,39 +275,39 @@ export async function createFileInPicker(editor: vscode.TextEditor, uriPath: str
         }
     };
 
-    const uri = await vscode.window.showSaveDialog(options);
+    const needPartOfUri = await vscode.window.showSaveDialog(options);
 
-    if (uri) {
-        fs.writeFile(uri.fsPath, data, async (err) => {
+    if (needPartOfUri) {
+        fs.writeFile(needPartOfUri.fsPath, data, async (err) => {
             if (err) {
                 vscode.window.showErrorMessage(`Failed to create file: ${err.message}`);
             } else {
-                let currentDir = path.dirname(document.fileName);
-                let currentFileName = path.basename(document.fileName);
-                let targetAbsPath = path.resolve(currentDir, uri.fsPath);
-                let targetDir = path.dirname(targetAbsPath);
-                let targetFileName = path.basename(targetAbsPath);
-                let targetImportPartOfName = path.join(path.relative(targetDir, currentDir), currentFileName);
-                let newPath = uri.fsPath.replace(getWorkspaceFolderPath() ?? "", '')
-                let partEditor = await openEditor(uri.fsPath)
-                if (targetImportPartOfName.split('/')[0] != '..' || targetImportPartOfName.split('/').length === 1) {
-                    targetImportPartOfName = `./${targetImportPartOfName}`;
+                let needPartDir = path.dirname(document.fileName);
+                let needPartFileName = path.basename(document.fileName);
+                let needPartOfAbsPath = path.resolve(needPartDir, needPartOfUri.fsPath);
+                let needPartOfDir = path.dirname(needPartOfAbsPath);
+                let needPartOfFileName = path.basename(needPartOfAbsPath);
+                let partOfName = path.join(path.relative(needPartOfDir, needPartDir), needPartFileName);
+                let newPath = needPartOfUri.fsPath.replace(getWorkspaceFolderPath() ?? "", '')
+                let partEditor = await openEditor(needPartOfUri.fsPath)
+                if (partOfName.split('/')[0] != '..' || partOfName.split('/').length === 1) {
+                    partOfName = `./${partOfName}`;
                 }
                 await partEditor?.edit((editBuilder) => {
-                    editBuilder.insert(new vscode.Position(0, 0), `part of '${targetImportPartOfName}';\n\n`);
+                    editBuilder.insert(new vscode.Position(0, 0), `part of '${partOfName}';\n\n`);
                 })
-                let needPartPath = path.join(path.relative(currentDir,targetDir ), targetFileName);
-                if (needPartPath.split('/')[0] != '..' || needPartPath.split('/').length === 1) {
-                    needPartPath = `./${needPartPath}`;
+                let partPath = path.join(path.relative(needPartDir,needPartOfDir ), needPartOfFileName);
+                if (partPath.split('/')[0] != '..' || partPath.split('/').length === 1) {
+                    partPath = `./${partPath}`;
                 }
-                let importLine = `part '${needPartPath}';`;
-                let needPartFile = path.join(currentDir, currentFileName)
+                let partImportLine = `part '${partPath}';`;
+                let needPartFile = path.join(needPartDir, needPartFileName)
                 await partEditor?.edit((editBuilder) => {
                     editBuilder.replace(range, '')
                 })
-                await vscode.commands.executeCommand(DartPartFixer.command, document, needPartFile, importLine);
+                await vscode.commands.executeCommand(DartPartFixer.command, document, needPartFile, partImportLine);
                 vscode.window.showInformationMessage(`File created: ${newPath}`);
-                onCreateFile(uri)
+                onCreateFile(needPartOfUri)
             }
         });
     }

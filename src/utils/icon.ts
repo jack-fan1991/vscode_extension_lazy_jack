@@ -9,8 +9,9 @@ export const Icon_Debug = '🐛';
 export const Icon_Star = '⭐';
 export const Icon_Project = '📁';
 
+
 export function logError(msg: any = "",showOnVscode:boolean = true) {
-    console.log(`${Icon_Error} : ${msg}`);
+    console.error(`${Icon_Error} : ${msg}`);
     if(showOnVscode){
         vscode.window.showErrorMessage(msg)
     }

@@ -7,16 +7,21 @@ export type TreeDataScript = {
     scriptsType: ScriptsType;
     label: string;
     script: string;
+    description?: string;
 
 };
 
+function decorateDescription(description: string|undefined): string|undefined {
+    return description==undefined? undefined :`( ${description}))`
+}
  
 export function parseScripts(scripts: TreeDataScript[]): SideBarEntryItem[] {
     let childrenList: SideBarEntryItem[] = []
     for (let index = 0; index < scripts.length; index++) {
+        let script = scripts[index]
         let item = new SideBarEntryItem(
-            '1.0.0',
-            scripts[index].label ?? scripts[index].script,
+            decorateDescription(script.description) ??'1.0.0',
+            script.label ?? script.script,
             vscode.TreeItemCollapsibleState.None
         )
         item.command = {

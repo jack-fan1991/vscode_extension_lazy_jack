@@ -40,7 +40,7 @@ export function subscribeToDocumentChanges(context: vscode.ExtensionContext, dia
  */
 export function refreshDiagnostics(document: vscode.TextDocument, partFixDiagnostics: vscode.DiagnosticCollection, providers: CodeActionProviderInterface<any>[]): void {
 	let diagnostics: vscode.Diagnostic[] = [];
-	autoImport()
+	// autoImport()
 	// 進行所有檢查 
 	for (let p of providers) {
 		if(document.languageId!=p.getLangrageType())break 

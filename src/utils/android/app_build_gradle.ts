@@ -20,6 +20,11 @@ export function getAndroidGradleText() {
     return gradleText
 }
 
+export function findApplicationId():string[] {
+    let gradleText = getAndroidGradleText()
+    let applicationId = gradleText.match(/applicationId\s+"(.*)"/)??[]
+    return applicationId
+}
 
 export async function gradleAddFlavor(flavor: string) {
 
